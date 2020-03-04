@@ -2,7 +2,7 @@
 
 # Description
 
-Bseta using leaflet and firebase 
+Beta using leaflet and firebase 
 
 # Getting started
 
