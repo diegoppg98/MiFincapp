@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # vuesion <sup>![version badge](https://v.egoist.moe/gh/vuesion/vuesion.svg)</sup> [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=flat)](https://twitter.com/intent/tweet?text=Vuesion%20an%20enterprise%20ready%20boilerplate%20for%20isomorphic,%20progressive%20web%20apps%20with%20Vue.JS&url=https://github.com/vuesion/vuesion&via=vuesion1&hashtags=Vuesion,VueJS,SEO,Enterprise) <a href="https://slack-vuesion.herokuapp.com/" target="_blank"><img src="https://home-assistant.io/images/supported_brands/slack.png" height="20px" /></a> <a href="https://discord.gg/59x5cg2" target="_blank"><img src="https://cdn0.iconfinder.com/data/icons/square-logo-buttons/512/discord-1-128.png" height="20px" /></a>
 
 <img width="256px" height="256px" src="https://user-images.githubusercontent.com/1667598/55292014-ea98a800-53e5-11e9-82ca-11ba7bb2bbcd.png" alt="vuesion logo" align="center" />
@@ -109,3 +110,23 @@ This project follows the [all-contributors](https://github.com/kentcdodds/all-co
 # License
 
 [MIT](http://opensource.org/licenses/MIT)
+=======
+
+
+# Description
+
+Beta using leaflet and firebase 
+
+# Getting started
+
+## Via Git
+
+1. Download or clone (`git clone https://github.com/diegoppg98/MifincApp`) the repository
+2. Change directory `cd MifincApp`
+3. Install dependencies: `npm install`
+4. Run `npm run dev`
+
+
+
+
+>>>>>>> origin/master

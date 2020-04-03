@@ -28,6 +28,10 @@ describe('Ayuda.vue', () => {
 
     //Ayuda.prefetch({});
 
+<<<<<<< HEAD
    // expect(wrapper.find('h1').text()).toBe('Ayuda');
+=======
+    expect(wrapper.find('h1').text()).toBe('Ayuda');
+>>>>>>> origin/master
   });
 });

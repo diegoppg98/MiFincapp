@@ -28,6 +28,10 @@ describe('AltaFinca.vue', () => {
 
     //AltaFinca.prefetch({});
 
+<<<<<<< HEAD
    // expect(wrapper.find('h1').text()).toBe('AltaFinca');
+=======
+    expect(wrapper.find('h1').text()).toBe('AltaFinca');
+>>>>>>> origin/master
   });
 });

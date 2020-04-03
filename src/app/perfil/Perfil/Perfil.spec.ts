@@ -28,6 +28,10 @@ describe('Perfil.vue', () => {
 
     //Perfil.prefetch({});
 
+<<<<<<< HEAD
     //expect(wrapper.find('h1').text()).toBe('Perfil');
+=======
+    expect(wrapper.find('h1').text()).toBe('Perfil');
+>>>>>>> origin/master
   });
 });

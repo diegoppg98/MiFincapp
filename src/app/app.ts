@@ -17,9 +17,12 @@ import {ImplementationDatabase} from './firebaseImplementation';
 
 let FunctionsDatabase: Database = new ImplementationDatabase();
 
+<<<<<<< HEAD
 import Vuetify from 'vuetify';
 Vue.use(Vuetify);
 
+=======
+>>>>>>> origin/master
 
 Vue.use(VeeValidate, { inject: false, delay: 1 });
 
@@ -30,7 +33,10 @@ export interface IApp {
   i18n: VueI18n;
 }
 
+<<<<<<< HEAD
 Vue.use(Vuetify);
+=======
+>>>>>>> origin/master
 Vue.use(VeeValidate, { inject: false, delay: 1 });
 
 
@@ -44,6 +50,7 @@ export const createApp = (): IApp => {
     router,
     store,
     i18n,
+<<<<<<< HEAD
     vuetify: new Vuetify({
       icons: {
         iconfont: 'mdi',
@@ -53,4 +60,10 @@ export const createApp = (): IApp => {
   });
 
   return { app, router, store, i18n , };
+=======
+    render: (h) => h(App),
+  });
+
+  return { app, router, store, i18n };
+>>>>>>> origin/master
 };

@@ -28,6 +28,10 @@ describe('HistoricoAlerta.vue', () => {
 
     //HistoricoAlerta.prefetch({});
 
+<<<<<<< HEAD
     //expect(wrapper.find('h1').text()).toBe('HistoricoAlerta');
+=======
+    expect(wrapper.find('h1').text()).toBe('HistoricoAlerta');
+>>>>>>> origin/master
   });
 });

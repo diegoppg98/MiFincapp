@@ -28,6 +28,10 @@ describe('RegistrarUsuario.vue', () => {
 
     //RegistrarUsuario.prefetch({});
 
+<<<<<<< HEAD
   //  expect(wrapper.find('h1').text()).toBe('RegistrarUsuario');
+=======
+    expect(wrapper.find('h1').text()).toBe('RegistrarUsuario');
+>>>>>>> origin/master
   });
 });

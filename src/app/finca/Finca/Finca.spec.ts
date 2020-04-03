@@ -28,6 +28,10 @@ describe('Finca.vue', () => {
 
     //Finca.prefetch({});
 
+<<<<<<< HEAD
   //  expect(wrapper.find('h1').text()).toBe('Finca');
+=======
+    expect(wrapper.find('h1').text()).toBe('Finca');
+>>>>>>> origin/master
   });
 });

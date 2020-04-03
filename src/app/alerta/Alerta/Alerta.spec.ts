@@ -28,6 +28,10 @@ describe('Alerta.vue', () => {
 
     //Alerta.prefetch({});
 
+<<<<<<< HEAD
     //expect(wrapper.find('h1').text()).toBe('Alerta');
+=======
+    expect(wrapper.find('h1').text()).toBe('Alerta');
+>>>>>>> origin/master
   });
 });

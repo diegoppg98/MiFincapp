@@ -28,7 +28,10 @@ Vue.use(Meta);
 
 import {Database} from './interfaceDatabase';
 import {ImplementationDatabase} from './firebaseImplementation';
+<<<<<<< HEAD
 import { DetalleAlertaRoutes } from './detalleAlerta/routes';
+=======
+>>>>>>> origin/master
 
 let FunctionsDatabase: Database = new ImplementationDatabase();
 FunctionsDatabase.init();
@@ -36,7 +39,11 @@ FunctionsDatabase.init();
 export const router: VueRouter = new VueRouter({
   mode: 'history',
   base: __dirname,
+<<<<<<< HEAD
   routes: [...AppRoutes, ...HomeRoutes, ...DashboardRoutes, ...AyudaRoutes, ...PerfilRoutes, ...CounterRoutes, ...FormRoutes, ...FincaRoutes, ...AlertaRoutes, ...AltaFincaRoutes, ...AltaAlertaRoutes, ...DetalleFincaRoutes, ...DetallePivotRoutes, ...AltaPivotRoutes, ...DetalleDispositivoRoutes, ...AltaDispositivoRoutes, ...HistoricoAlertaRoutes, ...RegistrarUsuarioRoutes, ...DetalleAlertaRoutes],
+=======
+  routes: [...AppRoutes, ...HomeRoutes, ...DashboardRoutes, ...AyudaRoutes, ...PerfilRoutes, ...CounterRoutes, ...FormRoutes, ...FincaRoutes, ...AlertaRoutes, ...AltaFincaRoutes, ...AltaAlertaRoutes, ...DetalleFincaRoutes, ...DetallePivotRoutes, ...AltaPivotRoutes, ...DetalleDispositivoRoutes, ...AltaDispositivoRoutes, ...HistoricoAlertaRoutes, ...RegistrarUsuarioRoutes],
+>>>>>>> origin/master
   scrollBehavior(to: Route, from: Route, savedPosition: { x: number; y: number }) {
     if (to.hash) {
       return { selector: to.hash };
@@ -52,8 +59,14 @@ router.beforeEach((to: Route, from: Route, next: any) => {
   const isAuthenticated = store.getters['auth/isAuthenticated'];
   const user = firebase.auth().currentUser;
   const autorizacion = to.matched.some((record: RouteRecord) => record.meta.requiresAuth);
+<<<<<<< HEAD
 
   //FunctionsDatabase.userAutenticated().then((result) =>{
+=======
+   firebase.auth().onAuthStateChanged(function(user) {
+      //  console.log(user);
+       })  
+>>>>>>> origin/master
 
   if (autorizacion && !isAuthenticated) {
      next({ path: '/', query: { redirect: to.fullPath } });
@@ -64,8 +77,11 @@ router.beforeEach((to: Route, from: Route, next: any) => {
    else {
     next();
    }
+<<<<<<< HEAD
 //});
 
+=======
+>>>>>>> origin/master
 });
 
 

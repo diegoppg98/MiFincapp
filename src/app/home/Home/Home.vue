@@ -1,4 +1,5 @@
 <template>
+<<<<<<< HEAD
 <div >
   <v-app >
   <v-snackbar
@@ -84,10 +85,43 @@
   </v-row>
 
  </v-app>
+=======
+  <div :class="$style.home">
+    <vue-notification-stack />
+    <vue-grid>
+      <vue-grid-row>
+        <vue-grid-item fill>
+           <br />
+          <br />
+          <br />
+                   <br />
+          <br />
+          <br />
+          <vue-headline level="1">Home</vue-headline>
+          HOME PARA INICIAR SESION O REGISTRARSE
+          <br />
+          <br />
+          <br />
+        <vue-button color="primary" @click="showLoginModal = true">
+        Iniciar Sesion
+      </vue-button>
+
+      <vue-button color="primary" @click="registrarUsuario">
+        Registrarse
+      </vue-button>
+        </vue-grid-item>
+      </vue-grid-row>
+    </vue-grid>
+
+        <vue-modal :show="showLoginModal" @close="showLoginModal = false">
+      <login-form @submit="onLoginSubmit" />
+    </vue-modal>
+>>>>>>> origin/master
   </div>
 </template>
 
 <script lang="ts">
+<<<<<<< HEAD
 
 import { mapState, mapActions, mapGetters } from 'vuex';
 import { IState } from '@/app/state';
@@ -99,6 +133,28 @@ import {ImplementationDatabase} from '../../firebaseImplementation';
 let FunctionsDatabase: Database = new ImplementationDatabase();
 import '../../../../node_modules/@mdi/font/css/materialdesignicons.css';
 import '../../../../node_modules/vuetify/dist/vuetify.css';
+=======
+import { mapState, mapActions, mapGetters } from 'vuex';
+//import Stage from '../components/Stage/Stage.vue';
+//import HomeSection from '@/app/home/components/HomeSection/HomeSection.vue';
+import { IState } from '@/app/state';
+//import VueHeadline from '@components/VueHeadline/VueHeadline.vue';
+import { IPreLoad } from '@/server/isomorphic';
+import VueGrid from '@/app/shared/components/VueGrid/VueGrid.vue';
+import VueGridRow from '@/app/shared/components/VueGridRow/VueGridRow.vue';
+import VueGridItem from '@/app/shared/components/VueGridItem/VueGridItem.vue';
+import VueButton from '@/app/shared/components/VueButton/VueButton.vue';
+import VueHeadline from '@/app/shared/components/VueHeadline/VueHeadline.vue';
+
+import VueModal from '@components/VueModal/VueModal.vue';
+
+import LoginForm from '@/app/shared/modules/auth/LoginForm/LoginForm.vue';
+
+import {router} from '../../router';
+
+import VueNotificationStack from '@/app/shared/components/VueNotificationStack/VueNotificationStack.vue';
+import { addNotification } from '@/app/shared/components/VueNotificationStack/utils';
+>>>>>>> origin/master
 
 export default {
   metaInfo: {
@@ -109,10 +165,15 @@ export default {
         content:
           'App for control irrigation',
       },
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/master
     ],
   },
   data(): any {
     return {
+<<<<<<< HEAD
       correo: '',
       contraseña: '',
       showPass: false,
@@ -138,11 +199,33 @@ export default {
   components: { 
   },
   computed: {
+=======
+      showLoginModal: false,
+    };
+  },
+  components: {
+    VueGrid,
+    VueGridItem,
+    VueButton,
+    VueGridRow,
+    VueHeadline,
+    LoginForm,
+    VueModal,
+    VueNotificationStack,
+    
+  },
+  computed: {
+    /*...mapState({
+      disableParticles: (state: IState) =>
+        (state.app.config && state.app.config.features && state.app.config.features.disableParticles) || false,
+    }),*/
+>>>>>>> origin/master
     ...mapGetters('auth', ['isAuthenticated']),
   },
 
   methods: {
     ...mapActions('auth', ['createToken', 'revokeToken']),
+<<<<<<< HEAD
     async onLoginSubmit() {
       this.dialog = false;
 
@@ -162,6 +245,18 @@ export default {
           this.snackbar = true;
           console.log(error);
       });
+=======
+    async onLoginSubmit(formData: any) {
+      try {
+        await this.createToken(formData);
+
+        router.push({ name: 'dashboard' });
+      } catch (e) {
+        addNotification({ title: 'Error during login', text: 'Please try again!' });
+      }
+
+      this.showLoginModal = false;
+>>>>>>> origin/master
     },
     async registrarUsuario() {
       router.push('/registrar-usuario');
@@ -169,6 +264,20 @@ export default {
   },
 };
 </script>
+<<<<<<< HEAD
 <style>
+=======
+<style lang="scss" module>
+@import "~@/app/shared/design-system";
+
+.home {
+  margin-top: $nav-bar-height;
+  min-height: 500px;
+  display: flex;
+  justify-content: top-center;
+  align-items: top-center;
+}
+
+>>>>>>> origin/master
 </style>
 

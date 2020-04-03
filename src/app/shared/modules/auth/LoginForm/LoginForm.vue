@@ -74,7 +74,12 @@ export default {
   },
   methods: {
     onSubmit() {
+<<<<<<< HEAD
       FunctionsDatabase.login(this.username,this.password).then((user) =>{ this.$emit('submit', this.$data)}, (error) => { alert("Datos incorrectos"); console.log(error);});
+=======
+
+      FunctionsDatabase.login(this.username,this.password).then((user) => this.$emit('submit', this.$data), (error) => { alert("Datos incorrectos"); console.log(error);});
+>>>>>>> origin/master
 
     /* INICIO MEDIANTE GOOGLE
       var provider = new firebase.auth.GoogleAuthProvider();

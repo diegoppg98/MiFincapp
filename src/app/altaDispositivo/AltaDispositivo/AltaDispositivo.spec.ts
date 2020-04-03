@@ -28,6 +28,10 @@ describe('AltaDispositivo.vue', () => {
 
     //AltaDispositivo.prefetch({});
 
+<<<<<<< HEAD
    // expect(wrapper.find('h1').text()).toBe('AltaDispositivo');
+=======
+    expect(wrapper.find('h1').text()).toBe('AltaDispositivo');
+>>>>>>> origin/master
   });
 });

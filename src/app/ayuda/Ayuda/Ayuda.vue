@@ -1,7 +1,14 @@
 <template>
+<<<<<<< HEAD
   <div >
     <v-app >
  </v-app>
+=======
+  <div :class="$style.ayuda" id="dispositivo">
+    <br />
+   <br />
+ <vue-headline level="1">Ayuda</vue-headline>
+>>>>>>> origin/master
  </div>
 </template>
 
@@ -21,8 +28,12 @@ import VueCheckbox from '@/app/shared/components/VueCheckbox/VueCheckbox.vue';
 import VueButton from '@/app/shared/components/VueButton/VueButton.vue';
 import { addNotification, INotification } from '@/app/shared/components/VueNotificationStack/utils';
 
+<<<<<<< HEAD
 import '../../../../node_modules/@mdi/font/css/materialdesignicons.css';
 import '../../../../node_modules/vuetify/dist/vuetify.css';
+=======
+
+>>>>>>> origin/master
 //import { AyudaModule } from '../module';
 import firebase from 'firebase';
 
@@ -154,6 +165,17 @@ db.ref('users/' + 'dppg/' + 'fincas').push({
 };
 </script>
 
+<<<<<<< HEAD
 <style >
 
+=======
+<style lang="scss" module>
+@import "~@/app/shared/design-system";
+
+.ayuda {
+  margin-top: $nav-bar-height;
+  min-height: 500px;
+  margin-left:5%;
+}
+>>>>>>> origin/master
 </style>

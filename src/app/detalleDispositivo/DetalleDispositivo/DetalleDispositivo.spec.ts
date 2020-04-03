@@ -28,6 +28,10 @@ describe('DetalleDispositivo.vue', () => {
 
     //DetalleDispositivo.prefetch({});
 
+<<<<<<< HEAD
    // expect(wrapper.find('h1').text()).toBe('DetalleDispositivo');
+=======
+    expect(wrapper.find('h1').text()).toBe('DetalleDispositivo');
+>>>>>>> origin/master
   });
 });

@@ -28,6 +28,10 @@ describe('DetallePivot.vue', () => {
 
     //DetallePivot.prefetch({});
 
+<<<<<<< HEAD
    // expect(wrapper.find('h1').text()).toBe('DetallePivot');
+=======
+    expect(wrapper.find('h1').text()).toBe('DetallePivot');
+>>>>>>> origin/master
   });
 });

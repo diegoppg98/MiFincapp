@@ -28,6 +28,10 @@ describe('AltaPivot.vue', () => {
 
     //AltaPivot.prefetch({});
 
+<<<<<<< HEAD
    // expect(wrapper.find('h1').text()).toBe('AltaPivot');
+=======
+    expect(wrapper.find('h1').text()).toBe('AltaPivot');
+>>>>>>> origin/master
   });
 });

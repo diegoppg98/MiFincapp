@@ -1,8 +1,22 @@
 <template>
+<<<<<<< HEAD
   <div>
      <v-app >
  </v-app>
  </div>
+=======
+  <div :class="$style.historicoAlerta">
+    <vue-grid>
+      <vue-breadcrumb :items="breadCrumbItems"></vue-breadcrumb>
+
+      <vue-grid-row>
+        <vue-grid-item fill>
+          <vue-headline level="1">HistoricoAlerta</vue-headline>
+        </vue-grid-item>
+      </vue-grid-row>
+    </vue-grid>
+  </div>
+>>>>>>> origin/master
 </template>
 
 <script lang="ts">
@@ -14,8 +28,12 @@ import VueGridRow from '@/app/shared/components/VueGridRow/VueGridRow.vue';
 import VueGridItem from '@/app/shared/components/VueGridItem/VueGridItem.vue';
 import VueButton from '@/app/shared/components/VueButton/VueButton.vue';
 import VueHeadline from '@/app/shared/components/VueHeadline/VueHeadline.vue';
+<<<<<<< HEAD
 import '../../../../node_modules/@mdi/font/css/materialdesignicons.css';
 import '../../../../node_modules/vuetify/dist/vuetify.css';
+=======
+
+>>>>>>> origin/master
 //import { HistoricoAlertaModule } from '../module';
 
 export default {
@@ -63,6 +81,16 @@ export default {
 };
 </script>
 
+<<<<<<< HEAD
 <style>
 
+=======
+<style lang="scss" module>
+@import "~@/app/shared/design-system";
+
+.historicoAlerta {
+  margin-top: $nav-bar-height;
+  min-height: 500px;
+}
+>>>>>>> origin/master
 </style>
