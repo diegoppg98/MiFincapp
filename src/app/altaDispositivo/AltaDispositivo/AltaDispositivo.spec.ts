@@ -2,13 +2,13 @@ import { createLocalVue, mount } from '@vue/test-utils';
 import Vuex, { Store } from 'vuex';
 import { i18n } from '@/app/shared/plugins/i18n/i18n';
 import AltaDispositivo from './AltaDispositivo.vue';
-//import { IAltaDispositivoState } from '../state';
-//import { AltaDispositivoModule } from '../module';
+// import { IAltaDispositivoState } from '../state';
+// import { AltaDispositivoModule } from '../module';
 
 const localVue = createLocalVue();
 
 describe('AltaDispositivo.vue', () => {
-  //let store: Store<IAltaDispositivoState>;
+  // let store: Store<IAltaDispositivoState>;
 
   /*beforeEach(() => {
     store = new Vuex.Store({
@@ -20,18 +20,14 @@ describe('AltaDispositivo.vue', () => {
 
   test('renders component', () => {
     const wrapper = mount<any>(AltaDispositivo, {
-      //store,
+      // store,
       localVue,
       i18n,
       stubs: ['router-link'],
     });
 
-    //AltaDispositivo.prefetch({});
+    // AltaDispositivo.prefetch({});
 
-<<<<<<< HEAD
-   // expect(wrapper.find('h1').text()).toBe('AltaDispositivo');
-=======
-    expect(wrapper.find('h1').text()).toBe('AltaDispositivo');
->>>>>>> origin/master
+    // expect(wrapper.find('h1').text()).toBe('AltaDispositivo');
   });
 });

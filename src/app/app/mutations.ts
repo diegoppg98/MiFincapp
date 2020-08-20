@@ -2,14 +2,13 @@ import { IAppState } from './state';
 
 export interface IAppMutations {
   CHANGE_LOCALE(state: IAppState, locale: string): void;
-<<<<<<< HEAD
-  CHANGE_NOMBREFINCA(state: IAppState, nombreFinca: string): void;
-  CHANGE_NOMBREPIVOT(state: IAppState, nombrePivot: string): void;
-  CHANGE_NOMBREDISPOSITIVO(state: IAppState, nombreDispositivo: string): void;
-  CHANGE_NOMBREALERTA(state: IAppState, nombreAlerta: string): void;
-=======
-
->>>>>>> origin/master
+  CHANGE_FINCA(state: IAppState, finca: Finca): void;
+  CHANGE_PIVOT(state: IAppState, pivot: Pivot): void;
+  CHANGE_DISPOSITIVO(state: IAppState, dispositivo: Dispositivo): void;
+  CHANGE_ALERTA(state: IAppState, alerta: Alerta): void;
+  CHANGE_AVATARUSUARIO(state: IAppState, avatarUsuario: string): void;
+  CHANGE_USER(state: IAppState, user: boolean): void;
+  CHANGE_RELOAD(state: IAppState, reload: string): void;
   SET_COOKIE_CONSENT_VERSION(state: IAppState, version: string): void;
 }
 
@@ -17,21 +16,27 @@ export const AppMutations: IAppMutations = {
   CHANGE_LOCALE: (state: IAppState, locale: string) => {
     state.locale = locale;
   },
-<<<<<<< HEAD
-  CHANGE_NOMBREFINCA: (state: IAppState, nombreFinca: string) => {
-    state.nombreFinca = nombreFinca;
+  CHANGE_FINCA: (state: IAppState, finca: Finca) => {
+    state.finca = finca;
   },
-  CHANGE_NOMBREPIVOT: (state: IAppState, nombrePivot: string) => {
-    state.nombrePivot = nombrePivot;
+  CHANGE_PIVOT: (state: IAppState, pivot: Pivot) => {
+    state.pivot = pivot;
   },
-  CHANGE_NOMBREDISPOSITIVO: (state: IAppState, nombreDispositivo: string) => {
-    state.nombreDispositivo = nombreDispositivo;
+  CHANGE_DISPOSITIVO: (state: IAppState, dispositivo: Dispositivo) => {
+    state.dispositivo = dispositivo;
   },
-  CHANGE_NOMBREALERTA: (state: IAppState, nombreAlerta: string) => {
-    state.nombreAlerta = nombreAlerta;
+  CHANGE_ALERTA: (state: IAppState, alerta: Alerta) => {
+    state.alerta = alerta;
   },
-=======
->>>>>>> origin/master
+  CHANGE_AVATARUSUARIO: (state: IAppState, avatarUsuario: string) => {
+    state.avatarUsuario = avatarUsuario;
+  },
+  CHANGE_USER: (state: IAppState, user: boolean) => {
+    state.user = user;
+  },
+  CHANGE_RELOAD: (state: IAppState, reload: string) => {
+    state.reload = reload;
+  },
   SET_COOKIE_CONSENT_VERSION: (state: IAppState, version: string) => {
     state.cookieConsentVersion = version;
   },

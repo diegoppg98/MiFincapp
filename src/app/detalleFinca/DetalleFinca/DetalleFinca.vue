@@ -1,11 +1,10 @@
 <template>
-<<<<<<< HEAD
 <div>
-  <v-app>
   <v-snackbar
       v-model="snackbar"
       :timeout="timeoutSnackbar"
       :color="colorSnackbar"
+      style="z-index: 999999"
     >
       {{ textSnackbar }}
       <v-btn
@@ -15,10 +14,16 @@
         Close
       </v-btn>
     </v-snackbar>
-
-   <v-btn class="mx-10 my-2" color="orange darken-2" dark absolute to='/finca'>
-        <v-icon dark left>mdi-arrow-left</v-icon>
-   </v-btn>
+   
+    <v-card
+      class="mx-10 my-12 font-weight-black red--text text-center"
+      raised
+      color="#000000"
+   >
+   <h1>Finca:  <span >{{ nombre }}</span></h1>  
+   </v-card>
+ <v-row>
+<v-col :cols="posMap">  
    <v-form
       class="mx-10 my-12"
       dark
@@ -26,34 +31,40 @@
       v-model="valid"
       :lazy-validation="lazy"
     >
-      <v-text-field
+
+<v-text-field
         v-model="nombre"
+        :rules="nameRules"
         label="Nombre"
+        clearable
         required
-        disabled
       ></v-text-field>
-
-     <v-textarea
-         v-model="descripcion"
-         clearable
-     >
-      <template v-slot:label>
-        <div>
-          Descripcion <small>(opcional)</small>
-        </div>
-      </template>
-     </v-textarea>
-
+      
       <v-text-field
         v-model="tamaño"
         label="Tamaño (opcional)"
       ></v-text-field>
 
-      <v-text-field
+         <v-select
         v-model="cultivo"
+        :items="tiposCultivos"
         label="Cultivo (opcional)"
-      ></v-text-field>
-     <div class="d-block" style="height: 350px;" ref="mapa" id="mapa"></div>
+        style="z-index: 999"
+      ></v-select>
+      
+      <v-layout justify-start v-if="!dialogMapa">
+     <v-btn small rounded class="mx-3 my-5" @click="mostrarMapa" color="grey">
+        Mostrar Mapa
+     </v-btn>
+     </v-layout>
+     
+    <v-layout justify-start v-if="dialogMapa">
+     <v-btn small rounded class="mx-3 my-5" @click="mostrarMapa" color="grey">
+        Ocultar Mapa
+     </v-btn>
+     </v-layout>
+        
+     <v-row justify="end">
       <v-btn
         :disabled="!valid"
         :loading="isLoading"
@@ -63,59 +74,45 @@
       >
         Guardar
       </v-btn>
+      </v-row>
     </v-form> 
- <v-card-actions class="justify-center">
-  <v-btn @click="registrarPivot" color="error">
+</v-col :cols="posMap">
+    <v-col>
+    <v-card
+      class="mx-10 my-12"
+      outlined
+      v-show="dialogMapa"
+   >
+   <v-layout justify-end v-if="!dialogMapaOptions">
+     <v-btn small rounded class="mx-3 my-5" @click="mostrarOpciones" color="grey">
+        Mostrar Opciones
+     </v-btn>
+     </v-layout>
+     
+    <v-layout justify-end v-if="dialogMapaOptions">
+     <v-btn small rounded class="mx-3 my-5" @click="mostrarOpciones" color="grey">
+        Ocultar Opciones
+     </v-btn>
+     </v-layout>
+      <div class="d-block" style="height: 350px;" ref="mapa" id="mapa"></div>
+   </v-card>
+    
+    </v-col>
+     </v-row>
+    
+<v-layout justify-center>
+  <v-btn class="d-block my-2" @click="registrarPivot" color="info">
     Registrar nuevo pivot
   </v-btn>
+</v-layout>
 
-  <v-btn @click.stop="dialog = true" color="error">
-    Eliminar finca
-  </v-btn>
-
-<v-dialog
-      v-model="dialog"
-      max-width="290"
-      style="z-index: 999"
-    >
-      <v-card>
-        <v-card-title class="headline">Confirmacion de eliminacion</v-card-title>
-
-        <v-card-text>
-        Esta seguro de que desea eliminar la finca, este procesos será irreversible.
-        </v-card-text>
-
-        <v-card-actions>
-          <v-spacer></v-spacer>
-
-          <v-btn
-            color="green darken-1"
-            text
-            @click="dialog = false"
-          >
-            Cancelar
-          </v-btn>
-
-          <v-btn
-            color="green darken-1"
-            text
-            @click="eliminarFinca"
-          >
-            Eliminar
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
-
-</v-card-actions>
  <v-list rounded>
       <v-list-item-group v-model="item" background-color= "red" >
         <v-list-item       
-          style="background:#26da3a"
+          style="background:#9F693A"
           v-for="item in items"
           :key="item.text"
-          @click="clickItem(item.text)"
+          @click="clickItem(item)"
         >
           <v-list-item-icon>
             <v-icon>{{ item.icon }}</v-icon>
@@ -126,119 +123,71 @@
         </v-list-item>
       </v-list-item-group>
     </v-list>
-  </v-app>
+ 
+    
+<v-layout justify-start>
+  <v-btn class="mx-3 my-5" @click.stop="dialog = true" color="error">
+    Eliminar finca
+  </v-btn>
+</v-layout>
+
+<v-dialog
+      v-model="dialog"
+      max-width="290"
+      style="z-index: 999"
+    >
+      <v-card>
+        <v-card-title class="headline">Confirmar eliminación</v-card-title>
+
+        <v-card-text>
+        Esta seguro de que desea eliminar la finca, este procesos será irreversible.
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+
+          <v-btn
+            color="success"
+            text
+            @click="dialog = false"
+          >
+            Cancelar
+          </v-btn>
+
+          <v-btn
+            color="error"
+            text
+            @click="eliminarFinca"
+          >
+            Eliminar
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
  </div> 
 </template>
+
+
 
 <script lang="ts">
 import { mapGetters } from 'vuex';
 import { mapActions } from 'vuex';
 import { IPreLoad } from '@/server/isomorphic';
 import {router} from '../../router';
-import {Database} from '../../interfaceDatabase';
-import {ImplementationDatabase} from '../../firebaseImplementation';
 import '../../../../node_modules/@mdi/font/css/materialdesignicons.css';
 import '../../../../node_modules/vuetify/dist/vuetify.css';
-=======
-  <div :class="$style.detalleFinca" id="pivot" >
-    <br />
-  <vue-grid>
-      <vue-button color="primary" @click="toBack">
-        <-
-      </vue-button>
-  </vue-grid>
-  <div :class="$style.map" ref="mapa" id="mapa"></div>
-  <form @submit.prevent="onSubmit" :class="$style.form">
-    <br />
-     <vue-grid>
-      <vue-grid-row>
-        <vue-grid-item fill>
-          <vue-headline level="1">DetalleFinca</vue-headline>
-        </vue-grid-item>
-      </vue-grid-row>
-    </vue-grid>
-
-    <br />
-    <br />
-     <vue-input
-      id="nombre"
-      name="nombre"
-      type="text"
-      autofocus
-      placeholder="Nombre"
-      required
-      validation="required"
-      error-message="Campo obligatorio"
-      v-model="form.nombre"
-      :disabled="nameDisabled"
-    />
-
-    <vue-grid-row>
-      <vue-grid-item>
-        <vue-input
-          name="descripcion"
-          id="descripcion"
-          placeholder="Descripcion"
-          v-model="form.descripcion"
-        />
-      </vue-grid-item> 
-      <vue-grid-item>
-        <vue-input
-          name="tamaño"
-          id="tamaño"
-          placeholder="Tamaño"
-          v-model="form.tamaño"
-        />
-      </vue-grid-item>
-    </vue-grid-row>
-
-
-    <vue-grid-row>
-      <vue-grid-item>
-        <vue-input
-          name="cultivo"
-          id="cultivo"
-          placeholder="Cultivo"
-          v-model="form.cultivo"
-        />
-      </vue-grid-item>
-    </vue-grid-row>
-
-
-    <br />
-    <vue-button color="primary" :disabled="isSubmitDisabled" :loading="isLoading"> Save </vue-button>
-  </form>
-    <br />
-    <br />
-  <vue-grid :class="$style.detalleFincaBoton">
-    <vue-button color="primary" @click="registrarPivot" > Registrar Nuevo Pivot </vue-button>
-    <vue-button color="primary" @click="eliminarFinca" > Eliminar Finca </vue-button>
-  </vue-grid>
- </div>
-</template>
-
-<script lang="ts">
-//import { registerModule } from '@/app/store';
-import { IPreLoad } from '@/server/isomorphic';
-import VueGrid from '@/app/shared/components/VueGrid/VueGrid.vue';
-import VueBreadcrumb from '@components/VueBreadcrumb/VueBreadcrumb.vue';
-import VueGridRow from '@/app/shared/components/VueGridRow/VueGridRow.vue';
-import VueGridItem from '@/app/shared/components/VueGridItem/VueGridItem.vue';
-import VueButton from '@/app/shared/components/VueButton/VueButton.vue';
-import VueHeadline from '@/app/shared/components/VueHeadline/VueHeadline.vue';
-
-import VueInput from '@/app/shared/components/VueInput/VueInput.vue';
-import VueSelect from '@/app/shared/components/VueSelect/VueSelect.vue';
-import { addNotification, INotification } from '@components/VueNotificationStack/utils';
-//import { DetalleFincaModule } from '../module';
-
-import {router} from '../../router';
-import {Database} from '../../interfaceDatabase';
-import {ImplementationDatabase} from '../../firebaseImplementation';
->>>>>>> origin/master
-
-let FunctionsDatabase: Database = new ImplementationDatabase();
+import {Utils} from '../../utils';
+let FunctionsUtils: Utils = new Utils();
+import {Spain_PNOA_Ortoimagen} from '../../LeafletSpain.js';
+import {Spain_MapasrasterIGN} from '../../LeafletSpain.js';
+import {Spain_IGNBase} from '../../LeafletSpain.js';
+import {Spain_Catastro} from '../../LeafletSpain.js';
+import {Spain_UnidadAdministrativa} from '../../LeafletSpain.js';
+import {parcelas} from '../../LeafletSpain';
+import {recintos} from '../../LeafletSpain';
+import {Finca} from '../../Clases/Finca';
+import {classMethods} from '../../classMethods';
 
 export default {
    $_veeValidate: {
@@ -248,14 +197,31 @@ export default {
     title: 'DetalleFinca',
   },
   components: {
-<<<<<<< HEAD
   },
   data(): any {
     return {
       nombre: '',        
-      descripcion: '',
       tamaño: '',
-      cultivo: '',
+      cultivo: null,
+      nameRules: [
+        v => !!v || 'Nombre no puede estar vacío',
+        v => (v && v.length <= 40) || 'Nombre debe tener menos de cuarenta caracteres',
+      ],
+      tiposCultivos: [
+        'Maiz',
+        'Trigo',
+        'Girasol',
+        'Cebada',
+        'Remolacha',
+        'Patatas',
+        'Alfalfa',
+        'Forraje',
+        'Alubias',
+        'Soja',
+        'Veza',
+        'Colza',
+        'Desconocido',
+      ],
       colorSnackbar: '',
       snackbar: false,
       textSnackbar: '',
@@ -269,167 +235,112 @@ export default {
       items: [
       ],
        dialog: false,
+       dialogMapa: true,
+       coorFinca: '',
+       dialogMapaOptions: true,
     };
   },
+  
+  //BEFORE UPDATE CHECK THAT ALL PIVOTS AND DEVICES ARE INSIDE THE LAND 
   methods: {
-     ...mapActions('app', ['changeNombrePivot']),
-
-      onSubmit() {   
-      this.isLoading = true;
+     ...mapActions('app', ['changePivot', 'changeUser', 'changeFinca']),
+     mostrarOpciones(){
+      var lc = document.getElementsByClassName('leaflet-control-layers');
+      if(this.dialogMapaOptions){ lc[0].style.visibility = 'hidden'; this.dialogMapaOptions = false;}
+      else{ lc[0].style.visibility = 'visible'; this.dialogMapaOptions = true; }
+    },
+      async onSubmit() {   
+       this.isLoading = true;
        var tierraLocalizacion = [];      
        var layers  = [];
         this.map2.eachLayer(function(layer) {
           if (layer instanceof L.Polygon) {
-=======
-    VueGrid,
-    VueBreadcrumb,
-    VueGridRow,
-    VueGridItem,
-    VueButton,
-    VueHeadline,
-    VueInput,
-    VueSelect,
-  },
-  data(): any {
-    return {
-      form: {
-        nombre: '',
-        descripcion: '',
-        tamaño: '',
-        cultivo: '',
-      },
-      map2: '',
-      localizacion: [],
-      isLoading: false,
-    };
-  },
-  methods: {
-      onSubmit() {
-
-      this.isLoading = true;
-
-       var tierraLocalizacion = [];
-       
-       var layers  = [];
-        this.map2.eachLayer(function(layer) {
-          if (layer instanceof L.Rectangle || layer instanceof L.Polygon) {
->>>>>>> origin/master
-           layers.push(layer); 
+           layers.push(layer);  
         }                  
         })
        this.localizacion = layers;
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/master
        this.localizacion.forEach(function(element,index) {
           tierraLocalizacion.push(JSON.stringify(element.toGeoJSON()));
         })       
        if(tierraLocalizacion.length === 0){
-<<<<<<< HEAD
    	  this.colorSnackbar = "error";
           this.textSnackbar = 'Localizacion no marcada. Por favor seleccione en el mapa la localizacion';
           this.snackbar = true;
           this.isLoading = false;
        } 
        else{
+         var t = this;
+  
           var tierraNombre = this.nombre;
-          var tierraDescripcion = this.descripcion;
           var tierraTamaño = this.tamaño;
           var tierraCultivo = this.cultivo;
 
-         FunctionsDatabase.updateLand(tierraNombre,tierraDescripcion,tierraLocalizacion,tierraTamaño,tierraCultivo); 
+         var finca = new Finca(this.getFinca.key,tierraNombre, tierraTamaño, tierraCultivo, tierraLocalizacion);
+         classMethods.getFincaMethods().updateLand(finca).then((result) =>{
+          this.changeFinca(finca); 
    	  this.colorSnackbar = "success";
           this.textSnackbar = 'Tierra actualizada correctamente';
           this.snackbar = true;
          // router.push('/finca');
           this.isLoading = false;
-=======
-         addNotification({ title: 'Localizacion no marcada', text: 'Por favor seleccione en el mapa la localizacion' });
-         this.isLoading = false;
-       } 
-       else{
-         var tierraNombre = this.form.nombre;
-         var tierraDescripcion = this.form.descripcion;
-         var tierraTamaño = this.form.tamaño;
-         var tierraCultivo = this.form.cultivo;
-
-         FunctionsDatabase.updateLand(tierraNombre,tierraDescripcion,tierraLocalizacion,tierraTamaño,tierraCultivo); 
-         addNotification({ title: 'Tierra actualizada correctamente', text: 'Tierra actualizada correctamente' });
-         // router.push('/finca');
-         this.isLoading = false;
->>>>>>> origin/master
+          }).catch((error) => {
+   	     this.colorSnackbar = "error";
+             this.textSnackbar = 'Error al actualizar la tierra. Por favor inténtelo otra vez';
+             this.snackbar = true;
+          });    
        }
     },
     async registrarPivot() {
       router.push('/alta-pivot');
     },
     async eliminarFinca() {
-<<<<<<< HEAD
-      this.dialog = false;
+      this.dialog = false; 
       var tierraNombre = this.nombre;
-      FunctionsDatabase.deleteLand(tierraNombre); 
-      router.push('/finca');
+      classMethods.getFincaMethods().deleteLand(this.getFinca.key).then((result) =>{
+          router.push('/finca');
+          this.isLoading = false;
+          }).catch((error) => {
+   	     this.colorSnackbar = "error";
+             this.textSnackbar = 'Error al eliminar la tierra. Por favor inténtelo otra vez';
+             this.snackbar = true;
+          });  
     },
     clickItem(nombreClicked){ 
-      this.changeNombrePivot(nombreClicked); 
+      this.changePivot(nombreClicked.pivot); 
       router.push('/detalle-pivot');
     },
+    
+    mostrarMapa(){
+      if(this.dialogMapa)  this.dialogMapa = false;
+      else{ 
+        this.dialogMapa = true;
+        this.map2.eachLayer(function(layer) {
+          if (layer instanceof L.Polygon) {
+              layer.bindPopup((LGeo.area(layer) / 10000).toFixed(2) + ' hectáreas');
+              layer.openPopup(); 
+          }                  
+        })              
+      }     
+    },
+
   },
   computed: {
-    ...mapGetters('app', [ 'getNombreFinca']),
-=======
-       var tierraNombre = this.form.nombre;
-       FunctionsDatabase.deleteLand(tierraNombre); 
-        addNotification({ title: 'Tierra eliminada correctamente', text: 'Tierra eliminada correctamente' });
-      router.push('/finca');
-    },
-    async toBack() {
-      router.push('/finca');
-    },
-  },
-  computed: {
->>>>>>> origin/master
-    breadCrumbItems() {
-      return [
-        { label: this.$t('common.home' /* Home */), href: '/' },
-        { label: this.$t('common.DetalleFinca' /* DetalleFinca */), href: '/detalle-finca' },
-      ];
-    },
-<<<<<<< HEAD
+    posMap () {
+        switch (this.$vuetify.breakpoint.name) {
+          case 'xs': return '12'
+          case 'sm': return '12'
+          case 'md': return '6'
+          case 'lg': return '6'
+          case 'xl': return '6'
+          }
+   },   
+    ...mapGetters('app', [ 'getFinca']),
  },
 
-mounted() {
 
-=======
-    nameDisabled() {
-      return 1;
-    },
-    hasErrors() {
-      return this.errors && this.errors.items.length > 0;
-    },
-    hasEmptyFields() {
-      
-      let hasEmptyField: boolean = false;
-      var nombre = this.form.nombre;
-      Object.keys(this.form).forEach((key: string) => {
-       // console.log(FunctionsDatabase.landExist(nombre));
-        if (this.form.nombre === '') {
-          hasEmptyField = true;
-        }
-      });
+ mounted() {   
 
-      return hasEmptyField;
-    },
-    isSubmitDisabled() {
-      return this.hasErrors || this.hasEmptyFields;
-  },
-
- },
-
-mounted() {
->>>>>>> origin/master
-   const accessToken = 'pk.eyJ1IjoiZGllZ29wcGciLCJhIjoiY2s3NmVtaXRmMTRyaDNndDA2dWFwYmk2OCJ9.0Evn9MpSDvrdASq2S60-hQ';
+ const accessToken = 'pk.eyJ1IjoiZGllZ29wcGciLCJhIjoiY2s3NmVtaXRmMTRyaDNndDA2dWFwYmk2OCJ9.0Evn9MpSDvrdASq2S60-hQ';
 
    const mapboxTiles1 = L.tileLayer(
      `https://api.mapbox.com/styles/v1/mapbox/streets-v9/tiles/{z}/{x}/{y}?access_token=${accessToken}`,
@@ -438,188 +349,177 @@ mounted() {
        '&copy; <a href="https://www.mapbox.com/feedback/">Mapbox</a> &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
    }
    );
-   
-   this.map2 = L.map(this.$refs['mapa'])
-     .addLayer(mapboxTiles1);
+		   
+    this.map2 = L.map(this.$refs['mapa'], {
+    fullscreenControl: true,
+   }).setView([0, 0], 1); 
+   var baselayers = {
+	"Normal": mapboxTiles1,
+	"Vista Real": Spain_PNOA_Ortoimagen,
+	"Mapa España": Spain_MapasrasterIGN,
+	"Parcelas": parcelas,
+	"Recintos": recintos,
+	//"Mapa España y Mundo": Spain_IGNBase,
+	"Catastro": Spain_Catastro					
+   };
+      
+   var overlayers = {
+       "Unidades administrativas": Spain_UnidadAdministrativa
+   };	
+   L.control.layers(baselayers, overlayers,{collapsed:false}).addTo(this.map2);
+   L.control.scale({options: {position: 'bottomleft',maxWidth: 100,metric: true,imperial: false,updateWhenIdle: false}}).addTo(this.map2);
+   Spain_PNOA_Ortoimagen.addTo(this.map2);
+   //var lc = document.getElementsByClassName('leaflet-control-layers');
+   //lc[0].style.visibility = 'hidden';
+    
 
    this.map2.pm.setLang('es');
-
-   this.map2.pm.addControls({
-     drawMarker: false,
-     drawCircleMarker: false,
-     drawPolygon: true,
-<<<<<<< HEAD
-     drawRectangle: false,
-=======
->>>>>>> origin/master
-     editPolygon: true,
-     drawCircle: false,
-     drawPolyline: false,
-     deleteLayer: true,
-     cutPolygon: false,
+   
+   var myStyle = {
+     "color": 'red',
+      "weight": 5,
+      "opacity": 0.65
+   };
+   
+   //DAR STYLE AL CREAR
+   this.map2.on('pm:create', e => {
+   
+     e.layer.bindPopup((LGeo.area(e.layer) / 10000).toFixed(2) + ' hectáreas');
+     e.layer.openPopup();
+     this.map2.pm.addControls({
+       drawPolygon: false,
+     });
+     e.layer.setStyle(myStyle); 
+     //this.map2.fitBounds(e.layer.getBounds());
+     var map = this.map2; var layer = e.layer;
+     e.layer.on('pm:edit', e => {
+        map.fitBounds(layer.getBounds());
+     });
    });
+   
+   //DEJAR CREAR OTRO POLYGON AL ELIMINAR EL ACTUAL
+   this.map2.on('pm:remove', e => {
+     this.map2.pm.addControls({
+       drawPolygon: true,
+     });
+     });
+
+     L.tileLayer.wms('http://www.ign.es/wms-inspire/pnoa-ma', {
+	layers: 'OI.OrthoimageCoverage',
+	format: 'image/png',
+	transparent: false,
+	continuousWorld : true,
+	attribution: 'PNOA cedido por © <a href="http://www.ign.es/ign/main/index.do" target="_blank">Instituto Geográfico Nacional de España</a>'
+     }).addTo(this.map2);
+     // var tiles = L.esri.basemapLayer("Streets").addTo(this.map2);
+      var searchControl = L.esri.Geocoding.geosearch().addTo(this.map2);
  
-<<<<<<< HEAD
-},
-
- beforeMount() {
-     
-     FunctionsDatabase.landInformation(this.getNombreFinca).then((result) =>{
-        if(result === null) router.push('/finca');
-        this.nombre = result.nombre[0];
-=======
-   // L.geoJSON(JSON.parse(this.localizacion)).addTo(this.map2);
-
-   //console.log(JSON.parse(this.localizacion));
-   this.map2.on('pm:create', function(e) {
-     var layer = e.layer;
+      var results = L.layerGroup().addTo(this.map2);
+      
+      searchControl.on('results', function (data) {
+        results.clearLayers();
+        for (var i = data.results.length - 1; i >= 0; i--) {
+          results.addLayer(L.marker(data.results[i].latlng));
+        }
+      });
+      
+   //this.changeUser(true);  
+  
+     if(this.getFinca === null) router.push('/finca');
+     else{
+     classMethods.getPivotMethods().listPivots(this.getFinca.key).then((result) =>{
+     var items = this.items;    
+     var arrayPivots = []; 
+       if(result !== null){
+        result.forEach(function(childResult) {       
+          var pivot = childResult.nombre;
+          var label = pivot;
+          arrayPivots.push(childResult);
+          items.push( { text: label ,icon: 'mdi-water-pump', pivot: childResult});         
+       })
+      // this.getFinca.pivots = arrayPivots;
+       if(items.length > 0){
+         this.map2.pm.addControls({
+            drawMarker: false,
+            drawCircleMarker: false,
+            drawPolygon: false,  
+            drawRectangle: false,
+            editPolygon: false,
+            drawCircle: false,
+            drawPolyline: false,
+            deleteLayer: false,
+            deletePolyline: false,
+            dragMode: false,
+            cutPolygon: false,
+            editMode: false,     
+          }); 
+       }
+       else{
+          this.map2.pm.addControls({ 
+            drawMarker: false,
+            drawCircleMarker: false,
+            drawPolygon: false,
+            drawRectangle: false,
+            editPolygon: true,
+            drawCircle: false,
+            drawPolyline: false,
+            deleteLayer: true,
+            deletePolyline: false,
+            dragPolygon: false,
+            cutPolygon: false,
+            editMode: true,     
+          });
+        }
+      }
    });
 
-   this.map2.on('pm:remove', function(e) {
-      var layer = e.layer;
-   });
-},
-
-
- /* beforeCreate() {
-    registerModule('detalleFinca', DetalleFincaModule);
-  },
-  prefetch: (options: IPreLoad) => {
-    registerModule('detalleFinca', DetalleFincaModule);
-
-    /**
-     * This is the function where you can load all the data that is needed
-     * to render the page on the server and client side
-     *
-     * This function always returns a promise that means, if you want to
-     * call a vuex action you have to return it, here is an example
-     *
-     * return options.store.dispatch('fetchDetalleFinca', '1');
-     *
-     * If you need to fetch data from multiple source your can also return
-     * a Promise chain or a Promise.all()
-     */
-  //  return Promise.resolve();
-  //},
-
-
-
-//location.reload(); 
- beforeMount() {
-     FunctionsDatabase.landInformation(localStorage.nameFinca).then((result) =>{
-        if(result === null) router.push('/finca');
-        this.form.nombre = result.nombre[0];
->>>>>>> origin/master
-        this.localizacion = result.localizacion[0];
+        this.nombre = this.getFinca.nombre;
+        this.localizacion = this.getFinca.localizacion;
         var map = this.map2;
+        var layers;
+
 
         L.geoJSON( L.geoJSON(JSON.parse(this.localizacion[0])).toGeoJSON(), {
-<<<<<<< HEAD
-=======
-        /*   coordsToLatLng: function (coords) {
-               map.setView([coords[1], coords[0]], 12);
-           },*/
->>>>>>> origin/master
            onEachFeature: function (feature, layer) {
-              map.setView([feature.geometry.coordinates[0][0][1], feature.geometry.coordinates[0][0][0]], 13);
+              layers = layer;                        
            },
         });
 
-        this.localizacion.forEach(function(element,index) {
-           L.geoJSON(JSON.parse(element)).addTo(map);
-        })  
-        
-<<<<<<< HEAD
-        this.descripcion = result.descripcion[0];
-        this.tamaño = result.tamaño[0];
-        this.cultivo = result.cultivo[0];
-   });
-    FunctionsDatabase.listPivots(this.getNombreFinca).then((result) =>{
-     var items = this.items;
-       if(result !== null){
-        result.forEach(function(childResult) {       
-          var pivot = childResult.nombre[0];
-          items.push( { text: pivot ,icon: 'mdi-water-pump'});          
-=======
-        this.form.descripcion = result.descripcion[0];
-        this.form.tamaño = result.tamaño[0];
-        this.form.cultivo = result.cultivo[0];
-   });
-    FunctionsDatabase.listPivots(localStorage.nameFinca).then((result) =>{
-       if(result !== null){
-        result.forEach(function(childResult) {       
-          var pivot = childResult.nombre[0];
-           var body = document.getElementById("pivot");
-           var button = document.createElement("button");
-           button.style.width = '400px'; // setting the width to 200px
-           button.style.height = '100px'; // setting the height to 200px
-           button.style.fontSize = '20px';
-           button.style.margin = "50px 80px 10px 220px"; 
-           button.style.border = 'solid';
-           button.style.background = 'rgba(0, 255, 0, 0.3)';
-           button.innerHTML = pivot;
-           body.appendChild(button);
-           button.addEventListener ("click", function() {
-               localStorage.namePivot = pivot;               
-               router.push('/detalle-pivot');
-           })
-           button.addEventListener("mouseover", function() {
-               button.style.background = 'rgba(0, 255, 0, 0.8)';
-           });
-           button.addEventListener("mouseout", function() {
-               button.style.background = 'rgba(0, 255, 0, 0.3)';
-           });
->>>>>>> origin/master
-       })
-      }
-   });
-},
+       this.map2.fitBounds(layers.getBounds());
 
-<<<<<<< HEAD
+	//COLORES
+	var finca;
+        this.localizacion.forEach(function(element,index) {
+          var myStyle = {
+          "color": 'red',
+          "weight": 5,
+          "opacity": 0.65
+          };
+          finca = JSON.parse(element);
+          //https://leafletjs.com/reference-1.6.0.html#path
+          L.geoJSON(JSON.parse(element), {
+             style: myStyle
+          }).addTo(map);
+          
+        })       
+
+        this.coorFinca = finca;    
+        this.tamaño = this.getFinca.tamaño;
+        if(this.getFinca.cultivo)
+          this.cultivo = this.getFinca.cultivo;  
+   }
+},
+beforeMount() {
+  window.onbeforeunload = function() { 
+    window.setTimeout(function () { 
+        window.location = "/perfil";
+    }, 0); 
+    window.onbeforeunload = null; // necessary to prevent infinite loop, that kills your browser 
+   }
+},
 };
 </script>
 
 <style>
-=======
-/*mounted() {
-    if (localStorage.getItem('reloaded')) {
-        // The page was just reloaded. Clear the value from local storage
-        // so that it will reload the next time this page is visited.
-        localStorage.removeItem('reloaded');
-    } else {
-        // Set a flag so that we know not to reload the page twice.
-        localStorage.setItem('reloaded', '1');
-        location.reload();
-    }
-}*/
-};
-</script>
 
-<style lang="scss" module>
-@import "~@/app/shared/design-system";
-
-.detalleFinca {
-  margin-top: $nav-bar-height;
-  margin-left:5%;
-  min-height: 500px;
-}
-.form {
-   margin-right:60%;
- }
-.map{
-    width: 50%; 
-    height: 380px; 
-    position: absolute;
-    left: 580px;
-    top: 180px;
-}
-.detalleFincaBoton {
-   display: inline;
-   margin-left:20%;
-   position:absolute; 
-   left:10px;
-   top: 570px;
-}
-
->>>>>>> origin/master
 </style>

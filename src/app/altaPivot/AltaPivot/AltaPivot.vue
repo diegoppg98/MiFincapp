@@ -1,11 +1,10 @@
 <template>
-<<<<<<< HEAD
 <div>
-  <v-app>
   <v-snackbar
       v-model="snackbar"
       :timeout="timeoutSnackbar"
       :color="colorSnackbar"
+      style="z-index: 999999"
     >
       {{ textSnackbar }}
       <v-btn
@@ -15,9 +14,8 @@
         Close
       </v-btn>
     </v-snackbar>
-  <v-btn class="mx-10 my-2" color="orange darken-2" dark absolute to='/detalle-finca'>
-        <v-icon dark left>mdi-arrow-left</v-icon>
-   </v-btn>
+<v-row>
+<v-col :cols="posMap">
    <v-form
       class="mx-10 my-12"
       dark
@@ -28,29 +26,18 @@
       <v-text-field
         v-model="nombre"
         :rules="nameRules"
-        :error="isNameRepeated"
         label="Nombre"
         required
         clearable
       ></v-text-field>
-
-     <v-textarea
-         v-model="descripcion"
-         clearable
-     >
-      <template v-slot:label>
-        <div>
-          Descripcion <small>(opcional)</small>
-        </div>
-      </template>
-     </v-textarea>
 
     <v-radio-group v-model="tipo" :mandatory="false">
       <v-radio label="Circular" value="circular"></v-radio>
       <v-radio label="Lineal" value="lineal"></v-radio>
     </v-radio-group>
 
-     <div class="d-block" style="height: 350px;" ref="mapa" id="mapa"></div>
+     
+     <v-row justify="end">
       <v-btn
         :disabled="!valid"
         :loading="isLoading"
@@ -60,9 +47,24 @@
       >
         Guardar
       </v-btn>
+       </v-row>
     </v-form> 
-  </v-app>
-
+       </v-col>
+    <v-col :cols="posMap">
+    <v-layout justify-end v-if="!dialogMapa">
+     <v-btn small rounded class="mx-3 my-5" @click="mostrarOpciones" color="grey">
+        Mostrar Opciones
+     </v-btn>
+     </v-layout>
+     
+    <v-layout justify-end v-if="dialogMapa">
+     <v-btn small rounded class="mx-3 my-5" @click="mostrarOpciones" color="grey">
+        Ocultar Opciones
+     </v-btn>
+     </v-layout>
+    <div class="d-block" style="height: 350px;" ref="mapa" id="mapa"></div>
+    </v-col>   
+     </v-row>
  </div> 
 </template>
 
@@ -70,104 +72,19 @@
 import { IPreLoad } from '@/server/isomorphic';
 import '../../../../node_modules/@mdi/font/css/materialdesignicons.css';
 import '../../../../node_modules/vuetify/dist/vuetify.css';
-import { mapGetters } from 'vuex';
-=======
-  <div :class="$style.altaPivot" >
-     <br />
-  <vue-grid>
-      <vue-button color="primary" @click="toBack">
-        <-
-      </vue-button>
-  </vue-grid>
-  <div :class="$style.map" ref="mapa" id="mapa"></div>
-  <form @submit.prevent="onSubmit" :class="$style.form">
-    <br />
-     <vue-grid>
-      <vue-grid-row>
-        <vue-grid-item fill>
-          <vue-headline level="1">AltaPivot</vue-headline>
-        </vue-grid-item>
-      </vue-grid-row>
-    </vue-grid>
-
-    <br />
-    <br />
-     <vue-input
-      id="nombre"
-      name="nombre"
-      type="text"
-      autofocus
-      placeholder="Nombre"
-      required
-      validation="required"
-      error-message="Campo obligatorio"
-      v-model="form.nombre"
-    />
-
-    <vue-grid-row>
-      <vue-grid-item>
-        <vue-input
-          name="descripcion"
-          id="descripcion"
-          placeholder="Descripcion"
-          v-model="form.descripcion"
-        />
-      </vue-grid-item> 
-    </vue-grid-row>
-
-
-    <vue-grid-row>
-      <vue-grid-item>
-        <vue-checkbox
-          name="tipoLineal"
-          id="tipoLineal"
-          label="tipo lineal"
-          :checked="form.tipo === true"
-          @click="form.tipo = !form.tipo"
-          radio
-        />
-        <br />
-        <vue-checkbox
-          name="tipoCircular"
-          id="tipoCircular"
-          label="tipo circular"
-          :checked="form.tipo === false"
-          @click="form.tipo = !form.tipo"
-          radio
-        />
-      </vue-grid-item>
-    </vue-grid-row>
-
-
-    <br />
-    <vue-button color="primary" :disabled="isSubmitDisabled" :loading="isLoading"> Save </vue-button>
-  </form>
- </div>
-</template>
-
-<script lang="ts">
-//import { registerModule } from '@/app/store';
-import { IPreLoad } from '@/server/isomorphic';
-import VueGrid from '@/app/shared/components/VueGrid/VueGrid.vue';
-import VueBreadcrumb from '@components/VueBreadcrumb/VueBreadcrumb.vue';
-import VueGridRow from '@/app/shared/components/VueGridRow/VueGridRow.vue';
-import VueGridItem from '@/app/shared/components/VueGridItem/VueGridItem.vue';
-import VueButton from '@/app/shared/components/VueButton/VueButton.vue';
-import VueHeadline from '@/app/shared/components/VueHeadline/VueHeadline.vue';
-import VueInput from '@/app/shared/components/VueInput/VueInput.vue';
-import VueCheckbox from '@/app/shared/components/VueCheckbox/VueCheckbox.vue';
-
-//import { AltaPivotModule } from '../module';
-import { addNotification, INotification } from '@components/VueNotificationStack/utils';
-
-
->>>>>>> origin/master
+import { mapActions, mapGetters } from 'vuex';
 import {router} from '../../router';
-
-import {Database} from '../../interfaceDatabase';
-import {ImplementationDatabase} from '../../firebaseImplementation';
-
-let FunctionsDatabase: Database = new ImplementationDatabase();
+import {Utils} from '../../utils';
+let FunctionsUtils: Utils = new Utils();
+import {Spain_PNOA_Ortoimagen} from '../../LeafletSpain.js';
+import {Spain_MapasrasterIGN} from '../../LeafletSpain.js';
+import {Spain_IGNBase} from '../../LeafletSpain.js';
+import {Spain_Catastro} from '../../LeafletSpain.js';
+import {Spain_UnidadAdministrativa} from '../../LeafletSpain.js';
+import {parcelas} from '../../LeafletSpain';
+import {recintos} from '../../LeafletSpain';
+import {Pivot} from '../../Clases/Pivot';
+import {classMethods} from '../../classMethods';
 
 export default {
   $_veeValidate: {
@@ -177,12 +94,10 @@ export default {
     title: 'AltaPivot',
   },
   components: {
-<<<<<<< HEAD
   },
   data(): any {
     return {
       nombre: '',
-      descripcion: '',
       tipo: 'lineal',
       colorSnackbar: '',
       snackbar: false,
@@ -194,46 +109,24 @@ export default {
         v => (v && v.length <= 40) || 'Nombre debe tener menos de cuarenta caracteres',
       ],
       lazy: false,
-=======
-    VueGrid,
-    VueBreadcrumb,
-    VueGridRow,
-    VueGridItem,
-    VueButton,
-    VueHeadline,
-    VueInput,
-    VueCheckbox,
-  },
-  data(): any {
-    return {
-      form: {
-        nombre: '',
-        descripcion: '',
-        tipo: true,
-      },
->>>>>>> origin/master
       map2: '',
       localizacion: [],
-      isNameRepeated: false,
       isLoading: false,
-    };
+      pivot:[],
+      coorFinca: '',
+      groupLayer:[],
+      coordenadaFinca:0,
+      dialogMapa: true,
+  }; 
   },
-<<<<<<< HEAD
-watch: {
-   async nombre(val) {
-       var result = await this.nameRepeated;
-       this.isNameRepeated = result; 
- 
-       if(this.isNameRepeated){
-   	  this.colorSnackbar = "error";
-          this.textSnackbar = 'Nombre de pivot ya utilizado. Por favor, pruebe con otro nombre';
-          this.snackbar = true;
-       }
-    }
-  },
-=======
->>>>>>> origin/master
+
   methods: {
+  ...mapActions('app', ['changeUser']),
+  mostrarOpciones(){
+      var lc = document.getElementsByClassName('leaflet-control-layers');
+      if(this.dialogMapa){ lc[0].style.visibility = 'hidden'; this.dialogMapa = false;}
+      else{ lc[0].style.visibility = 'visible'; this.dialogMapa = true; }
+    },
     onSubmit() {
        this.isLoading = true;
 
@@ -247,113 +140,57 @@ watch: {
        this.localizacion = layers;
        this.localizacion.forEach(function(element,index) {
           pivotLocalizacion.push(JSON.stringify(element.toGeoJSON()));
-        })       
+        })    
+         
        if(pivotLocalizacion.length === 0){
-<<<<<<< HEAD
    	  this.colorSnackbar = "error";
           this.textSnackbar = 'Localizacion no marcada. Por favor seleccione en el mapa la localizacion';
           this.snackbar = true;
           this.isLoading = false;
        }
        else{
-         var nombreTierra = this.getNombreFinca;
+        var p1 = L.latLng(this.localizacion[0].getLatLngs()[0].lat, this.localizacion[0].getLatLngs()[0].lng);
+        var p2 = L.latLng(this.localizacion[0].getLatLngs()[1].lat, this.localizacion[0].getLatLngs()[1].lng);  
+       if(!FunctionsUtils.pointInLand(p1,this.coordenadaFinca) || !FunctionsUtils.pointInLand(p2,this.coordenadaFinca)){
+   	  this.colorSnackbar = "error";
+          this.textSnackbar = 'Localizacion no válida. Por favor seleccione la localizacion del pivot dentro de la finca';
+          this.snackbar = true;
+         this.isLoading = false;
+       }
+       else{
+         var nombreTierra = this.getFinca.key;
          var pivotNombre = this.nombre;
-         var pivotDescripcion = this.descripcion;
          var pivotTipo = this.tipo;
-
-         FunctionsDatabase.createPivot(pivotNombre,pivotDescripcion,pivotLocalizacion,pivotTipo,nombreTierra);
+         
+         var pivot = new Pivot("",pivotNombre, pivotTipo, pivotLocalizacion, nombreTierra);
+        classMethods.getPivotMethods().createPivot(pivot).then((result) =>{
    	  this.colorSnackbar = "success";
           this.textSnackbar = 'Pivot creado correctamente';
           this.snackbar = true;        
-        // router.push('/detalle-finca');
-          this.nombre = '';
+         router.push('/detalle-finca');
          this.isLoading = false;
+          }).catch((error) => {
+   	     this.colorSnackbar = "error";
+             this.textSnackbar = 'Error al crear el pivot. Por favor inténtelo otra vez';
+             this.snackbar = true;
+          });  
+
+      }
       }
     },
   },
   computed: {
-    ...mapGetters('app', [ 'getNombreFinca']),
-
-    nameRepeated(){
-      var nombre = this.nombre;    
-      var nombreTierra = this.getNombreFinca;
-=======
-          addNotification({ title: 'Localizacion no marcada', text: 'Por favor seleccione en el mapa la localizacion' });
-          this.isLoading = false;
-       }
-       else{
-         var nombreTierra = localStorage.nameFinca;
-         var pivotNombre = this.form.nombre;
-         var pivotDescripcion = this.form.descripcion;
-         var pivotTipo = this.form.tipo;
-
-         FunctionsDatabase.createPivot(pivotNombre,pivotDescripcion,pivotLocalizacion,pivotTipo,nombreTierra);
-         addNotification({ title: 'Pivot creado correctamente', text: 'Pivot creado correctamente' });        
-        // router.push('/detalle-finca');
-         this.isLoading = false;
-      }
-    },
-    async toBack() {
-      router.push('/detalle-finca');
-    },
-  },
-  computed: {
-    breadCrumbItems() {
-      return [
-        { label: this.$t('common.home' /* Home */), href: '/' },
-        { label: this.$t('common.AltaPivot' /* AltaPivot */), href: '/alta-pivot' },
-      ];
-    },
-    hasErrors() {
-      return this.errors && this.errors.items.length > 0;
-    },
-    hasEmptyFields() {
-      let hasEmptyField: boolean = false;
-
-      Object.keys(this.form).forEach((key: string) => {
-        if (key !== 'tipo' && (this.form.nombre === '')) {
-          hasEmptyField = true;
-        }
-      });
-
-      return hasEmptyField;
-    },
-    nameRepeated(){
-      var nombre = this.form.nombre;
-      
-      var nombreTierra = localStorage.nameFinca;
->>>>>>> origin/master
-      var resultado = false;
-      if (nombre === ''){
-        resultado = false;
-      }
-      else{
-        resultado = FunctionsDatabase.pivotExist(nombreTierra, nombre).then(function (result) {
-            return false;
-        })
-        .catch(function (error) {
-<<<<<<< HEAD
-=======
-            console.log(error.message);
-            addNotification({ title: 'Nombre de pivot ya utilizado', text: 'Por favor, pruebe con otro nombre' });
->>>>>>> origin/master
-            return true;
-        })
-      }
-      return resultado;  
-    },
+    posMap () {
+        switch (this.$vuetify.breakpoint.name) {
+          case 'xs': return '12'
+          case 'sm': return '12'
+          case 'md': return '6'
+          case 'lg': return '6'
+          case 'xl': return '6'
+          }
+   },
+    ...mapGetters('app', [ 'getFinca']),
     
-<<<<<<< HEAD
-=======
-    async hasNameRepeated(){
-       var result = await this.nameRepeated;
-       this.isNameRepeated = result;
-    },
-    isSubmitDisabled() {
-      this.hasNameRepeated;
-      return this.hasErrors || this.hasEmptyFields|| this.isNameRepeated;
-    },
->>>>>>> origin/master
   },
  mounted() {
    const accessToken = 'pk.eyJ1IjoiZGllZ29wcGciLCJhIjoiY2s3NmVtaXRmMTRyaDNndDA2dWFwYmk2OCJ9.0Evn9MpSDvrdASq2S60-hQ';
@@ -366,10 +203,40 @@ watch: {
    }
    );
 
-   this.map2 = L.map(this.$refs['mapa'])
-     .addLayer(mapboxTiles1);
+    this.map2 = L.map(this.$refs['mapa'], {
+    fullscreenControl: true,
+   });
+   
+   var baselayers = {
+	"Normal": mapboxTiles1,
+	"Vista Real": Spain_PNOA_Ortoimagen,
+	"Mapa España": Spain_MapasrasterIGN,
+	"Parcelas": parcelas,
+	"Recintos": recintos,
+	//"Mapa España y Mundo": Spain_IGNBase,
+	"Catastro": Spain_Catastro					
+   };
+   var overlayers = {
+       "Unidades administrativas": Spain_UnidadAdministrativa
+   };		
+   L.control.layers(baselayers, overlayers,{collapsed:false}).addTo(this.map2);
+   L.control.scale({options: {position: 'bottomleft',maxWidth: 100,metric: true,imperial: false,updateWhenIdle: false}}).addTo(this.map2);
+   Spain_PNOA_Ortoimagen.addTo(this.map2);
+//   var lc = document.getElementsByClassName('leaflet-control-layers');
+ //  lc[0].style.visibility = 'hidden';
 
    this.map2.pm.setLang('es');
+   
+      var myStyleLine = {
+     "color": 'blue',
+      "weight": 5,
+      "opacity": 1
+   };
+   var myStylePolygon = {
+     "color": 'red',
+      "weight": 5,
+      "opacity": 0.65
+   };
 
    this.map2.pm.addControls({
      drawMarker: false,
@@ -379,80 +246,128 @@ watch: {
      drawCircle: false,
      drawPolyline: true,
      deleteLayer: true,
-     editeModel: false,
-     dragMode: true,
+     editMode: false,
+     dragMode: false,
      cutPolygon: false,
    });
- },
+      this.map2.createPane("pane250").style.zIndex = 250; // between tiles and overlays
+   this.map2.createPane("pane450").style.zIndex = 450; // between overlays and shadows
+   this.map2.createPane("pane620").style.zIndex = 620; // between markers and tooltips
+   this.map2.createPane("pane800").style.zIndex = 800; // above popups
+   
+      //DAR STYLE AL CREAR
+   this.map2.on('pm:create', e => {
+     this.map2.pm.addControls({
+       drawPolyline: false,
+     });
+     e.layer.setStyle(myStyleLine);
+     
+   });
+      //DEJAR CREAR OTRO PIVOT AL ELIMINAR EL ACTUAL
+   this.map2.on('pm:remove', e => {
+      if ((e.layer instanceof L.Polyline) && ! (e.layer instanceof L.Polygon)) {
+         this.map2.pm.addControls({
+            drawPolyline: true,
+         });
+      } 
+      else if (e.layer instanceof L.Polygon) {//crearlo con el style y debajo de la linea
+         L.geoJSON((this.coorFinca), {
+           pane: "pane250",
+           style: myStylePolygon
+         }).addTo(this.map2);
+         //e.layer.pm.disable(); 
+      } 
+   });
+   
+     //CREAR FIGURA AL SEGUNDO CLICK 
+   this.map2.on('pm:drawstart', ({ workingLayer }) => {    
 
+  workingLayer.on('pm:vertexadded', e => {
+    var p = L.latLng(e.latlng.lat, e.latlng.lng);
+    if(!FunctionsUtils.pointInLand(p,this.coordenadaFinca)){
+       this.map2.pm.Draw.Line._removeLastVertex();
+       this.colorSnackbar = "error";
+       this.textSnackbar = 'Posición no válida. Por favor, marque una posición dentro de la finca';
+       this.snackbar = true;
+    }
+    else{
+      this.pivot.push(p);
+      if(this.pivot.length === 2){
+        this.pivot = [];
+        requestAnimationFrame(() => e.marker._icon.click());
+      }
+    }
+  });
+});
 
+  L.tileLayer.wms('http://www.ign.es/wms-inspire/pnoa-ma', {
+	layers: 'OI.OrthoimageCoverage',
+	format: 'image/png',
+	transparent: false,
+	continuousWorld : true,
+	attribution: 'PNOA cedido por © <a href="http://www.ign.es/ign/main/index.do" target="_blank">Instituto Geográfico Nacional de España</a>'
+     }).addTo(this.map2);
+ //  var tiles = L.esri.basemapLayer("Streets").addTo(this.map2);
+  var searchControl = L.esri.Geocoding.geosearch().addTo(this.map2);
+ 
 
- beforeMount(){
-<<<<<<< HEAD
-     FunctionsDatabase.landInformation(this.getNombreFinca).then((result) =>{
-=======
-     FunctionsDatabase.landInformation(localStorage.nameFinca).then((result) =>{
->>>>>>> origin/master
-        if(result === null) router.push('/finca');
-        this.localizacion = result.localizacion[0];
+  var results = L.layerGroup().addTo(this.map2);
+
+  searchControl.on('results', function (data) {
+    results.clearLayers();
+    for (var i = data.results.length - 1; i >= 0; i--) {
+      results.addLayer(L.marker(data.results[i].latlng));
+    }
+  });
+ 
+     if(this.getFinca === null) router.push('/finca');
+     else{
+        if(this.getFinca === null) router.push('/finca');       
+        this.localizacion = this.getFinca.localizacion;
         var map = this.map2;
+         var layers;
+         var t = this;
         L.geoJSON( L.geoJSON(JSON.parse(this.localizacion[0])).toGeoJSON(), {
            onEachFeature: function (feature, layer) {
-              map.setView([feature.geometry.coordinates[0][0][1], feature.geometry.coordinates[0][0][0]], 13);
+           layers = layer;
+           t.coordenadaFinca = layer;
+           // map.setView([feature.geometry.coordinates[0][0][1], feature.geometry.coordinates[0][0][0]], 13);
+//map.fitBounds(poly.getBounds(),{maxZoom:12});
            },
-        });
+        }); 
+        this.groupLayer.push(layers);
+        var group = new L.featureGroup(this.groupLayer);
+        this.map2.fitBounds(group.getBounds());
+        var finca;
         this.localizacion.forEach(function(element,index) {
-           L.geoJSON(JSON.parse(element)).addTo(map);
+          var myStyle = {
+            "color": 'red',
+            "weight": 5,
+            "opacity": 0.65
+          };
+          finca = JSON.parse(element);
+          L.geoJSON(JSON.parse(element), {
+             pane: "pane250",
+             style: myStyle
+          }).addTo(map);
         })  
-   });
+        this.coorFinca = finca; 
+
+   }
  },
-<<<<<<< HEAD
+
+ beforeMount(){
+     //this.changeUser(true); 
+  window.onbeforeunload = function() { 
+    window.setTimeout(function () { 
+        window.location = "/perfil";
+    }, 0); 
+    window.onbeforeunload = null; // necessary to prevent infinite loop, that kills your browser 
+   }
+ },
 
 };
 </script>
 
 <style>
-=======
-  /*beforeCreate() {
-    registerModule('altaPivot', AltaPivotModule);
-  },
-  prefetch: (options: IPreLoad) => {
-    registerModule('altaPivot', AltaPivotModule);
-
-    /**
-     * This is the function where you can load all the data that is needed
-     * to render the page on the server and client side
-     *
-     * This function always returns a promise that means, if you want to
-     * call a vuex action you have to return it, here is an example
-     *
-     * return options.store.dispatch('fetchAltaPivot', '1');
-     *
-     * If you need to fetch data from multiple source your can also return
-     * a Promise chain or a Promise.all()
-     */
-   // return Promise.resolve();
-  //},
-};
-</script>
-
-<style lang="scss" module>
-@import "~@/app/shared/design-system";
-
-.altaPivot {
-  margin-top: $nav-bar-height;
-  min-height: 500px;
-  margin-left:5%;
-}
-.form {
-   margin-right:60%;
- }
-.map{
-    width: 50%; 
-    height: 380px; 
-    position: absolute;
-    left: 580px;
-    top: 200px;
-}
->>>>>>> origin/master
 </style>

@@ -1,13 +1,12 @@
 <template>
-<<<<<<< HEAD
 <div>
   <v-app>
 <v-snackbar
       v-model="snackbar"
       :timeout="timeoutSnackbar"
       :color="colorSnackbar"
-    >
-     
+      style="z-index: 999999"
+    >    
       {{ textSnackbar }}
       <v-btn
         text
@@ -16,9 +15,8 @@
         Close
       </v-btn>
     </v-snackbar>
-  <v-btn class="mx-10 my-2" color="orange darken-2" dark absolute to='/finca'>
-        <v-icon dark left>mdi-arrow-left</v-icon>
-   </v-btn>
+<v-row>
+<v-col :cols="posMap">
    <v-form
       class="mx-10 my-12"
       dark
@@ -29,22 +27,10 @@
       <v-text-field
         v-model="nombre"
         :rules="nameRules"
-        :error="isNameRepeated"
         label="Nombre"
         clearable
         required
       ></v-text-field>
-
-     <v-textarea
-         v-model="descripcion"
-         clearable
-     >
-      <template v-slot:label>
-        <div>
-          Descripcion <small>(opcional)</small>
-        </div>
-      </template>
-     </v-textarea>
 
       <v-text-field
         v-model="tamaño"
@@ -52,12 +38,13 @@
         clearable
       ></v-text-field>
 
-      <v-text-field
+      <v-select
         v-model="cultivo"
+        :items="tiposCultivos"
         label="Cultivo (opcional)"
-        clearable
-      ></v-text-field>
-     <div class="d-block" style="height: 350px;" ref="mapa" id="mapa"></div>
+        style="z-index: 999"
+      ></v-select>
+     <v-row justify="end">
       <v-btn
         :disabled="!valid"
         :loading="isLoading"
@@ -67,9 +54,24 @@
       >
         Guardar
       </v-btn>
-
-
+       </v-row>       
     </v-form> 
+    </v-col>
+    <v-col :cols="posMap">
+    <v-layout justify-end v-if="!dialogMapa">
+     <v-btn small rounded class="mx-3 my-5" @click="mostrarOpciones" color="grey">
+        Mostrar Opciones
+     </v-btn>
+     </v-layout>
+     
+    <v-layout justify-end v-if="dialogMapa">
+     <v-btn small rounded class="mx-3 my-5" @click="mostrarOpciones" color="grey">
+        Ocultar Opciones
+     </v-btn>
+     </v-layout>
+    <div style="height: 350px;" ref="mapa" id="mapa"></div>
+    </v-col>
+     </v-row>
   </v-app>
 
  </div> 
@@ -77,126 +79,20 @@
 
 <script lang="ts">
 
-
-//import { registerModule } from '@/app/store';
 import { IPreLoad } from '@/server/isomorphic';
-import VueGrid from '@/app/shared/components/VueGrid/VueGrid.vue';
-import VueBreadcrumb from '@components/VueBreadcrumb/VueBreadcrumb.vue';
-import VueGridRow from '@/app/shared/components/VueGridRow/VueGridRow.vue';
-import VueGridItem from '@/app/shared/components/VueGridItem/VueGridItem.vue';
-import VueButton from '@/app/shared/components/VueButton/VueButton.vue';
-import VueHeadline from '@/app/shared/components/VueHeadline/VueHeadline.vue';
-
-import VueInput from '@/app/shared/components/VueInput/VueInput.vue';
-
-//import { AltaFincaModule } from '../module';
-
-
+import { mapActions, mapGetters } from 'vuex';
 import '../../../../node_modules/@mdi/font/css/materialdesignicons.css';
 import '../../../../node_modules/vuetify/dist/vuetify.css';
-/*
-
-
-<div :class="$style.altaFinca">
-=======
-  <div :class="$style.altaFinca">
->>>>>>> origin/master
-    <br />
-
-     <vue-grid>
-      <vue-button color="primary" @click="toBack">
-        <-
-      </vue-button>
-  </vue-grid>
-  <div :class="$style.map" ref="mapa" id="mapa"></div>
- <form @submit.prevent="onSubmit" :class="$style.form">
-    <br />
-     <vue-grid>
-      <vue-grid-row>
-        <vue-grid-item fill>
-          <vue-headline level="1">AltaFinca</vue-headline>
-        </vue-grid-item>
-      </vue-grid-row>
-    </vue-grid>
-  
-    <br />
-    <br />
-     <vue-input
-      id="nombre"
-      name="nombre"
-      type="text"
-      autofocus
-      placeholder="Nombre"
-      required
-      validation="required"
-      error-message="Campo obligatorio"
-      v-model="form.nombre"
-    />
-  
-        <vue-input
-          name="descripcion"
-          id="descripcion"
-          placeholder="Descripcion"
-          v-model="form.descripcion"
-        />
-
-        <vue-input
-          name="tamaño"
-          id="tamaño"
-          placeholder="Tamaño"
-          v-model="form.tamaño"
-        />
-
-
-
-    <vue-grid-row>
-      <vue-grid-item>
-        <vue-input
-          name="cultivo"
-          id="cultivo"
-          placeholder="Cultivo"
-          v-model="form.cultivo"
-        />
-      </vue-grid-item>
-    </vue-grid-row>
-
-
-    <br />
-    <vue-button color="primary" :disabled="isSubmitDisabled" :loading="isLoading"> Save </vue-button>
-  </form>
-  
- </div>
-<<<<<<< HEAD
-
-*/
-=======
-</template>
-
-<script lang="ts">
-//import { registerModule } from '@/app/store';
-import { IPreLoad } from '@/server/isomorphic';
-import VueGrid from '@/app/shared/components/VueGrid/VueGrid.vue';
-import VueBreadcrumb from '@components/VueBreadcrumb/VueBreadcrumb.vue';
-import VueGridRow from '@/app/shared/components/VueGridRow/VueGridRow.vue';
-import VueGridItem from '@/app/shared/components/VueGridItem/VueGridItem.vue';
-import VueButton from '@/app/shared/components/VueButton/VueButton.vue';
-import VueHeadline from '@/app/shared/components/VueHeadline/VueHeadline.vue';
-
-import VueInput from '@/app/shared/components/VueInput/VueInput.vue';
-
-//import { AltaFincaModule } from '../module';
-
-import { addNotification, INotification } from '@components/VueNotificationStack/utils';
-
->>>>>>> origin/master
-
 import {router} from '../../router';
-
-import {Database} from '../../interfaceDatabase';
-import {ImplementationDatabase} from '../../firebaseImplementation';
-
-let FunctionsDatabase: Database = new ImplementationDatabase();
-
+import {Spain_PNOA_Ortoimagen} from '../../LeafletSpain.js';
+import {Spain_MapasrasterIGN} from '../../LeafletSpain.js';
+import {Spain_IGNBase} from '../../LeafletSpain.js';
+import {Spain_Catastro} from '../../LeafletSpain.js';
+import {Spain_UnidadAdministrativa} from '../../LeafletSpain.js';
+import {parcelas} from '../../LeafletSpain';
+import {recintos} from '../../LeafletSpain';
+import {Finca} from '../../Clases/Finca';
+import {classMethods} from '../../classMethods';
 
 export default {
   $_veeValidate: {
@@ -206,21 +102,27 @@ export default {
     title: 'AltaFinca',
   },
   components: {
-    VueGrid,
-    VueBreadcrumb,
-    VueGridRow,
-    VueGridItem,
-    VueButton,
-    VueHeadline,
-    VueInput,
   },
   data(): any {
     return {
-<<<<<<< HEAD
       nombre: '',      
-      descripcion: '',
       tamaño: '',
-      cultivo: '',
+      cultivo: 'Desconocido',
+      tiposCultivos: [
+        'Maiz',
+        'Trigo',
+        'Girasol',
+        'Cebada',
+        'Remolacha',
+        'Patatas',
+        'Alfalfa',
+        'Forraje',
+        'Alubias',
+        'Soja',
+        'Veza',
+        'Colza',
+        'Desconocido',
+      ],
       colorSnackbar: '',
       snackbar: false,
       textSnackbar: '',
@@ -231,49 +133,27 @@ export default {
         v => (v && v.length <= 40) || 'Nombre debe tener menos de cuarenta caracteres',
       ],
       lazy: false,
-=======
-      form: {
-        nombre: '',        
-        descripcion: '',
-        tamaño: '',
-        cultivo: '',
-      },
->>>>>>> origin/master
       map2: '',
       localizacion: [],
       isLoading: false,
-      isNameRepeated: false,
+      dialogMapa: true,
     };
   },
-<<<<<<< HEAD
 
-watch: {
-   async nombre(val) {
-       var result = await this.nameRepeated;
-       this.isNameRepeated = result; 
- 
-       if(this.isNameRepeated){
-   	  this.colorSnackbar = "error";
-          this.textSnackbar = 'Nombre de tierra ya utilizado. Por favor, pruebe con otro nombre';
-          this.snackbar = true;
-       }
-    }
-  },
-
-=======
->>>>>>> origin/master
   methods: {
+  ...mapActions('app', ['changeUser']),
+  mostrarOpciones(){
+      var lc = document.getElementsByClassName('leaflet-control-layers');
+      if(this.dialogMapa){ lc[0].style.visibility = 'hidden'; this.dialogMapa = false;}
+      else{ lc[0].style.visibility = 'visible'; this.dialogMapa = true; }
+    },
     onSubmit() {
        this.isLoading = true;
                   
        var tierraLocalizacion = [];
         var layers = [];
         this.map2.eachLayer(function(layer) {
-<<<<<<< HEAD
           if (layer instanceof L.Polygon) {
-=======
-          if (layer instanceof L.Rectangle || layer instanceof L.Polygon) {
->>>>>>> origin/master
            layers.push(layer); 
         }                    
         })
@@ -282,7 +162,6 @@ watch: {
           tierraLocalizacion.push(JSON.stringify(element.toGeoJSON()));
         })       
        if(tierraLocalizacion.length === 0){
-<<<<<<< HEAD
    	  this.colorSnackbar = "error";
           this.textSnackbar = 'Localizacion no marcada. Por favor seleccione en el mapa la localizacion';
           this.snackbar = true;
@@ -290,199 +169,145 @@ watch: {
        }
        else{
           var tierraNombre = this.nombre;
-          var tierraDescripcion = this.descripcion;
           var tierraTamaño = this.tamaño;
           var tierraCultivo = this.cultivo;
-          FunctionsDatabase.createLand(tierraNombre,tierraDescripcion,tierraLocalizacion,tierraTamaño,tierraCultivo); 
+          
+          var finca = new Finca("",tierraNombre, tierraTamaño, tierraCultivo, tierraLocalizacion);
+         classMethods.getFincaMethods().createLand(finca).then((result) =>{
    	  this.colorSnackbar = "success";
           this.textSnackbar = 'Tierra creada correctamente';
           this.snackbar = true;
-         // router.push('/finca');
-           this.nombre = '';
+          router.push('/finca');
           this.isLoading = false;
+          }).catch((error) => {
+   	     this.colorSnackbar = "error";
+             this.textSnackbar = 'Error al crear la tierra. Por favor inténtelo otra vez';
+             this.snackbar = true;
+          });
        }
     },
   },
 
-=======
-          addNotification({ title: 'Localizacion no marcada', text: 'Por favor seleccione en el mapa la localizacion' });
-          this.isLoading = false;
-       }
-       else{
-          var tierraNombre = this.form.nombre;
-          var tierraDescripcion = this.form.descripcion;
-          var tierraTamaño = this.form.tamaño;
-          var tierraCultivo = this.form.cultivo;
-          FunctionsDatabase.createLand(tierraNombre,tierraDescripcion,tierraLocalizacion,tierraTamaño,tierraCultivo); 
-          addNotification({ title: 'Tierra creada correctamente', text: 'Tierra creada correctamente' });
-         // router.push('/finca');
-          this.isLoading = false;
-       }
-    },
-    async toBack() {
-      router.push('/finca');
-    },
-  },
->>>>>>> origin/master
   computed: {
-    breadCrumbItems() {
-      return [
-        { label: this.$t('common.home' /* Home */), href: '/' },
-        { label: this.$t('common.AltaFinca' /* AltaFinca */), href: '/alta-finca' },
-      ];
-    },
-<<<<<<< HEAD
-     nameRepeated(){
-      var nombre = this.nombre;
-=======
-    hasErrors() {
-      return this.errors && this.errors.items.length > 0;
-    },
-   hasEmptyFields() {
+    posMap () {
+        switch (this.$vuetify.breakpoint.name) {
+          case 'xs': return '12'
+          case 'sm': return '12'
+          case 'md': return '6'
+          case 'lg': return '6'
+          case 'xl': return '6'
+          }
+   },
 
-      let hasEmptyField: boolean = false;
-
-      Object.keys(this.form).forEach((key: string) => {
-        if (this.form.nombre === '') {
-          hasEmptyField = true;
-        }
-      });
-
-      return hasEmptyField;
-    },
-    nameRepeated(){
-      var nombre = this.form.nombre;
->>>>>>> origin/master
-      var resultado = false;
-      if (nombre === ''){
-        resultado = false;
-      }
-      else{
-        resultado = FunctionsDatabase.landExist(nombre).then(function (result) {
-            return false;
-        })
-        .catch(function (error) {
-<<<<<<< HEAD
-=======
-            console.log(error.message);
-            addNotification({ title: 'Nombre de tierra ya utilizado', text: 'Por favor, pruebe con otro nombre' });
->>>>>>> origin/master
-            return true;
-        })
-      }
-      return resultado;  
-    },
-<<<<<<< HEAD
-=======
-    
-    async hasNameRepeated(){
-       var result = await this.nameRepeated;
-       this.isNameRepeated = result;
-    },
-
-    isSubmitDisabled() {
-      this.hasNameRepeated;
-      return this.hasErrors || this.hasEmptyFields || this.isNameRepeated; 
-    },
->>>>>>> origin/master
   },
 
  mounted() {
    const accessToken = 'pk.eyJ1IjoiZGllZ29wcGciLCJhIjoiY2s3NmVtaXRmMTRyaDNndDA2dWFwYmk2OCJ9.0Evn9MpSDvrdASq2S60-hQ';
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/master
    const mapboxTiles1 = L.tileLayer(
      `https://api.mapbox.com/styles/v1/mapbox/streets-v9/tiles/{z}/{x}/{y}?access_token=${accessToken}`,
    {
      attribution:
        '&copy; <a href="https://www.mapbox.com/feedback/">Mapbox</a> &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
    }
-   );
-
-   this.map2 = L.map(this.$refs['mapa'])
-     .setView([0, 0], 1)
-     .addLayer(mapboxTiles1);
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/master
+   );   		
+		
+   
+   this.map2 = L.map(this.$refs['mapa'], {
+    fullscreenControl: true,
+   }).setView([0, 0], 1);
+   
+   var baselayers = {
+	"Normal": mapboxTiles1,
+	"Vista Real": Spain_PNOA_Ortoimagen,
+	"Mapa España": Spain_MapasrasterIGN,
+	"Parcelas": parcelas,
+	"Recintos": recintos,
+	//"Mapa España y Mundo": Spain_IGNBase,
+	"Catastro": Spain_Catastro					
+   };
+   var overlayers = {
+       "Unidades administrativas": Spain_UnidadAdministrativa
+   };		
+   L.control.layers(baselayers, overlayers,{collapsed:false}).addTo(this.map2);
+   L.control.scale({options: {position: 'bottomleft',maxWidth: 100,metric: true,imperial: false,updateWhenIdle: false}}).addTo(this.map2);
+   Spain_PNOA_Ortoimagen.addTo(this.map2);
+  // var lc = document.getElementsByClassName('leaflet-control-layers');
+  // lc[0].style.visibility = 'hidden';
+		   
    this.map2.pm.setLang('es');
+   
+   L.tileLayer.wms('http://www.ign.es/wms-inspire/pnoa-ma', {
+	layers: 'OI.OrthoimageCoverage',
+	format: 'image/png',
+	transparent: false,
+	continuousWorld : true,
+	attribution: 'PNOA cedido por © <a href="http://www.ign.es/ign/main/index.do" target="_blank">Instituto Geográfico Nacional de España</a>'
+     }).addTo(this.map2);
+  //var tiles = L.esri.basemapLayer("Streets").addTo(this.map2);
+  var searchControl = L.esri.Geocoding.geosearch().addTo(this.map2); 
+
+  var results = L.layerGroup().addTo(this.map2);
+
+  searchControl.on('results', function (data) {
+    results.clearLayers();
+    for (var i = data.results.length - 1; i >= 0; i--) {
+      results.addLayer(L.marker(data.results[i].latlng));
+    }
+  });
 
    this.map2.pm.addControls({
      drawMarker: false,
      drawCircleMarker: false,
      drawPolygon: true,
-<<<<<<< HEAD
      drawRectangle: false,
-=======
->>>>>>> origin/master
      editPolygon: true,
      drawCircle: false,
      drawPolyline: false,
      deleteLayer: true,
      cutPolygon: false,
    });
-<<<<<<< HEAD
+   
+      var myStyle = {
+     "color": 'red',
+      "weight": 5,
+      "opacity": 0.65
+   };
+   
+   //DAR STYLE AL CREAR
+   this.map2.on('pm:create', e => {
+     e.layer.bindPopup((LGeo.area(e.layer) / 10000).toFixed(2) + ' hectáreas');
+     e.layer.openPopup();
+     this.map2.pm.addControls({
+       drawPolygon: false,
+     });
+     e.layer.setStyle(myStyle);
+     this.map2.fitBounds(e.layer.getBounds());
+     var map = this.map2; var layer = e.layer;
+     e.layer.on('pm:edit', e => {
+        map.fitBounds(layer.getBounds());
+     });
+   });
+   
+   this.map2.on('pm:remove', e => {
+     this.map2.pm.addControls({
+       drawPolygon: true,
+     });
+   });
+   
+  
+ },
+ beforeMount(){
+ //this.changeUser(true);  
+   window.onbeforeunload = function() { 
+    window.setTimeout(function () { 
+        window.location = "/perfil";
+    }, 0); 
+    window.onbeforeunload = null; // necessary to prevent infinite loop, that kills your browser 
+   }
  },
 
 };
 </script>
 
 <style>
-=======
-
-  /* this.map2.on('pm:create', function(e) {
-     var layer = e.layer;
-   });
-
-   this.map2.on('pm:remove', function(e) {
-      var layer = e.layer;
-   });*/
-
- },
-
-  /*beforeCreate() {
-    registerModule('altaFinca', AltaFincaModule);
-  },
-  prefetch: (options: IPreLoad) => {
-    registerModule('altaFinca', AltaFincaModule);
-
-    /**
-     * This is the function where you can load all the data that is needed
-     * to render the page on the server and client side
-     *
-     * This function always returns a promise that means, if you want to
-     * call a vuex action you have to return it, here is an example
-     *
-     * return options.store.dispatch('fetchAltaFinca', '1');
-     *
-     * If you need to fetch data from multiple source your can also return
-     * a Promise chain or a Promise.all()
-     */
-   // return Promise.resolve();
-  //},
-};
-</script>
-
-<style lang="scss" module>
-@import "~@/app/shared/design-system";
-
-.altaFinca {
- margin-top: $nav-bar-height;
- min-height: 500px;
- margin-left:5%;
-}
-.form {
-   margin-right:60%;
- }
-.map{
-    width: 50%; 
-    height: 380px; 
-    position: absolute;
-    left: 580px;
-    top: 200px;
-}
->>>>>>> origin/master
 </style>

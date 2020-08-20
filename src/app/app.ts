@@ -12,17 +12,13 @@ import { i18n } from '@shared/plugins/i18n/i18n';
 import { HttpService } from '@shared/services/HttpService/HttpService';
 import './shared/directives';
 
-import {Database} from './interfaceDatabase';
-import {ImplementationDatabase} from './firebaseImplementation';
+import { Database } from './interfaceDatabase';
+import { ImplementationDatabase } from './firebaseImplementation';
 
-let FunctionsDatabase: Database = new ImplementationDatabase();
+const FunctionsDatabase: Database = new ImplementationDatabase();
 
-<<<<<<< HEAD
 import Vuetify from 'vuetify';
 Vue.use(Vuetify);
-
-=======
->>>>>>> origin/master
 
 Vue.use(VeeValidate, { inject: false, delay: 1 });
 
@@ -33,13 +29,8 @@ export interface IApp {
   i18n: VueI18n;
 }
 
-<<<<<<< HEAD
 Vue.use(Vuetify);
-=======
->>>>>>> origin/master
 Vue.use(VeeValidate, { inject: false, delay: 1 });
-
-
 
 export const createApp = (): IApp => {
   sync(store, router);
@@ -50,7 +41,6 @@ export const createApp = (): IApp => {
     router,
     store,
     i18n,
-<<<<<<< HEAD
     vuetify: new Vuetify({
       icons: {
         iconfont: 'mdi',
@@ -59,11 +49,5 @@ export const createApp = (): IApp => {
     render: (h) => h(App),
   });
 
-  return { app, router, store, i18n , };
-=======
-    render: (h) => h(App),
-  });
-
   return { app, router, store, i18n };
->>>>>>> origin/master
 };

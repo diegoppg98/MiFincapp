@@ -2,13 +2,13 @@ import { createLocalVue, mount } from '@vue/test-utils';
 import Vuex, { Store } from 'vuex';
 import { i18n } from '@/app/shared/plugins/i18n/i18n';
 import RegistrarUsuario from './RegistrarUsuario.vue';
-//import { IRegistrarUsuarioState } from '../state';
-//import { RegistrarUsuarioModule } from '../module';
+// import { IRegistrarUsuarioState } from '../state';
+// import { RegistrarUsuarioModule } from '../module';
 
 const localVue = createLocalVue();
 
 describe('RegistrarUsuario.vue', () => {
-  //let store: Store<IRegistrarUsuarioState>;
+  // let store: Store<IRegistrarUsuarioState>;
 
   /*beforeEach(() => {
     store = new Vuex.Store({
@@ -20,18 +20,14 @@ describe('RegistrarUsuario.vue', () => {
 
   test('renders component', () => {
     const wrapper = mount<any>(RegistrarUsuario, {
-      //store,
+      // store,
       localVue,
       i18n,
       stubs: ['router-link'],
     });
 
-    //RegistrarUsuario.prefetch({});
+    // RegistrarUsuario.prefetch({});
 
-<<<<<<< HEAD
-  //  expect(wrapper.find('h1').text()).toBe('RegistrarUsuario');
-=======
-    expect(wrapper.find('h1').text()).toBe('RegistrarUsuario');
->>>>>>> origin/master
+    //  expect(wrapper.find('h1').text()).toBe('RegistrarUsuario');
   });
 });

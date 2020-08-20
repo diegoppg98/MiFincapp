@@ -1,903 +1,1024 @@
-import {Database} from './interfaceDatabase';
+import { Database } from './interfaceDatabase';
 import firebase from 'firebase';
 
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/master
-var firebaseConfig = {
-    apiKey: "AIzaSyDvNNc2-XaHTnZDDy6g_uTEciVqc3z8nfc",
-    authDomain: "pivot-2f31f.firebaseapp.com",
-    databaseURL: "https://pivot-2f31f.firebaseio.com",
-    projectId: "pivot-2f31f",
-    storageBucket: "pivot-2f31f.appspot.com",
-    messagingSenderId: "919977317494",
-    appId: "1:919977317494:web:ea08bb9e69e0ba7303bb57"
-  };
-
-
+const firebaseConfig = {
+  apiKey: 'AIzaSyDvNNc2-XaHTnZDDy6g_uTEciVqc3z8nfc',
+  authDomain: 'pivot-2f31f.firebaseapp.com',
+  databaseURL: 'https://pivot-2f31f.firebaseio.com',
+  projectId: 'pivot-2f31f',
+  storageBucket: 'pivot-2f31f.appspot.com',
+  messagingSenderId: '919977317494',
+  appId: '1:919977317494:web:ea08bb9e69e0ba7303bb57',
+};
 
 export class ImplementationDatabase implements Database {
 
-    init(){
-      if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-      }
-    }    
-
-    login(mail:string, pass:string){
-      var promise = new Promise(function(resolve, reject) {
-<<<<<<< HEAD
-        firebase.auth().signInWithEmailAndPassword(mail,pass).then((user) =>{resolve("Usuario iniciado correctamente")}, (error) => reject(Error(error)));
-=======
-        firebase.auth().signInWithEmailAndPassword(mail,pass).then((user) => resolve("Usuario iniciado correctamente"), (error) => reject(Error(error)));
->>>>>>> origin/master
-     });
-     return promise;
+  public init() {
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
     }
+  }
 
-    logout() {
-       firebase.auth().onAuthStateChanged(function(user) {
-         firebase.auth().signOut().then(() =>console.log('Usuario desconectado'));
-       });  
-    }
-<<<<<<< HEAD
-=======
+  public login(mail: string, pass: string) {
+    const promise = new Promise(function(resolve, reject) {
+      firebase
+        .auth()
+        .signInWithEmailAndPassword(mail, pass)
+        .then(
+          (user) => {
+            //const userMail = firebase.auth().currentUser;
+          //  console.log(userMail.emailVerified);
+            resolve('Correo no verificado, por favor revise su correo y confirme su cuenta');
+          },
+          (error) => reject(Error('Datos incorrectos')),
+        );
+    });
+    return promise;
+  }
 
-    userInformation():string[]{
-      var promise = new Promise(function(resolve, reject) {
+
+  public changePassword(name: string, pass: string, newPass: string) {
+    const promise = new Promise(function(resolve, reject) {
+           firebase.auth().onAuthStateChanged(function(user) {
+              if (user) {
+                 const userMail = firebase.auth().currentUser;
+                 const cred = firebase.auth.EmailAuthProvider.credential(name, pass);
+                 userMail.reauthenticateWithCredential(cred).then(() => {
+                    userMail.updatePassword(newPass).then(() => {
+                       resolve('Contraseña cambiada correctamente');
+                    }).catch((error) => {
+                       reject(Error('Error al intentar cambiar la contraseña. Por favor intentelo otra vez'));
+                    });
+                 }).catch((error) => { 
+                    reject(Error('Contraseña actual incorrecta. Por favor intentelo otra vez'));
+                 });
+              } else {
+                reject(Error('Error userInformation'));
+              }
+          });
+    });
+    return promise;
+  }
+
+  public forgetPassword(name: string){
+    const promise = new Promise(function(resolve, reject) {
+        firebase.auth().languageCode = 'es';
+        firebase.auth().sendPasswordResetEmail(name).then(() => {
+            resolve('Contraseña enviada al correo');
+        }).catch((error) => { 
+            reject(Error('Datos incorrectos'));
+        });
+    });
+    return promise;
+  }
+
+
+  public logout() {
+     firebase.auth().signOut().then(function() {
+        console.log('DESC');
+        //router.push('/');
+     }).catch(function(error) {
+       //console.log(error);
+    });
+  }
+  
+  public appIcon(): Promise<string>{
+  const promise = new Promise<string>(function(resolve) {
+      const ref = firebase.storage().ref('miFincappIcon.png');
+     ref.getDownloadURL().then(function(url) {
+         resolve(url);                           
+     });                
+    });
+    return promise;    
+  }
+     
+  public userProfileIcon(): Promise<string>{
+  const promise = new Promise<string>(function(resolve) {
+      const ref = firebase.storage().ref('userPicture');
+      var pictureRef = ref.child('userProfile.jpg');
+     pictureRef.getDownloadURL().then(function(url) {
+         resolve(url);                           
+     });                
+    });
+    return promise;    
+  }
+
+  public createUser(mail: string, pass: string, name: string, picture: object, address: string) {
+    const db = firebase.database();
+    const promise = new Promise(function(resolve, reject) {
+      firebase
+        .auth()
+        .createUserWithEmailAndPassword(mail, pass)
+        .then(
+          (result) => {
             firebase.auth().onAuthStateChanged(function(user) {
-               if(user){  
-                 var name;
-                 var UserRef = firebase.database().ref('users/' + user.uid);
-	         var misDatos;
-                 misDatos = Promise.resolve(
-		       UserRef.once('value').then(function(snapshot){ 
-			   const obj = snapshot.val();
-			   const obj2 = Object.values(obj);
-			   name = obj.nombre[0];
-                          // console.log(obj);
-			   return obj;
-		       })
-                 )
-               resolve(misDatos)
-               } else { 
-                 reject(Error('Error userInformation'))
-               }
-            })       
-      });
-      return promise;
-    }
->>>>>>> origin/master
-	
-    createUser(mail:string, pass:string , name:string, picture:string, address:string, phone:string){
-          var db = firebase.database();
-          var promise = new Promise(function(resolve, reject) {
-            firebase.auth().createUserWithEmailAndPassword(mail, pass).then((result) => {
-              firebase.auth().onAuthStateChanged(function(user) {
-                if (user) {
+            console.log(user);
+              if (user) {
+                var foto = '';
+                if (picture){
+                   const ref = firebase.storage().ref('userPicture');
+                   const metadata = { contentType: picture.type };
+                   const task = ref.child(mail).put(picture,metadata);
+                   var pictureRef = ref.child(mail);
+                   pictureRef.getDownloadURL().then(function(url) {
+                     foto = url;
+                     db.ref('users/' + user.uid).push({
+                       correo: [mail],
+                       nombre: [name],
+                       direccion: [address],
+                       foto: [foto],
+                     });
+                    db.ref('users/' + user.uid).set({
+                      correo: [mail],
+                      nombre: [name],
+                      direccion: [address],
+                      foto: [foto],
+                    });
+                   });
+                }
+                else{
                   db.ref('users/' + user.uid).push({
                     correo: [mail],
                     nombre: [name],
-                    foto: [picture],
                     direccion: [address],
-                    telefono: [phone]
+                    foto: [foto],
                   });
                   db.ref('users/' + user.uid).set({
                     correo: [mail],
                     nombre: [name],
-                    foto: [picture],
                     direccion: [address],
-                    telefono: [phone]
+                    foto: [foto],
                   });
                 }
-              }); 
-              resolve("Usuario creado correctamente")
-            },(error) => reject(Error(error)));
+                firebase.auth().languageCode = 'es';
+                user.sendEmailVerification().catch(function(error) {
+                  reject(Error(error));
+                });                
+              }
+            });
+            //firebase.auth().signOut();
+            resolve('Usuario creado correctamente');
+            
+          },
+          (error) => reject(Error(error)),
+        );
+    });
+    return promise;
+  }
+
+  public updateUser(mail: string, pass: string, name: string, picture: object, address: string): Promise<any> {
+const promise = new Promise(function(resolve, reject) {
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+         var foto = '';
+       if (picture){
+          const ref = firebase.storage().ref('userPicture');
+          const metadata = { contentType: picture.type };
+          const task = ref.child(mail).put(picture,metadata);
+          var pictureRef = ref.child(mail);
+          pictureRef.getDownloadURL().then(function(url) {
+             foto = url;
+             const db = firebase.database();
+             db.ref('users/' + user.uid).update({
+               correo: [mail],
+               nombre: [name],
+               direccion: [address],
+               foto: [foto],
+             });
           });
-          return promise;     
-    }
+       }
+       else{
+        const db = firebase.database();
+        db.ref('users/' + user.uid).update({
+          correo: [mail],
+          nombre: [name],
+          direccion: [address],
+          foto: [foto],
+        });
+       } 
+      resolve('Actualizado');
+      } else {
+        reject(Error('Error updateUser'));
+      }
+    });
+   });
+return promise;
+  }
 
-    updateUser(mail:string, pass:string , name:string, picture:string, address:string, phone:string){
-      firebase.auth().onAuthStateChanged(function(user) {
-        if (user) {
-<<<<<<< HEAD
-          var db = firebase.database();          
-          db.ref('users/' + user.uid).update({
-             correo: [mail],
-             nombre: [name],
-             foto: [picture],
-             direccion: [address],
-             telefono: [phone]
-          });
-        } else {
-          return null;
-        }
-      }); 
-    }
-
-    deleteUser(){
-      firebase.auth().onAuthStateChanged(function(user) {
-        if (user) {
-          var db = firebase.database();
-          var UserRef =  db.ref('users/' + user.uid);	
-          UserRef.remove();
-          user.delete().then(function() {
-            // User deleted.
-          }).catch(function(error) {
-            // An error happened.
-=======
-          var db = firebase.database();
-          db.ref('users/' + user.uid).set({
-            correo: [mail],
-            nombre: [name],
-            foto: [picture],
-            direccion: [address],
-            telefono: [phone]
->>>>>>> origin/master
-          });
-        } else {
-          return null;
-        }
-      }); 
-    }
-
-<<<<<<< HEAD
-    userInformation():Promise<any>{
-      var promise = new Promise(function(resolve, reject) {
-            firebase.auth().onAuthStateChanged(function(user) {
-               if(user){  
-                 var name;
-                 var UserRef = firebase.database().ref('users/' + user.uid);
-	         var misDatos;
-                 misDatos = Promise.resolve(
-		       UserRef.once('value').then(function(snapshot){ 
-			   const obj = snapshot.val();
-			   const obj2 = Object.values(obj);
-			   name = obj.nombre[0];
-                          // console.log(obj);
-			   return obj;
-		       })
-                 )
-               resolve(misDatos)
-               } else { 
-                 reject(Error('Error userInformation'))
-               }
-            })       
-      });
-      return promise;
-    }
-
-    createLand(name:string, description:string , location:string[], size:string, crop:string){ 
-      firebase.auth().onAuthStateChanged(function(user) {
-        if (user) {
-=======
-    createLand(name:string, description:string , location:string[], size:string, crop:string){ 
-      firebase.auth().onAuthStateChanged(function(user) {
-        if (user) {
-          console.log(location);
->>>>>>> origin/master
-          var db = firebase.database();
-          var UserRef =  db.ref('users/' + user.uid + '/lands');	
-          UserRef.once('value').then(function(snapshot){ 
-            db.ref('users/' + user.uid + '/lands/' + name).push({
-              nombre: [name],
-	      descripcion: [description],
-	      localizacion: [location],
-	      tamaño: [size],
-	      cultivo: [crop]
-	     });
-            db.ref('users/' + user.uid+ '/lands/' + name).set({
-	      nombre: [name],
-	      descripcion: [description],
-	      localizacion: [location],
-	      tamaño: [size],
-	      cultivo: [crop]
-	    });                           
+  public deleteUser() {
+  const promise = new Promise(function(resolve, reject) {
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        const db = firebase.database();
+        const UserRef = db.ref('users/' + user.uid);      
+        user
+          .delete()
+          .then(function() {
+            UserRef.remove();
+            resolve('Usuario eliminado');
           })
-        } else {
-          return null;
-        }
-      });    
-    }
+          .catch(function(error) {
+            reject(Error('Error deleteUser'));
+          });
+      } else {
+        reject(Error('Error deleteUser'));
+      }
+    });
+    });
+    return promise;
+  }
 
-    updateLand(name:string, description:string , location:string[], size:string, crop:string){
+  public userInformation(): Promise<any> {
+    const promise = new Promise(function(resolve, reject) {
       firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
-          var db = firebase.database();
-<<<<<<< HEAD
-          db.ref('users/' + user.uid + '/lands/' + name).update({
-=======
-          db.ref('users/' + user.uid + '/lands/' + name).set({
->>>>>>> origin/master
+          let name;
+          const UserRef = firebase.database().ref('users/' + user.uid);
+          let misDatos;
+          misDatos = Promise.resolve(
+            UserRef.once('value').then(function(snapshot) {
+              const obj = snapshot.val();
+              const obj2 = Object.values(obj);
+              name = obj.nombre[0];
+              return obj;
+            }),
+          );
+          resolve(misDatos);
+        } else {
+          reject(Error('Error userInformation'));
+        }
+      });
+    });
+    return promise;
+  }
+
+  public createLand(name: string, location: string[], size: string, crop: string) : Promise<any>{
+const promise = new Promise(function(resolve, reject) {
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        const db = firebase.database();
+        const UserRef = db.ref('users/' + user.uid + '/lands');
+        UserRef.once('value').then(function(snapshot) {
+          db.ref('users/' + user.uid + '/lands').push({
             nombre: [name],
-            descripcion: [description],
             localizacion: [location],
             tamaño: [size],
-            cultivo: [crop]
+            cultivo: [crop],
           });
-        } else {
-          return null;
-        }
-      }); 
-    }
-<<<<<<< HEAD
-
-    deleteLand(name:string){
-      firebase.auth().onAuthStateChanged(function(user) {
-        if (user) {
-          var db = firebase.database();
-          var UserRef =  db.ref('users/' + user.uid + '/lands/' +name);	
-          UserRef.remove();
-=======
-    createPivot(name:string, description:string , location:string[], kind:string, nameLand:string){
-      firebase.auth().onAuthStateChanged(function(user) {
-        if (user) {
-          var db = firebase.database();
-          var UserRef =  db.ref('users/' + user.uid + '/lands/'+ nameLand);	
-          UserRef.once('value').then(function(snapshot){ 
-            db.ref('users/' + user.uid + '/lands/'+ nameLand + '/pivots/' + name).push({
-               nombre: [name],
-               descripcion: [description],
-               localizacion: [location],
-               tipo: [kind]
-	     });
-            db.ref('users/' + user.uid+ '/lands/'+ nameLand + '/pivots/' + name).set({
-              nombre: [name],
-              descripcion: [description],
-              localizacion: [location],
-              tipo: [kind]
-	    });                           
-          })
-        } else {
-          return null;
-        }
-      });        
-    } 
-
-    updatePivot(name:string, description:string , location:string[], kind:string, nameLand:string){
-      firebase.auth().onAuthStateChanged(function(user) {
-        if (user) {
-          var db = firebase.database();
-          db.ref('users/' + user.uid+ '/lands/'+ nameLand + '/pivots/' + name).set({
-              nombre: [name],
-              descripcion: [description],
-              localizacion: [location],
-              tipo: [kind]
-          });
-        } else {
-          return null;
-        }
-      }); 
-    } 
-    createDevice(name:string, tipo:string, description:string , location:string[], nameLand:string, namePivot:string){
-      firebase.auth().onAuthStateChanged(function(user) {
-        if (user) {
-          var db = firebase.database();
-          var UserRef =  db.ref('users/' + user.uid + '/lands/'+ nameLand + '/pivots/' + namePivot);	
-          UserRef.once('value').then(function(snapshot){ 
-            db.ref('users/' + user.uid + '/lands/'+ nameLand + '/pivots/' + namePivot + '/devices/' + name).push({
-              nombre: [name],
-              tipo: [tipo],
-              descripcion: [description],
-              localizacion: [location]
-	     });
-            db.ref('users/' + user.uid+ '/lands/'+ nameLand + '/pivots/' + namePivot + '/devices/' + name).set({
-              nombre: [name],
-              tipo: [tipo],
-              descripcion: [description],
-              localizacion: [location]
-	    });                           
-          })
-        } else {
-          return null;
-        }
-      });
-    }
-
-    updateDevice(name:string, tipo:string, description:string , location:string[], nameLand:string, namePivot:string){
-      firebase.auth().onAuthStateChanged(function(user) {
-        if (user) {
-          var db = firebase.database();
-          db.ref('users/' + user.uid+ '/lands/'+ nameLand + '/pivots/' + namePivot + '/devices/' + name).set({
-              nombre: [name],
-              tipo: [tipo],
-              descripcion: [description],
-              localizacion: [location]
-          });
->>>>>>> origin/master
-        } else {
-          return null;
-        }
-      }); 
-    }
-<<<<<<< HEAD
-
-    listLands():Promise<any>{
-=======
-    createAlert(location:string){
-     
-    }
-    updateAlert(location:string){
-
-    }
-
-
-    listLands():string[]{
->>>>>>> origin/master
-      var promise = new Promise(function(resolve, reject) {
-            firebase.auth().onAuthStateChanged(function(user) {
-               if(user){  
-                 var name;
-                 var UserRef = firebase.database().ref('users/' + user.uid + '/lands');
-	         var misDatos;
-                 misDatos = Promise.resolve(
-		       UserRef.once('value').then(function(snapshot){ 
-			   const obj = snapshot.val();
-                           if(obj === null) return null;
-                           else{
-			     const obj2 = Object.values(obj);			   
-			     return obj2;
-                           }
-		       })
-                 )
-               resolve(misDatos)
-               } else {
-                 reject(Error('Error listLands'))
-               }
-            })       
-      });
-
-    return promise; 
-    }
-
-<<<<<<< HEAD
-    landInformation(name:string):Promise<any>{
-      var promise = new Promise(function(resolve, reject) {
-            firebase.auth().onAuthStateChanged(function(user) {
-               if(user){  
-=======
-    landInformation(name:string):string[]{
-      var promise = new Promise(function(resolve, reject) {
-            firebase.auth().onAuthStateChanged(function(user) {
-               if(user){  
-              
->>>>>>> origin/master
-                 var UserRef = firebase.database().ref('users/' + user.uid + '/lands/' + name);
-	         var misDatos;
-                 misDatos = Promise.resolve(
-		       UserRef.once('value').then(function(snapshot){ 
-			   const obj = snapshot.val();
-			  // const obj2 = Object.values(obj);			   
-                         //  console.log(obj); console.log(snapshot);
-                          // console.log(obj2[0].nombre[0]);
-			   return obj;
-		       })
-                 )
-               resolve(misDatos)
-               } else { 
-                 reject(Error('Error landInformation'))
-               }
-            })       
-      });
-
-    return promise; 
-    }
-
-<<<<<<< HEAD
-    landExist(name:string):Promise<string>{      
-      var promise = new Promise<string>(function (resolve, reject) {
-=======
-    landExist(name:string):string{      
-      var promise = new Promise(function (resolve, reject) {
->>>>>>> origin/master
-        firebase.auth().onAuthStateChanged(function(user) {
-           if(user){
-        var UserRef =  firebase.database().ref('users/' + user.uid + '/lands');	
-        UserRef.once('value').then(function(snapshot){ 
-	  if (snapshot.hasChild(name)) {
-            var reason = new Error('nombre en uso');
-            reject(reason);
-   	  }
-          else {
-            resolve('nombre libre');
-          } 
-       })
-      }else { 
-<<<<<<< HEAD
-          reject(Error('Error alertExist'))
-=======
-          reject(Error('Error landExist'))
->>>>>>> origin/master
-        }
-      }) 
+        resolve('Tierra creada');
+        });
+      } else {
+        reject(Error('Error createLands'));
+      }
     });
-    return promise;
-    }
-
-<<<<<<< HEAD
-    createPivot(name:string, description:string , location:string[], kind:string, nameLand:string){
-      firebase.auth().onAuthStateChanged(function(user) {
-        if (user) {
-          var db = firebase.database();
-          var UserRef =  db.ref('users/' + user.uid + '/lands/'+ nameLand);	
-          UserRef.once('value').then(function(snapshot){ 
-            db.ref('users/' + user.uid + '/lands/'+ nameLand + '/pivots/' + name).push({
-               nombre: [name],
-               descripcion: [description],
-               localizacion: [location],
-               tipo: [kind]
-	     });
-            db.ref('users/' + user.uid+ '/lands/'+ nameLand + '/pivots/' + name).set({
-              nombre: [name],
-              descripcion: [description],
-              localizacion: [location],
-              tipo: [kind]
-	    });                           
-          })
-        } else {
-          return null;
-        }
-      });        
-    } 
-
-    updatePivot(name:string, description:string , location:string[], kind:string, nameLand:string){
-      firebase.auth().onAuthStateChanged(function(user) {
-        if (user) {
-          var db = firebase.database();
-          db.ref('users/' + user.uid+ '/lands/'+ nameLand + '/pivots/' + name).update({
-              nombre: [name],
-              descripcion: [description],
-              localizacion: [location],
-              tipo: [kind]
-          });
-        } else {
-          return null;
-        }
-      }); 
-    } 
-
-    deletePivot(name:string, nameLand:string){
-      firebase.auth().onAuthStateChanged(function(user) {
-        if (user) {
-          var db = firebase.database();
-          var UserRef =  db.ref('users/' + user.uid + '/lands/'+ nameLand + '/pivots/' + name);	
-          UserRef.remove();
-        } else {
-          return null;
-        }
-      }); 
-    }
-
-    listPivots(nameLand:string):Promise<any>{
-=======
-    listPivots(nameLand:string):string[]{
->>>>>>> origin/master
-      var promise = new Promise(function(resolve, reject) {
-            firebase.auth().onAuthStateChanged(function(user) {
-               if(user){  
-                 var name;
-                 var UserRef = firebase.database().ref('users/' + user.uid + '/lands/'+ nameLand + '/pivots');
-	         var misDatos;
-                 misDatos = Promise.resolve(
-		       UserRef.once('value').then(function(snapshot){ 
-			   const obj = snapshot.val();  
-                           if(obj === null) return null;
-                           else{
-			      const obj2 = Object.values(obj);			   
-			      return obj2;
-                           }
-		       })
-                 )
-               resolve(misDatos)
-               } else { console.log(nameLand);
-                 reject(Error('Error listPivots'))
-               }
-            })       
-      });
-
-    return promise; 
-    }
-
-<<<<<<< HEAD
-    pivotInformation(nameLand:string, name:string):Promise<any>{
-=======
-    pivotInformation(nameLand:string, name:string):string[]{
->>>>>>> origin/master
-      var promise = new Promise(function(resolve, reject) {
-            firebase.auth().onAuthStateChanged(function(user) {
-               if(user){  
-              
-                 var UserRef = firebase.database().ref('users/' + user.uid + '/lands/'+ nameLand + '/pivots/' + name);
-	         var misDatos;
-                 misDatos = Promise.resolve(
-		       UserRef.once('value').then(function(snapshot){ 
-			   const obj = snapshot.val();
-			  // const obj2 = Object.values(obj);			   
-                         //  console.log(obj); console.log(snapshot);
-                          // console.log(obj2[0].nombre[0]);
-			   return obj;
-		       })
-                 )
-               resolve(misDatos)
-               } else { 
-                 reject(Error('Error pivotInformation'))
-               }
-            })       
-      });
-
-    return promise; 
-    }
-
-<<<<<<< HEAD
-    pivotExist(nameLand:string, name:string):Promise<string>{      
-      var promise = new Promise<string>(function (resolve, reject) {
-=======
-    pivotExist(nameLand:string, name:string):string{      
-      var promise = new Promise(function (resolve, reject) {
->>>>>>> origin/master
-        firebase.auth().onAuthStateChanged(function(user) {
-           if(user){
-        var UserRef =  firebase.database().ref('users/' + user.uid + '/lands/'+ nameLand + '/pivots');	
-        UserRef.once('value').then(function(snapshot){ 
-	  if (snapshot.hasChild(name)) {
-            var reason = new Error('nombre en uso');
-            reject(reason);
-   	  }
-          else {
-            resolve('nombre libre');
-          } 
-       })
-      }else { 
-          reject(Error('Error pivotExist'))
-        }
-      }) 
     });
-    return promise;
-    }
 
-<<<<<<< HEAD
-    createDevice(name:string, tipo:string, description:string , location:string[], nameLand:string, namePivot:string){
+    return promise;
+  }
+
+  public updateLand(key: string, name: string, location: string[], size: string, crop: string) {
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        const db = firebase.database();
+        db.ref('users/' + user.uid + '/lands/' + key).update({
+          nombre: [name],
+          localizacion: [location],
+          tamaño: [size],
+          cultivo: [crop],
+        });
+      } else {
+        return null;
+      }
+    });
+  }
+
+  public deleteLand(key: string) {
+    var pivots = this.listPivots.bind(this);
+    var pivotDelete = this.deletePivot.bind(this);
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        const db = firebase.database();
+        const UserRef = db.ref('users/' + user.uid + '/lands/' + key);
+        pivots(key).then((result) =>{
+          if(result !== null){
+            result.forEach(function(childResult) {       
+              pivotDelete(childResult.key);
+            })
+          }
+        });
+        UserRef.remove();
+      } else {
+        return null;
+      }
+    });
+  }
+
+  public listLands(): Promise<any> {
+    const promise = new Promise(function(resolve, reject) {
       firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
-          var db = firebase.database();
-          var UserRef =  db.ref('users/' + user.uid + '/lands/'+ nameLand + '/pivots/' + namePivot);	
-          UserRef.once('value').then(function(snapshot){ 
-            db.ref('users/' + user.uid + '/lands/'+ nameLand + '/pivots/' + namePivot + '/devices/' + name).push({
-              nombre: [name],
-              tipo: [tipo],
-              descripcion: [description],
-              localizacion: [location]
-	     });
-            db.ref('users/' + user.uid+ '/lands/'+ nameLand + '/pivots/' + namePivot + '/devices/' + name).set({
-              nombre: [name],
-              tipo: [tipo],
-              descripcion: [description],
-              localizacion: [location]
-	    });                           
-          })
+          const UserRef = firebase.database().ref('users/' + user.uid + '/lands');
+          let misDatos;
+          misDatos = Promise.resolve(
+            UserRef.once('value').then(function(snapshot) {
+              return snapshot;
+            }),
+          );
+          resolve(misDatos);
         } else {
-          return null;
+          reject(Error('Error listLands'));
         }
       });
-    }
+    });
 
-    updateDevice(name:string, tipo:string, description:string , location:string[], nameLand:string, namePivot:string){
+    return promise;
+  }
+
+  public landInformation(key: string): Promise<any> {
+    const promise = new Promise(function(resolve, reject) {
       firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+          const UserRef = firebase.database().ref('users/' + user.uid + '/lands/' + key);
+          let misDatos;
+          misDatos = Promise.resolve(
+            UserRef.once('value').then(function(snapshot) {
+              const obj = snapshot.val();            
+              return obj;
+            }),
+          );
+          resolve(misDatos);
+        } else {
+          reject(Error('Error landInformation'));
+        }
+      });
+    });
+
+    return promise;
+  }
+
+
+  public createPivot(name: string, location: string[], kind: string, keyLand: string) : Promise<any>{
+const promise = new Promise(function(resolve, reject) {
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        const db = firebase.database();
+        const UserRef = db.ref('users/' + user.uid + '/pivots');
+        UserRef.once('value').then(function(snapshot) {
+          db.ref('users/' + user.uid + '/pivots').push({
+            nombre: [name],
+            localizacion: [location],
+            tipo: [kind],
+            finca: [keyLand],
+          });
+
+          resolve('Pivot creada');
+        });
+      } else {
+        reject(Error('Error createLands'));
+      }
+    });
+    });
+
+    return promise;
+  }
+//https://firebase.google.com/docs/reference/js/firebase.database.DataSnapshot
+  public updatePivot(key: string, name: string, location: string[], kind: string, keyLand: string) {
+  
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        const db = firebase.database();
+        db.ref('users/' + user.uid + '/pivots/' + key).update({
+          nombre: [name],
+          localizacion: [location],
+          tipo: [kind],
+          finca: [keyLand],
+        });
+      } else {
+        return null;
+      }
+    });
+  }
+
+  public deletePivot(key: string) {
+    var devices = this.listDevices.bind(this);
+    var deviceDelete = this.deleteDevice.bind(this);
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        const db = firebase.database();
+        const UserRef = db.ref('users/' + user.uid + '/pivots/' + key);
+        devices(key).then((result) =>{
+          if(result !== null){
+            result.forEach(function(childResult) {       
+              deviceDelete(childResult.key);
+            })
+          }
+        });
+        UserRef.remove();
+      } else {
+        return null;
+      }
+    });
+  }
+
+  public listPivots(keyLand: string): Promise<any> {
+    const promise = new Promise(function(resolve, reject) {
+      firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+          const UserRef = firebase.database().ref('users/' + user.uid + '/pivots');
+          let misDatos;
+          var items = [];
+          misDatos = Promise.resolve(
+            UserRef.once('value').then(function(snapshot) {
+               snapshot.forEach(function(childResult) {       
+                  var finca = childResult.child("finca").val()[0];
+                  if(finca === keyLand) items.push(childResult);                    
+               })
+              return items;              
+            }),
+          );       
+          resolve(misDatos);
+        } else {
+          reject(Error('Error listPivots'));
+        }
+      });
+    });
+
+    return promise;
+  }
+
+  public pivotInformation(key: string): Promise<any> {
+    const promise = new Promise(function(resolve, reject) {
+      firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+          const UserRef = firebase.database().ref('users/' + user.uid + '/pivots/' + key);
+          let misDatos;
+          misDatos = Promise.resolve(
+            UserRef.once('value').then(function(snapshot) {
+              const obj = snapshot.val();
+              return obj;
+            }),
+          );
+          resolve(misDatos);
+        } else {
+          reject(Error('Error pivotInformation'));
+        }
+      });
+    });
+
+    return promise;
+  }
+
+
+  public createDevice(
+    name: string,
+    id: string,
+    tipo: string,
+    location: string[],
+    keyLand: string,
+    keyPivot: string,
+    temperature: string,
+    possibleLocation: object[]
+  ) : Promise<any>{
+  
+  
+  const promise = new Promise(function(resolve, reject) {
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        const db = firebase.database();
+        if(tipo === "GPS"){
+          const UserRef = db.ref('users/' + user.uid + '/devices');
+          const Ref = db.ref('devices');
+          UserRef.once('value').then(function(snapshot) {
+          var device = db.ref('users/' + user.uid + '/devices').push({
+            nombre: [name],
+            id: [id],
+            tipo: [tipo],
+            localizacion: [location],
+            finca: [keyLand],
+            pivot: [keyPivot],
+            localizacionesPosibles: [possibleLocation],
+          });
+
+          db.ref('devices/' + id).push({
+            user: [user.uid],
+            device: [device.key],
+          });
+          db.ref('devices/' + id).set({
+            user: [user.uid],
+            device: [device.key],
+          });
+          resolve('Dispositivo creado');
+        });
+        }
+        else if(tipo === "Temperatura"){
+          const UserRef = db.ref('users/' + user.uid + '/devices');
+          UserRef.once('value').then(function(snapshot) {
+          var device = db.ref('users/' + user.uid + '/devices').push({
+            nombre: [name],
+            id: [id],
+            tipo: [tipo],
+            localizacion: [location],
+            temperaturaActual: [temperature],
+            finca: [keyLand],
+            pivot: [keyPivot],
+          });
+
+          db.ref('devices/' + id).push({
+            user: [user.uid],
+            device: [device.key],
+          });
+          db.ref('devices/' + id).set({
+            user: [user.uid],
+            device: [device.key],
+          });
+          resolve('Dispositivo creado');
+        }); 
+        }
+        } else {
+        reject(Error('Error createLands'));
+      }
+
+    });
+    });
+
+    return promise;
+   
+  }
+
+  public updateDevice(
+    key: string,
+    name: string,
+    id: string,
+    tipo: string,
+    location: string[],
+    keyLand: string,
+    keyPivot: string,
+    temperature: string,
+    possibleLocation: object[]
+  ) {
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        const db = firebase.database();
+        if(tipo === "GPS"){
+        db.ref('users/' + user.uid + '/devices/' + key).update({
+          nombre: [name],
+          id: [id],
+          tipo: [tipo],
+          localizacion: [location],
+          finca: [keyLand],
+          pivot: [keyPivot],
+          localizacionesPosibles: [possibleLocation],
+        });
+        }
+        else if(tipo === "Temperatura"){
+        db.ref('users/' + user.uid + '/devices/' + key).update({
+          nombre: [name],
+          id: [id],
+          tipo: [tipo],
+          localizacion: [location],
+          temperaturaActual: [temperature],
+          finca: [keyLand],
+          pivot: [keyPivot],
+        });
+        }
+      } else {
+        return null;
+      }
+    });
+  }
+
+  public deleteDevice(key: string) {
+    var alerts = this.listAlerts.bind(this);
+    var alertDelete = this.deleteAlert.bind(this);
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        const db = firebase.database();
+        const UserRef = db.ref(
+          'users/' + user.uid + '/devices/' + key
+        );
+                         
+        const deviceRef = firebase.database().ref('users/' + user.uid + '/devices/' + key);
+        UserRef.once('value').then(function(snapshot) {
+           const obj = snapshot.val();
+           var id = obj.id[0];
+           const Ref = db.ref('devices/' + id);
+           Ref.remove();     
+           UserRef.remove();
+        });                  
         
+        alerts().then((result) =>{
+          if(result !== null){
+            result.forEach(function(childResult) {   
+            if(childResult.child("nombreDispositivo").val()[0] === key)
+              alertDelete(childResult.key);
+            })
+          }
+        });
+               
+      } else {
+        return null;
+      }
+    });
+  }
+
+  public listDevices(keyPivot: string): Promise<any> {
+   
+  const promise = new Promise(function(resolve, reject) {
+      firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
-          var db = firebase.database();
-          db.ref('users/' + user.uid+ '/lands/'+ nameLand + '/pivots/' + namePivot + '/devices/' + name).update({
-              nombre: [name],
-              tipo: [tipo],
-              descripcion: [description],
-              localizacion: [location]
+          const UserRef = firebase
+            .database()
+            .ref('users/' + user.uid + '/devices');
+          let misDatos;
+          var items = [];
+          misDatos = Promise.resolve(
+            UserRef.once('value').then(function(snapshot) {             
+                snapshot.forEach(function(childResult) {       
+                  var pivot = childResult.child("pivot").val()[0];
+                  if(pivot === keyPivot) items.push(childResult);                    
+               })
+              return items;           
+            }),
+          );
+          resolve(misDatos);
+        } else {
+          reject(Error('Error listDevices'));
+        }
+      });
+    });
+
+    return promise;
+  }
+
+  public deviceInformation(key: string): Promise<any> {
+    const promise = new Promise(function(resolve, reject) {
+      firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+          const UserRef = firebase
+            .database()
+            .ref('users/' + user.uid + '/devices/' + key);
+          let misDatos;
+          misDatos = Promise.resolve( 
+            UserRef.once('value').then(function(snapshot) {
+              const obj = snapshot.val();
+              return obj;
+            }),
+          );
+          resolve(misDatos);
+        } else {
+          reject(Error('Error deviceInformation'));
+        }
+      });
+    });
+
+    return promise;
+  }
+
+  public createAlert(
+    name: string,
+    tipo: string,
+    datos: string[],
+    opcion: string,
+    keyLand: string,
+    keyPivot: string,
+    keyDispositivo: string,
+    timeAlert: string, timeLastAlert: string, silenced: boolean
+  ) : Promise<any>{
+const promise = new Promise(function(resolve, reject) {
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        const db = firebase.database();
+        const UserRef = db.ref('users/' + user.uid + '/alerts');
+        UserRef.once('value').then(function(snapshot) {
+          var alert = db.ref('users/' + user.uid + '/alerts').push({
+            nombre: [name],
+            tipo: [tipo],
+            nombreTierra: [keyLand],
+            nombrePivot: [keyPivot],
+            nombreDispositivo: [keyDispositivo],
+            opcionAlerta: [opcion],
+            datosAlerta: [datos],
+            tiempoAlerta: [timeAlert],
+            tiempoUltimaAlerta: [timeLastAlert],
+            silenciada: [silenced],
+          });
+          resolve(alert.key);
+        });
+      } else {
+        reject(Error('Error createLands'));
+      }
+    });
+    });
+
+    return promise;
+  }
+
+  public updateAlert(
+  key: string,
+    name: string,
+    tipo: string,
+    datos: string[],
+    opcion: string,
+    nameLand: string,
+    namePivot: string,
+    nameDispositivo: string,
+    timeAlert: string, timeLastAlert: string, silenced: boolean
+  ) {
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        const db = firebase.database();
+        if(timeLastAlert === null){
+          db.ref('users/' + user.uid + '/alerts/' + key).update({
+            nombre: [name],
+            tipo: [tipo],
+            nombreTierra: [nameLand],
+            nombrePivot: [namePivot],
+            nombreDispositivo: [nameDispositivo],
+            opcionAlerta: [opcion],
+            datosAlerta: [datos],
+            tiempoAlerta: [timeAlert],
+            silenciada: [silenced],
+          });
+        }
+        else{
+          db.ref('users/' + user.uid + '/alerts/' + key).update({
+            nombre: [name],
+            tipo: [tipo],
+            nombreTierra: [nameLand],
+            nombrePivot: [namePivot],
+            nombreDispositivo: [nameDispositivo],
+            opcionAlerta: [opcion],
+            datosAlerta: [datos],
+            tiempoAlerta: [timeAlert],
+            tiempoUltimaAlerta: [timeLastAlert],
+            silenciada: [silenced],
+          });
+        }
+      } else {
+        return null;
+      }
+    });
+  }
+
+
+  public deleteAlert(key: string) {
+    var notifications = this.listNotification.bind(this);
+    var notificationDelete = this.deleteNotification.bind(this);
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        const db = firebase.database();
+        notifications().then((result) =>{
+          if(result !== null){
+            result.forEach(function(childResult) {   
+            if(childResult.child("alerta").val()[0] === key)
+              notificationDelete(childResult.key);
+            })
+          }
+        });
+        const UserRef = db.ref('users/' + user.uid + '/alerts/' + key);
+        UserRef.remove();
+      } else {
+        return null;
+      }
+    });
+  }
+
+  public listAlerts(): Promise<any> {
+    const promise = new Promise(function(resolve, reject) {
+      firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+          const UserRef = firebase.database().ref('users/' + user.uid + '/alerts');
+          let misDatos;
+          misDatos = Promise.resolve(
+            UserRef.once('value').then(function(snapshot) {
+              return snapshot;
+            }),
+          );
+          resolve(misDatos);
+        } else {
+          reject(Error('Error listAlerts'));
+        }
+      });
+    });
+    return promise;
+  }
+
+  public alertInformation(key: string): Promise<any> {
+    const promise = new Promise(function(resolve, reject) {
+      firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+          const UserRef = firebase.database().ref('users/' + user.uid + '/alerts/' + key);
+          let misDatos;
+          misDatos = Promise.resolve(
+            UserRef.once('value').then(function(snapshot) {
+              const obj = snapshot.val();
+              return obj;
+            }),
+          );
+          resolve(misDatos);
+        } else {
+          reject(Error('Error alerInformation'));
+        }
+      });
+    });
+    return promise;
+  }
+  
+  public createNotification(measurement: string, time: string, keyAlert: string): Promise<any>{
+   const promise = new Promise(function(resolve, reject) {
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        const db = firebase.database();
+        const UserRef = db.ref('users/' + user.uid + '/notifications');
+        UserRef.once('value').then(function(snapshot) {
+          db.ref('users/' + user.uid + '/notifications').push({
+            medida: [measurement],
+            tiempo: [time],
+            alerta: [keyAlert],
+          });
+          resolve('Notification creada');
+        });
+      } else {
+        reject(Error('Error createNotification'));
+      }
+    });
+    });
+
+    return promise;
+  }
+
+  public deleteNotification(key: string){
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        const db = firebase.database();
+        const UserRef = db.ref('users/' + user.uid + '/notifications/' + key);
+        UserRef.remove();
+      } else {
+        return null;
+      }
+    });
+  }
+  public listNotification(): Promise<any>{
+  const promise = new Promise(function(resolve, reject) {
+      firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+          const UserRef = firebase.database().ref('users/' + user.uid + '/notifications');
+          let misDatos;
+          misDatos = Promise.resolve(
+            UserRef.once('value').then(function(snapshot) {
+              return snapshot;
+            }),
+          );
+          resolve(misDatos);
+        } else {
+          reject(Error('Error listNotification'));
+        }
+      });
+    });
+    return promise;
+  }
+  public notificationInformation(key: string): Promise<any>{
+  const promise = new Promise(function(resolve, reject) {
+      firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+          const UserRef = firebase.database().ref('users/' + user.uid + '/notifications/' + key);
+          let misDatos;
+          misDatos = Promise.resolve(
+            UserRef.once('value').then(function(snapshot) {
+              const obj = snapshot.val();
+              return obj;
+            }),
+          );
+          resolve(misDatos);
+        } else {
+          reject(Error('Error notificationInformation'));
+        }
+      });
+    });
+    return promise;
+  }
+  
+  public deviceExist(id: string): Promise<string> {
+    const promise = new Promise<string>(function(resolve, reject) {
+      firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+          const UserRef = firebase.database().ref('devices');
+          UserRef.once('value').then(function(snapshot) {
+            if (snapshot.hasChild(id)) {
+              const reason = new Error('id en uso');
+              reject(reason);
+            } else {
+              resolve('id libre');
+            }
           });
         } else {
-          return null;
+          reject(Error('Error deviceExist'));
         }
-      }); 
-    }
-
-    deleteDevice(name:string, nameLand:string, namePivot:string){
-      firebase.auth().onAuthStateChanged(function(user) {
-        if (user) {
-          var db = firebase.database();
-          var UserRef =  db.ref('users/' + user.uid + '/lands/'+ nameLand + '/pivots/' + namePivot + '/devices/' + name);	
-          UserRef.remove();
-        } else {
-          return null;
-        }
-      }); 
-    }
-
-    listDevices(nameLand:string, namePivot:string):Promise<any>{
-=======
-    listDevices(nameLand:string, namePivot:string):string[]{
->>>>>>> origin/master
-      var promise = new Promise(function(resolve, reject) {
-            firebase.auth().onAuthStateChanged(function(user) {
-               if(user){  
-                 var name;
-                 var UserRef = firebase.database().ref('users/' + user.uid + '/lands/'+ nameLand + '/pivots/' + namePivot +'/devices');
-	         var misDatos;
-                 misDatos = Promise.resolve(
-		       UserRef.once('value').then(function(snapshot){ 
-			   const obj = snapshot.val();
-                           if(obj === null) return null;
-                           else{
-			     const obj2 = Object.values(obj);			   
-			     return obj2;
-                           }
-		       })
-                 )
-               resolve(misDatos)
-               } else {
-                 reject(Error('Error listDevices'))
-               }
-            })       
       });
-
-    return promise; 
-    }
-
-<<<<<<< HEAD
-    deviceInformation(nameLand:string, namePivot:string, name:string):Promise<any>{
-=======
-    deviceInformation(nameLand:string, namePivot:string, name:string):string[]{
->>>>>>> origin/master
-      var promise = new Promise(function(resolve, reject) {
-            firebase.auth().onAuthStateChanged(function(user) {
-               if(user){  
-              
-                 var UserRef = firebase.database().ref('users/' + user.uid+ '/lands/'+ nameLand + '/pivots/' + namePivot + '/devices/' + name);
-	         var misDatos;
-                 misDatos = Promise.resolve(
-		       UserRef.once('value').then(function(snapshot){ 
-			   const obj = snapshot.val();
-			  // const obj2 = Object.values(obj);			   
-<<<<<<< HEAD
-=======
-                         //  console.log(obj); console.log(snapshot);
->>>>>>> origin/master
-                          // console.log(obj2[0].nombre[0]);
-			   return obj;
-		       })
-                 )
-               resolve(misDatos)
-               } else { 
-                 reject(Error('Error deviceInformation'))
-               }
-            })       
-      });
-
-    return promise; 
-    }
-
-<<<<<<< HEAD
-    deviceExist(nameLand:string, namePivot:string, name:string):Promise<string>{      
-      var promise = new Promise<string>(function (resolve, reject) {
-=======
-    deviceExist(nameLand:string, namePivot:string, name:string):string{      
-      var promise = new Promise(function (resolve, reject) {
->>>>>>> origin/master
-        firebase.auth().onAuthStateChanged(function(user) {
-           if(user){
-        var UserRef =  firebase.database().ref('users/' + user.uid + '/lands/'+ nameLand + '/pivots/' + namePivot +'/devices');	
-        UserRef.once('value').then(function(snapshot){ 
-	  if (snapshot.hasChild(name)) {
-            var reason = new Error('nombre en uso');
-            reject(reason);
-   	  }
-          else {
-            resolve('nombre libre');
-          } 
-       })
-      }else { 
-          reject(Error('Error deviceExist'))
-        }
-      }) 
     });
     return promise;
-    }
+  }
 
-<<<<<<< HEAD
-    createAlert(name:string, tipo:string, description:string , datos:string[], opcion:string, nameLand:string, namePivot:string, nameDispositivo:string){
+  checkDeviceMeasurement(idDevice: string): Promise<any>{
+    var items = [];
+    const promise = new Promise(function(resolve, reject) {
       firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
-          var db = firebase.database();
-          var UserRef =  db.ref('users/' + user.uid + '/alerts/'+ name);	
-          UserRef.once('value').then(function(snapshot){ 
-            db.ref('users/' + user.uid + '/alerts/'+ name).push({
-              nombre: [name],
-              tipo: [tipo],
-              descripcion: [description],
-              nombreTierra: [nameLand],
-              nombrePivot: [namePivot],
-              nombreDispositivo: [nameDispositivo],
-              opcionAlerta: [opcion],
-              datosAlerta: [datos]
-	     });
-            db.ref('users/' + user.uid + '/alerts/'+ name).set({
-              nombre: [name],
-              tipo: [tipo],
-              descripcion: [description],
-              nombreTierra: [nameLand],
-              nombrePivot: [namePivot],
-              nombreDispositivo: [nameDispositivo],
-              opcionAlerta: [opcion],
-              datosAlerta: [datos]
-	    });                           
-          })
+          const UserRef = firebase.database().ref('measurements');
+          let misDatos;
+          misDatos = Promise.resolve(
+            UserRef.once('value').then(function(snapshot) {
+              snapshot.forEach(function(childResult) {       
+                  var id = childResult.child("id").val();
+                  var location = childResult.child("location").val();
+                  var time = childResult.child("time").val();  
+                  var key = childResult.key;    
+                  var checked = childResult.child("checked").val();         
+                  if(id === idDevice && checked === false){
+                    if(items.length == 0)
+                     items.push({ id: id , location: location, time: time}); 
+                     else{
+                       if(items[0].time < time){
+                       items = [];
+                       items.push({ id: id , location: location, time: time}); 
+                       }
+                     }
+                     firebase.database().ref('measurements/'+ key).update({
+                        checked: true,
+                      });
+                  }                 
+              });
+              return items;
+            }),
+          );
+          resolve(misDatos);
         } else {
-          return null;
+          reject(Error('Error Measurements'));
         }
       });
-    }
-
-    updateAlert(name:string, tipo:string, description:string , datos:string[], opcion:string, nameLand:string, namePivot:string, nameDispositivo:string){
-      firebase.auth().onAuthStateChanged(function(user) {     
-        if (user) {
-          var db = firebase.database();
-            db.ref('users/' + user.uid + '/alerts/'+ name).update({
-              nombre: [name],
-              tipo: [tipo],
-              descripcion: [description],
-              nombreTierra: [nameLand],
-              nombrePivot: [namePivot],
-              nombreDispositivo: [nameDispositivo],
-              opcionAlerta: [opcion],
-              datosAlerta: [datos]
-	    });
-=======
-    deleteLand(name:string){
-      firebase.auth().onAuthStateChanged(function(user) {
-        if (user) {
-          var db = firebase.database();
-          var UserRef =  db.ref('users/' + user.uid + '/lands/' +name);	
-          UserRef.remove();
-        } else {
-          return null;
-        }
-      }); 
-    }
-
-    deletePivot(name:string, nameLand:string){
-      firebase.auth().onAuthStateChanged(function(user) {
-        if (user) {
-          var db = firebase.database();
-          var UserRef =  db.ref('users/' + user.uid + '/lands/'+ nameLand + '/pivots/' + name);	
-          UserRef.remove();
->>>>>>> origin/master
-        } else {
-          return null;
-        }
-      }); 
-    }
-
-<<<<<<< HEAD
-    deleteAlert(name:string){
-      firebase.auth().onAuthStateChanged(function(user) {
-        if (user) {
-          var db = firebase.database();
-          var UserRef =  db.ref('users/' + user.uid + '/alerts/'+ name);	
-=======
-    deleteDevice(name:string, nameLand:string, namePivot:string){
-      firebase.auth().onAuthStateChanged(function(user) {
-        if (user) {
-          var db = firebase.database();
-          var UserRef =  db.ref('users/' + user.uid + '/lands/'+ nameLand + '/pivots/' + namePivot + '/devices/' + name);	
->>>>>>> origin/master
-          UserRef.remove();
-        } else {
-          return null;
-        }
-      }); 
-    }
-
-<<<<<<< HEAD
-    listAlerts():Promise<any>{
-      var promise = new Promise(function(resolve, reject) {
-            firebase.auth().onAuthStateChanged(function(user) {
-               if(user){  
-                 var name;
-                 var UserRef = firebase.database().ref('users/' + user.uid + '/alerts');
-	         var misDatos;
-                 misDatos = Promise.resolve(
-		       UserRef.once('value').then(function(snapshot){ 
-			   const obj = snapshot.val();
-                           if(obj === null) return null;
-                           else{
-			     const obj2 = Object.values(obj);			   
-			     return obj2;
-                           }
-		       })
-                 )
-               resolve(misDatos)
-               } else {
-                 reject(Error('Error listAlerts'))
-               }
-            })       
-      });
-    return promise; 
-    }
-
-    alertInformation(name:string):Promise<any>{
-      var promise = new Promise(function(resolve, reject) {
-            firebase.auth().onAuthStateChanged(function(user) {
-               if(user){  
-                 var UserRef = firebase.database().ref('users/' + user.uid + '/alerts/'+ name);
-	         var misDatos;
-                 misDatos = Promise.resolve(
-		       UserRef.once('value').then(function(snapshot){ 
-			   const obj = snapshot.val();
-			   return obj;
-		       })
-                 )
-               resolve(misDatos)
-               } else { 
-                 reject(Error('Error alerInformation'))
-               }
-            })       
-      });
-    return promise; 
-    }
-
-    alertExist(name:string):Promise<string>{      
-      var promise = new Promise<string>(function (resolve, reject) {
-        firebase.auth().onAuthStateChanged(function(user) {
-       if(user){
-        var UserRef =  firebase.database().ref('users/' + user.uid + '/alerts');	
-        UserRef.once('value').then(function(snapshot){ 
-	  if (snapshot.hasChild(name)) {
-            var reason = new Error('nombre en uso');
-            reject(reason);
-   	  }
-          else {
-            resolve('nombre libre');
-          } 
-       })
-      }else { 
-          reject(Error('Error landExist'))
-        }
-      }) 
     });
     return promise;
-    }
-
-
-    userAutenticated():Promise<boolean>{
-      var promise = new Promise<boolean>(function (resolve) {
-        firebase.auth().onAuthStateChanged(function(user) {
-           if(user){
-            resolve(true);
-        }else { 
-            resolve(false);
-        }
-      }) 
-    });
-    return promise;
-=======
-    deleteUser(){
+  }
+  
+  checkDeviceId(idDevice: string): Promise<any>{
+  const promise = new Promise(function(resolve, reject) {
       firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
-          var db = firebase.database();
-          var UserRef =  db.ref('users/' + user.uid);	
-          UserRef.remove();
-          user.delete().then(function() {
-            // User deleted.
-          }).catch(function(error) {
-            // An error happened.
-          });
+          const UserRef = firebase.database().ref('devices/'+idDevice);
+          let misDatos;
+          misDatos = Promise.resolve(
+            UserRef.once('value').then(function(snapshot) {
+              const obj = snapshot.val();
+              return obj;
+            }),
+          );
+          resolve(misDatos);
         } else {
-          return null;
+          reject(Error('Error checkDeviceId'));
         }
-      }); 
->>>>>>> origin/master
-    }
+      });
+    });
+    return promise;
+  }
+  
+  public listMeasurements(idDevice: string): Promise<any> {
+  var items = [];
+    const promise = new Promise(function(resolve, reject) {
+      firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+          const UserRef = firebase.database().ref('measurements');
+          let misDatos;
+          misDatos = Promise.resolve(
+            UserRef.once('value').then(function(snapshot) {
+              snapshot.forEach(function(childResult) {       
+                  var id = childResult.child("id").val();                 
+                  if(id === idDevice){ 
+                     items.push(childResult); 
+                  }                 
+              });
+              return items;
+            }),
+          );
+          resolve(misDatos);
+        } else {
+          reject(Error('Error listMeasurements'));
+        }
+      });
+    });
+    return promise;
+  }
+
+  public userAutenticated(): Promise<boolean> {
+    const promise = new Promise<boolean>(function(resolve) {
+      firebase.auth().onAuthStateChanged(function(user) {
+            
+        if (user && user.emailVerified) { 
+          resolve(true);
+        } else {
+          resolve(false);
+        }
+      });
+    });
+    return promise;
+  }
 }
-
-
-
-
-

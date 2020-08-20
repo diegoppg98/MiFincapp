@@ -3,7 +3,6 @@ import { AuthDefaultState, IAuthState } from './shared/modules/auth/state';
 
 import { ICounterState } from './example/counter/state';
 
-
 export interface IState {
   [key: string]: any;
 
@@ -11,7 +10,6 @@ export interface IState {
   auth?: IAuthState;
 
   counter?: ICounterState;
-
 }
 
 export const DefaultState: IState = {

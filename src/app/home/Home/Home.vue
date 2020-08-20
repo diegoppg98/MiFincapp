@@ -1,160 +1,129 @@
 <template>
-<<<<<<< HEAD
 <div >
-  <v-app >
-  <v-snackbar
+    <v-snackbar
       v-model="snackbar"
       :timeout="timeoutSnackbar"
       :color="colorSnackbar"
+      style="z-index: 999999"
     >
       {{ textSnackbar }}
       <v-btn
         text
         @click="snackbar = false"
       >
-        Close
+        Cerrar
       </v-btn>
     </v-snackbar>
 
-<v-row class="d-flex flex-column mb-6" justify="center" align="center">
- <v-avatar color="indigo" >
-      <v-icon dark>mdi-account-circle</v-icon>
-    </v-avatar>
-<br/>
-<v-btn @click="registrarUsuario" color="error">
-      Registrarse
-    </v-btn>
-<br/>
-    <v-btn
-      color="primary"
+ <div v-show="auth">
+  <v-card width="400" class="mx-auto mt-5">
+
+<div class="text-center">
+      <v-avatar size="100">
+     <v-img  
+        height="100%"
+        :src="icon"
+     ></v-img>     
+   </v-avatar>
+   </div>
+   
+      <v-card-title class="pb-0">
+        <h1>Inicio Sesión</h1>
+      </v-card-title>
+      <v-card-text>
+        <v-form
+         ref="form"
+         v-model="valid"
+         :lazy-validation="lazy">
+          <v-text-field 
+            v-model="correo"
+            :rules="emailRules"
+            label="Correo"
+            required
+            prepend-icon="mdi-account-circle"
+          />
+          <v-text-field 
+            :rules="passRules"
+            :type="showPass ? 'text' : 'password'"
+            label="Contraseña"
+            hint="Al menos 8 caracteres"
+            prepend-icon="mdi-lock"
+            v-model="contraseña"
+            :append-icon="showPass ? 'mdi-eye' : 'mdi-eye-off'"
+            @click:append="showPass = !showPass"
+            required
+          />
+        </v-form>
+      </v-card-text>
+      <v-divider></v-divider>
+      <v-card-actions>
+        <v-btn block class="mb-6" color="success" :disabled="!valid" :loading="isLoading" @click="onLoginSubmit">Iniciar Sesion</v-btn>
+      </v-card-actions>
+       <v-card-actions>
+        <v-btn block color="info" @click="registrarUsuario">Registrarse</v-btn>
+      </v-card-actions>
+       <v-card-actions>
+        <v-btn block color="error" @click.stop="dialogPass = true">¿Olvidaste tu contraseña?</v-btn>
+      </v-card-actions>
+    </v-card>
+   </div>
+  <div class="loading" v-show="!auth">
+    <h2>CARGANDO...</h2>
+    <div class="loader"></div> 
+  </div>
+ 
+<v-dialog
+      v-model="dialogPass"
+      max-width="400"
+      style="z-index: 999"
+    >
+      <v-card>
+        <v-card-title class="headline">Pedir contraseña</v-card-title>
+        <v-card-text>
+   <v-form
+      class="mx-4 my-4"
       dark
-      @click.stop="dialog = true"
-    >
-      Iniciar Sesion
-    </v-btn>
-
-    <v-dialog
-      v-model="dialog"
-      max-width="330"
-    >
-<v-card>
- <v-card-title class="headline">Inicio sesion</v-card-title>
-<v-card-text>
-          Introduce tus datos
-        </v-card-text>
-<v-card-actions>
-
-<v-form
       ref="form"
-      v-model="valid"
-      :lazy-validation="lazy"
+      v-model="validPass"
+      :lazy-validation="lazyPass"
     >
-     <v-text-field
-        v-model="correo"
+      <v-text-field
+        v-model="correoPass"
         :rules="emailRules"
         label="Correo"
         required
       ></v-text-field>
+           </v-form> 
+        </v-card-text>
 
-      <v-text-field
-        :append-icon="showPass ? 'mdi-eye' : 'mdi-eye-off'"
-        :rules="passRules"
-        :type="showPass ? 'text' : 'password'"
-        name="input-10-2"
-        label="Contraseña"
-        hint="Al menos 8 caracteres"
-        v-model="contraseña"
-        class="input-group--focused"
-        @click:append="showPass = !showPass"
-        required
-      ></v-text-field>
+        <v-card-actions>
+          <v-spacer></v-spacer>
 
-      <v-btn
-        :disabled="!valid"
-        :loading="isLoading"
-        color="success"
-        class="mr-4"
-        @click="onLoginSubmit"
-      >
-        Iniciar sesion
-      </v-btn>
-    </v-form> 
-</v-card-actions>
-  </v-card>
+          <v-btn
+            :disabled="!validPass"
+            color="green darken-1"
+            text
+            @click="sendPass"
+          >
+            Pedir contraseña
+          </v-btn>
+        </v-card-actions>
+      </v-card>
     </v-dialog>
-  </v-row>
 
- </v-app>
-=======
-  <div :class="$style.home">
-    <vue-notification-stack />
-    <vue-grid>
-      <vue-grid-row>
-        <vue-grid-item fill>
-           <br />
-          <br />
-          <br />
-                   <br />
-          <br />
-          <br />
-          <vue-headline level="1">Home</vue-headline>
-          HOME PARA INICIAR SESION O REGISTRARSE
-          <br />
-          <br />
-          <br />
-        <vue-button color="primary" @click="showLoginModal = true">
-        Iniciar Sesion
-      </vue-button>
-
-      <vue-button color="primary" @click="registrarUsuario">
-        Registrarse
-      </vue-button>
-        </vue-grid-item>
-      </vue-grid-row>
-    </vue-grid>
-
-        <vue-modal :show="showLoginModal" @close="showLoginModal = false">
-      <login-form @submit="onLoginSubmit" />
-    </vue-modal>
->>>>>>> origin/master
   </div>
 </template>
 
 <script lang="ts">
-<<<<<<< HEAD
 
-import { mapState, mapActions, mapGetters } from 'vuex';
-import { IState } from '@/app/state';
+
+import { mapActions, mapGetters } from 'vuex';
 import { IPreLoad } from '@/server/isomorphic';
 import {router} from '../../router';
-import {Database} from '../../interfaceDatabase';
-import {ImplementationDatabase} from '../../firebaseImplementation';
-
-let FunctionsDatabase: Database = new ImplementationDatabase();
 import '../../../../node_modules/@mdi/font/css/materialdesignicons.css';
 import '../../../../node_modules/vuetify/dist/vuetify.css';
-=======
-import { mapState, mapActions, mapGetters } from 'vuex';
-//import Stage from '../components/Stage/Stage.vue';
-//import HomeSection from '@/app/home/components/HomeSection/HomeSection.vue';
-import { IState } from '@/app/state';
-//import VueHeadline from '@components/VueHeadline/VueHeadline.vue';
-import { IPreLoad } from '@/server/isomorphic';
-import VueGrid from '@/app/shared/components/VueGrid/VueGrid.vue';
-import VueGridRow from '@/app/shared/components/VueGridRow/VueGridRow.vue';
-import VueGridItem from '@/app/shared/components/VueGridItem/VueGridItem.vue';
-import VueButton from '@/app/shared/components/VueButton/VueButton.vue';
-import VueHeadline from '@/app/shared/components/VueHeadline/VueHeadline.vue';
-
-import VueModal from '@components/VueModal/VueModal.vue';
-
-import LoginForm from '@/app/shared/modules/auth/LoginForm/LoginForm.vue';
-
-import {router} from '../../router';
-
-import VueNotificationStack from '@/app/shared/components/VueNotificationStack/VueNotificationStack.vue';
-import { addNotification } from '@/app/shared/components/VueNotificationStack/utils';
->>>>>>> origin/master
+import VImageInput from 'vuetify-image-input';
+import {classMethods} from '../../classMethods';
 
 export default {
   metaInfo: {
@@ -165,18 +134,15 @@ export default {
         content:
           'App for control irrigation',
       },
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/master
     ],
   },
   data(): any {
     return {
-<<<<<<< HEAD
       correo: '',
+      correoPass: '',      
       contraseña: '',
       showPass: false,
+      auth: false,
       valid: true,
       passRules: [
         v => !!v || 'Contraseña no puede ser vacía',
@@ -188,96 +154,100 @@ export default {
       ],
       lazy: false,
       isLoading: false,
-      showLoginModal: false,
       colorSnackbar: '',
       snackbar: false,
       textSnackbar: '',
       timeoutSnackbar: 4000,
       dialog: false,
+      lazyPass: false,
+      validPass: true,
+      dialogPass: false,
+      icon: '',
     };
   },
   components: { 
   },
   computed: {
-=======
-      showLoginModal: false,
-    };
-  },
-  components: {
-    VueGrid,
-    VueGridItem,
-    VueButton,
-    VueGridRow,
-    VueHeadline,
-    LoginForm,
-    VueModal,
-    VueNotificationStack,
-    
-  },
-  computed: {
-    /*...mapState({
-      disableParticles: (state: IState) =>
-        (state.app.config && state.app.config.features && state.app.config.features.disableParticles) || false,
-    }),*/
->>>>>>> origin/master
-    ...mapGetters('auth', ['isAuthenticated']),
   },
 
-  methods: {
-    ...mapActions('auth', ['createToken', 'revokeToken']),
-<<<<<<< HEAD
-    async onLoginSubmit() {
-      this.dialog = false;
+  methods: {  
+  ...mapActions('app', ['changeUser', 'changeNombreAlerta', 'changeNombreFinca', 'changeAvatarUsuario']),
 
-      FunctionsDatabase.login(this.correo,this.contraseña).then( async (user) =>{
-          try {
-            await this.createToken(this.correo,this.contraseña);
-            router.push({ name: 'dashboard' });
-          } catch (e) {
-              this.colorSnackbar = "error";
-              this.textSnackbar = 'Error al intertar iniciar sesion. Por favor intentelo otra vez';
-              this.snackbar = true;
-              console.log(error);
-          }
+  onLoginSubmit() {
+  this.dialog = false;
+       classMethods.getUsuarioMethods().login(this.correo,this.contraseña).then((user) =>{  
+         // this.changeUser(true); 
+          this.changeAvatarUsuario('');
+          router.push({ name: 'inicio' }).catch(err => {}); 
+      }, (error) => {
+     // FunctionsDatabase.logout();
+           this.colorSnackbar = "error";
+          this.textSnackbar = error;
+          this.snackbar = true;
+      });
+    },
+
+    async registrarUsuario() {
+      router.push('/registrar-usuario').catch(err => {});
+    },
+    sendPass() { 
+      this.dialogPass = false;
+      classMethods.getUsuarioMethods().forgetPassword(this.correoPass).then((user) =>{
+        this.colorSnackbar = "success";
+        this.textSnackbar = 'Correo enviado. Por favor revise su correo';
+        this.snackbar = true;
       }, (error) => {
           this.colorSnackbar = "error";
           this.textSnackbar = 'Datos incorrectos. Por favor revise los datos introducidos e intentelo otra vez';
           this.snackbar = true;
-          console.log(error);
       });
-=======
-    async onLoginSubmit(formData: any) {
-      try {
-        await this.createToken(formData);
-
-        router.push({ name: 'dashboard' });
-      } catch (e) {
-        addNotification({ title: 'Error during login', text: 'Please try again!' });
-      }
-
-      this.showLoginModal = false;
->>>>>>> origin/master
     },
-    async registrarUsuario() {
-      router.push('/registrar-usuario');
-    },
+    
+   
   },
+ created(){
+  },
+
+ beforeMount(){
+ classMethods.getUsuarioMethods().appIcon().then((result) =>{
+    this.icon = result;
+ }); 
+ 
+     classMethods.getUsuarioMethods().userAutenticated().then((user) =>{    
+	if(user){
+	  router.push('/inicio');
+	}
+	else this.auth = true;
+    });
+ },
+      
 };
 </script>
-<<<<<<< HEAD
-<style>
-=======
-<style lang="scss" module>
-@import "~@/app/shared/design-system";
 
-.home {
-  margin-top: $nav-bar-height;
-  min-height: 500px;
-  display: flex;
-  justify-content: top-center;
-  align-items: top-center;
+<style>
+.loading {
+  text-align: center;
 }
 
->>>>>>> origin/master
+.loader {
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid #3498db;
+  width: 120px;
+  height: 120px;
+  display: inline-block;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+}
+
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 </style>
 

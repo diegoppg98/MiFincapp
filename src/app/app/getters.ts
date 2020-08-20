@@ -2,14 +2,13 @@ import { IAppState } from './state';
 
 export interface IAppGetters {
   getLocale(state: IAppState): string;
-<<<<<<< HEAD
-  getNombreFinca(state: IAppState): string;
-  getNombrePivot(state: IAppState): string;
-  getNombreDispositivo(state: IAppState): string;
-  getNombreAlerta(state: IAppState): string;
-=======
-
->>>>>>> origin/master
+  getFinca(state: IAppState): Finca;
+  getPivot(state: IAppState): Pivot;
+  getDispositivo(state: IAppState): Dispositivo;
+  getAlerta(state: IAppState): Alerta;
+  getAvatarUsuario(state: IAppState): string;
+  getUser(state: IAppState): boolean;
+  getReload(state: IAppState): string;
   cookieConsentVersion(state: IAppState): string;
 }
 
@@ -17,21 +16,27 @@ export const AppGetters: IAppGetters = {
   getLocale(state: IAppState): string {
     return state.locale;
   },
-<<<<<<< HEAD
-  getNombreFinca(state: IAppState): string {
-    return state.nombreFinca;
+  getFinca(state: IAppState): Finca {
+    return state.finca;
   },
-  getNombrePivot(state: IAppState): string {
-    return state.nombrePivot;
+  getPivot(state: IAppState): Pivot {
+    return state.pivot;
   },
-  getNombreDispositivo(state: IAppState): string {
-    return state.nombreDispositivo;
+  getDispositivo(state: IAppState): Dispositivo {
+    return state.dispositivo;
   },
-  getNombreAlerta(state: IAppState): string {
-    return state.nombreAlerta;
+  getAlerta(state: IAppState): Alerta {
+    return state.alerta;
   },
-=======
->>>>>>> origin/master
+  getAvatarUsuario(state: IAppState): string {
+    return state.avatarUsuario;
+  },
+  getUser(state: IAppState): boolean {
+    return state.user;
+  },
+  getReload(state: IAppState): string {
+    return state.reload;
+  },
   cookieConsentVersion(state: IAppState): string {
     return state.cookieConsentVersion;
   },

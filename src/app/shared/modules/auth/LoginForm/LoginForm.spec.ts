@@ -30,6 +30,6 @@ describe('LoginForm.vue', () => {
     const actual = wrapper.emitted('submit');
     const expected = [[{ password: '123456', username: 'foo' }]];
 
-    //expect(actual).toEqual(expected);
+    // expect(actual).toEqual(expected);
   });
 });

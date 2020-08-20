@@ -50,11 +50,10 @@
     "postci": "vuesion parallel \"npm run build\" \"npm run storybook:build\""
   },
   "dependencies": {
+    "-": "0.0.1",
     "@geoman-io/leaflet-geoman-free": "2.4.0",
-<<<<<<< HEAD
     "@paulpv/vuetify-number-field": "0.0.1",
-=======
->>>>>>> origin/master
+    "@turf/boolean-point-in-polygon": "6.0.1",
     "@vuesion/addon-vuex-persist": "^3.1.2",
     "@vuesion/models": "^3.1.2",
     "@vuesion/utils": "^3.1.2",
@@ -68,35 +67,45 @@
     "cookie-parser": "1.4.4",
     "deepmerge": "4.1.1",
     "express": "4.17.1",
-    "firebase": "7.8.1",
+    "firebase": "7.14.0",
+    "g": "2.0.1",
     "helmet": "3.21.1",
+    "kalmanjs": "1.1.0",
     "leaflet": "1.6.0",
+    "leaflet-draw": "1.0.4",
+    "leaflet-easybutton": "2.4.0",
+    "leaflet-geometryutil": "0.9.3",
+    "leaflet-geosearch": "2.7.0",
+    "leaflet-play": "0.4.4",
+    "leaflet-plugin-trackplayback": "1.0.5",
+    "leaflet-polylineoffset": "1.1.1",
+    "leaflet.wms": "0.2.0",
     "lodash": "4.17.15",
     "lru-cache": "5.1.1",
     "mapbox-gl": "1.8.1",
     "marked": "0.7.0",
+    "qrcode-terminal": "0.12.0",
+    "robust-point-in-polygon": "1.0.3",
     "serve-favicon": "2.5.0",
     "vee-validate": "2.0.9",
     "vue": "2.6.11",
     "vue-i18n": "8.14.1",
     "vue-meta": "2.3.1",
+    "vue-picture-input": "2.1.6",
+    "vue-prevent-unload": "0.2.3",
     "vue-router": "3.1.5",
     "vue-server-renderer": "2.6.11",
-<<<<<<< HEAD
     "vuetify": "2.2.19",
-=======
->>>>>>> origin/master
+    "vuetify-image-input": "19.1.0",
     "vuex": "3.1.2",
     "vuex-router-sync": "^5.0.0",
+    "whatsapp-web.js": "1.7.0",
     "winston": "3.2.1"
   },
   "devDependencies": {
     "@commitlint/cli": "8.2.0",
     "@commitlint/config-conventional": "8.2.0",
-<<<<<<< HEAD
     "@mdi/font": "5.0.45",
-=======
->>>>>>> origin/master
     "@types/animejs": "2.0.2",
     "@types/body-parser": "1.17.1",
     "@types/compression": "1.0.1",
@@ -104,6 +113,7 @@
     "@types/express": "4.17.1",
     "@types/helmet": "0.0.44",
     "@types/jest": "24.0.18",
+    "@types/leaflet-geosearch": "2.7.1",
     "@types/lodash": "4.14.144",
     "@types/marked": "0.6.5",
     "@types/node": "10.12.24",

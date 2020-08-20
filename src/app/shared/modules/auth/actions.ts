@@ -41,8 +41,6 @@ export const AuthActions: IAuthActions = {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
       });
-      console.log('Create');console.log('Create');console.log('Create');
-
 
       commit('SET_ACCESS_TOKEN', access_token);
       commit('SET_REFRESH_TOKEN', refresh_token);
@@ -62,7 +60,6 @@ export const AuthActions: IAuthActions = {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
       });
-      console.log('Refresh');console.log('Refresh');console.log('Refresh');
 
       commit('SET_ACCESS_TOKEN', access_token);
       commit('SET_REFRESH_TOKEN', refresh_token);

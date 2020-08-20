@@ -5,23 +5,45 @@
   {{{ meta.inject().meta.text() }}} {{{ meta.inject().title.text() }}} {{{ meta.inject().link.text() }}} {{{ meta.inject().style.text() }}} {{{ meta.inject().script.text() }}} {{{ meta.inject().noscript.text() }}}
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, minimal-ui">
+
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+
   <meta name="theme-color" content="#17BEBB"><% for (var chunk of webpack.chunks) {
   for (var file of chunk.files) {
   if (file.match(/\.(js|css)$/)) { %>
   <link rel="<%= chunk.initial?'preload':'prefetch' %>" href="<%= htmlWebpackPlugin.files.publicPath + file %>" as="<%= file.match(/\.css$/)?'style':'script' %>"><% }}} %>
   <link rel="manifest" href="/manifest.json">
   <link href="https://rsms.me/inter/inter.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
 
-<<<<<<< HEAD
     <link href="https://fonts.googleapis.com/css?family=Material+Icons" rel="stylesheet">
-=======
-
->>>>>>> origin/master
+    
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+    
     <link rel="stylesheet" href="https://unpkg.com/@geoman-io/leaflet-geoman-free@latest/dist/leaflet-geoman.css" />
     <script src="https://unpkg.com/@geoman-io/leaflet-geoman-free@latest/dist/leaflet-geoman.min.js"></script>
+    <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
+<link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
 
+<!-- Load Esri Leaflet from CDN -->
+    <script src="https://unpkg.com/esri-leaflet"></script> 
+ 
+    <!-- Esri Leaflet Geocoder -->
+    <link rel="stylesheet" href="https://unpkg.com/esri-leaflet-geocoder/dist/esri-leaflet-geocoder.css">
+    <script src="https://unpkg.com/esri-leaflet-geocoder"></script> 
+
+<script src="https://cdn.rawgit.com/heigeo/leaflet.wms/gh-pages/dist/leaflet.wms.js"></script> 
+  
+  
+  
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
+<script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-geodesy/v0.1.0/leaflet-geodesy.js'></script>
+
+    
 </head>
 <body>
 <!--vue-ssr-outlet-->

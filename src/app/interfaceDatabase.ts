@@ -1,65 +1,44 @@
-
-
 export interface Database {
-    init();
-    login(name:string, pass:string);
-    logout();
-<<<<<<< HEAD
-    userInformation():Promise<any>;
-    createUser(mail:string, pass:string , name:string, picture:string, address:string, phone:string); 
-    updateUser(mail:string, pass:string , name:string, picture:string, address:string, phone:string); 
-    deleteUser(); 
-    createLand(name:string, description:string , location:string[], size:string, crop:string);
-    updateLand(name:string, description:string , location:string[], size:string, crop:string);
-    deleteLand(name:string);
-    listLands():Promise<any>;
-    landInformation(name:string):Promise<any>;
-    landExist(name:string):Promise<string>;
-    createPivot(name:string, description:string , location:string[], kind:string, nameLand:string); 
-    updatePivot(name:string, description:string , location:string[], kind:string, nameLand:string); 
-    deletePivot(name:string, nameLand:string);
-    listPivots(nameLand:string):Promise<any>;
-    pivotInformation(nameLand:string, name:string):Promise<any>;
-    pivotExist(nameLand:string, name:string):Promise<string>;
-    createDevice(name:string, tipo:string, description:string , location:string[], nameLand:string, namePivot:string);
-    updateDevice(name:string, tipo:string, description:string , location:string[], nameLand:string, namePivot:string);
-    listDevices(nameLand:string, namePivot:string):Promise<any>;
-    deviceInformation(nameLand:string, namePivot:string, name:string):Promise<any>;
-    deviceExist(nameLand:string, namePivot:string, name:string):Promise<string>;
-    deleteDevice(name:string, nameLand:string, namePivot:string);
-    createAlert(name:string, tipo:string, description:string , datos:string[], opcion:string, nameLand:string, namePivot:string, nameDispositivo:string);
-    updateAlert(name:string, tipo:string, description:string , datos:string[], opcion:string, nameLand:string, namePivot:string, nameDispositivo:string);
-    deleteAlert(name:string);
-    listAlerts():Promise<any>;
-    alertInformation(name:string):Promise<any>;
-    alertExist(name:string):Promise<string>;
-
-    userAutenticated():Promise<boolean>;
-=======
-    userInformation():string[];
-    createUser(mail:string, pass:string , name:string, picture:string, address:string, phone:string); 
-    updateUser(mail:string, pass:string , name:string, picture:string, address:string, phone:string); 
-    deleteUser(); 
-    createLand(name:string, description:string , location:string[], size:string, crop:string):string;
-    updateLand(name:string, description:string , location:string[], size:string, crop:string);
-    deleteLand(name:string);
-    createPivot(name:string, description:string , location:string[], kind:string, nameLand:string); 
-    updatePivot(name:string, description:string , location:string[], kind:string, nameLand:string); 
-    deletePivot(name:string, nameLand:string);
-    createDevice(name:string, tipo:string, description:string , location:string[], nameLand:string, namePivot:string);
-    updateDevice(name:string, tipo:string, description:string , location:string[], nameLand:string, namePivot:string);
-    deleteDevice(name:string, nameLand:string, namePivot:string);
-    createAlert(location:string);
-    updateAlert(location:string);
-    listLands():string[];
-    landInformation(name:string):string[];
-    landExist(name:string):string;
-    listPivots(nameLand:string):string[];
-    pivotInformation(nameLand:string, name:string):string[];
-    pivotExist(nameLand:string, name:string):string;
-    listDevices(nameLand:string, namePivot:string):string[];
-    deviceInformation(nameLand:string, namePivot:string, name:string):string[];
-    deviceExist(nameLand:string, namePivot:string, name:string):string;
->>>>>>> origin/master
+  init();
+  login(name: string, pass: string);
+  changePassword(name: string, pass: string, newPass: string);
+  forgetPassword(name: string);
+  logout();
+  userInformation(): Promise<any>;
+  createUser(mail: string, pass: string, name: string, picture: object, address: string);
+  updateUser(mail: string, pass: string, name: string, picture: object, address: string): Promise<any>;
+  deleteUser();
+  createLand(name: string, location: string[], size: string, crop: string): Promise<any>;
+  updateLand(key: string, name: string, location: string[], size: string, crop: string);
+  deleteLand(key: string);
+  listLands(): Promise<any>;
+  landInformation(key: string): Promise<any>;
+  createPivot(name: string, location: string[], kind: string, keyLand: string): Promise<any>;
+  updatePivot(key: string, name: string, location: string[], kind: string, keyLand: string);
+  deletePivot(key: string);
+  listPivots(keyLand: string): Promise<any>;
+  pivotInformation(key: string): Promise<any>;
+  createDevice(name: string, id: string, tipo: string, location: string[], keyLand: string, keyPivot: string, temperature: string, possibleLocation: object[]): Promise<any>;
+  updateDevice(key: string, name: string, id: string, tipo: string, location: string[], keyLand: string, keyPivot: string, temperature: string, possibleLocation: object[]);
+  listDevices(keyPivot: string): Promise<any>;
+  deviceInformation(key: string): Promise<any>;
+  deleteDevice(key: string);
+  createAlert(name: string, tipo: string, datos: string[], opcion: string, keyLand: string, keyPivot: string, keyDispositivo: string, timeAlert: string, timeLastAlert: string, silenced: boolean): Promise<any>;
+  updateAlert(key: string, name: string, tipo: string, datos: string[], opcion: string, keyLand: string, keyPivot: string, keyDispositivo: string, timeAlert: string, timeLastAlert: string, silenced: boolean);
+  deleteAlert(key: string);
+  listAlerts(): Promise<any>;
+  alertInformation(key: string): Promise<any>;
+  
+  createNotification(measurement: string, time: string, keyAlert: string): Promise<any>;
+  deleteNotification(key: string);
+  listNotification(): Promise<any>;
+  notificationInformation(key: string): Promise<any>;
+  
+  userAutenticated(): Promise<boolean>;
+  deviceExist(id: string): Promise<string>;
+  checkDeviceMeasurement(id: string): Promise<any>;
+  checkDeviceId(idDevice: string): Promise<any>;
+  listMeasurements(idDevice: string): Promise<any>;
+  appIcon(): Promise<string>;
+  userProfileIcon(): Promise<string>;
 }
-

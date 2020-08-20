@@ -1,14 +1,18 @@
 import { IAppConfig } from '../config/IAppConfig';
+import {Finca} from '../Clases/Finca';
+import {Pivot} from '../Clases/Pivot';
+import {Alerta} from '../Clases/Alerta';
+import {Dispositivo} from '../Clases/Dispositivo';
 
 export interface IAppState {
   locale: string;
-<<<<<<< HEAD
-  nombreFinca: string;
-  nombrePivot: string;
-  nombreDispositivo: string;
-  nombreAlerta: string;
-=======
->>>>>>> origin/master
+  finca: Finca;
+  pivot: Pivot;
+  dispositivo: Dispositivo;
+  alerta: Alerta;
+  avatarUsuario: string;
+  user: boolean;
+  reload: string;
   config: IAppConfig;
   defaultMessages: any;
   redirectTo: string;
@@ -18,13 +22,13 @@ export interface IAppState {
 export const AppDefaultState = (): IAppState => {
   return {
     locale: null,
-<<<<<<< HEAD
-    nombreFinca: null,
-    nombrePivot: null,
-    nombreDispositivo: null,
-    nombreAlerta: null,
-=======
->>>>>>> origin/master
+    finca: null,
+    pivot: null,
+    dispositivo: null,
+    alerta: null,
+    avatarUsuario: null,
+    user: false,
+    reload: null,
     config: null,
     defaultMessages: {},
     redirectTo: null,

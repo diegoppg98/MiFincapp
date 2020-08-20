@@ -2,13 +2,13 @@ import { createLocalVue, mount } from '@vue/test-utils';
 import Vuex, { Store } from 'vuex';
 import { i18n } from '@/app/shared/plugins/i18n/i18n';
 import Ayuda from './Ayuda.vue';
-//import { IAyudaState } from '../state';
-//import { AyudaModule } from '../module';
+// import { IAyudaState } from '../state';
+// import { AyudaModule } from '../module';
 
 const localVue = createLocalVue();
 
 describe('Ayuda.vue', () => {
-  //let store: Store<IAyudaState>;
+  // let store: Store<IAyudaState>;
 
   /*beforeEach(() => {
     store = new Vuex.Store({
@@ -20,18 +20,14 @@ describe('Ayuda.vue', () => {
 
   test('renders component', () => {
     const wrapper = mount<any>(Ayuda, {
-      //store,
+      // store,
       localVue,
       i18n,
       stubs: ['router-link'],
     });
 
-    //Ayuda.prefetch({});
+    // Ayuda.prefetch({});
 
-<<<<<<< HEAD
-   // expect(wrapper.find('h1').text()).toBe('Ayuda');
-=======
-    expect(wrapper.find('h1').text()).toBe('Ayuda');
->>>>>>> origin/master
+    // expect(wrapper.find('h1').text()).toBe('Ayuda');
   });
 });

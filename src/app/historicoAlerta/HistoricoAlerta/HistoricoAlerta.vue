@@ -1,39 +1,16 @@
 <template>
-<<<<<<< HEAD
   <div>
-     <v-app >
- </v-app>
- </div>
-=======
-  <div :class="$style.historicoAlerta">
-    <vue-grid>
-      <vue-breadcrumb :items="breadCrumbItems"></vue-breadcrumb>
 
-      <vue-grid-row>
-        <vue-grid-item fill>
-          <vue-headline level="1">HistoricoAlerta</vue-headline>
-        </vue-grid-item>
-      </vue-grid-row>
-    </vue-grid>
-  </div>
->>>>>>> origin/master
+ </div>
 </template>
 
 <script lang="ts">
 //import { registerModule } from '@/app/store';
 import { IPreLoad } from '@/server/isomorphic';
-import VueGrid from '@/app/shared/components/VueGrid/VueGrid.vue';
-import VueBreadcrumb from '@components/VueBreadcrumb/VueBreadcrumb.vue';
-import VueGridRow from '@/app/shared/components/VueGridRow/VueGridRow.vue';
-import VueGridItem from '@/app/shared/components/VueGridItem/VueGridItem.vue';
-import VueButton from '@/app/shared/components/VueButton/VueButton.vue';
-import VueHeadline from '@/app/shared/components/VueHeadline/VueHeadline.vue';
-<<<<<<< HEAD
+
 import '../../../../node_modules/@mdi/font/css/materialdesignicons.css';
 import '../../../../node_modules/vuetify/dist/vuetify.css';
-=======
-
->>>>>>> origin/master
+import {router} from '../../router';
 //import { HistoricoAlertaModule } from '../module';
 
 export default {
@@ -41,22 +18,15 @@ export default {
     title: 'HistoricoAlerta',
   },
   components: {
-    VueGrid,
-    VueBreadcrumb,
-    VueGridRow,
-    VueGridItem,
-    VueButton,
-    VueHeadline,
+
   },
   data: (): any => ({}),
   methods: {},
   computed: {
-    breadCrumbItems() {
-      return [
-        { label: this.$t('common.home' /* Home */), href: '/' },
-        { label: this.$t('common.HistoricoAlerta' /* HistoricoAlerta */), href: '/historico-alerta' },
-      ];
-    },
+
+  },
+  beforeCreate() {
+    router.push('/inicio');
   },
   /*beforeCreate() {
     registerModule('historicoAlerta', HistoricoAlertaModule);
@@ -81,16 +51,6 @@ export default {
 };
 </script>
 
-<<<<<<< HEAD
 <style>
 
-=======
-<style lang="scss" module>
-@import "~@/app/shared/design-system";
-
-.historicoAlerta {
-  margin-top: $nav-bar-height;
-  min-height: 500px;
-}
->>>>>>> origin/master
 </style>

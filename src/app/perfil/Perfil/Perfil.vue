@@ -1,11 +1,10 @@
 <template>
-<<<<<<< HEAD
-  <div  >
-  <v-app>
+  <div>
   <v-snackbar
       v-model="snackbar"
       :timeout="timeoutSnackbar"
       :color="colorSnackbar"
+      style="z-index: 999999"
     >
       {{ textSnackbar }}
       <v-btn
@@ -15,13 +14,21 @@
         Close
       </v-btn>
     </v-snackbar>
-  <v-btn class="mx-10 my-2" color="orange darken-2" dark absolute to='/example/dashboard'>
-        <v-icon dark left>mdi-arrow-left</v-icon>
-   </v-btn>
-
+    
+<v-card width="220" height="200" class="mx-auto mt-5 d-flex align-center" @click.native="pickFile()">
+  <img :src="imageUrl" width="100%" height="100%" v-if="imageUrl"/>
  
+   <input
+	type="file"
+	style="display: none"
+	ref="image"
+	accept="image/*"
+	@change="onFilePicked"
+   >
+ </v-card>
+
    <v-form
-      class="mx-10 my-12"
+      class="mx-10 my-1"
       dark
       ref="form"
       v-model="valid"
@@ -40,53 +47,59 @@
       ></v-text-field>
 
       <v-text-field
-        v-model="foto"
-        label="Foto (opcional)"
-      ></v-text-field>
-
-      <v-text-field
         v-model="direccion"
         label="Direcccion (opcional)"
       ></v-text-field>
 
-      <v-text-field
-        v-model="telefono"
-        label="Telefono (opcional)"
-      ></v-text-field>
-
+     <v-row justify="end">
       <v-btn
         :disabled="!valid"
         color="success"
-        class="mr-4"
+        class="d-block my-2"
         @click="onSubmit"
       >
-        Guardar
+        Guardar 
       </v-btn>
+       </v-row>
 
+      <v-layout justify-center>
+       <v-btn
+        color="info"
+        class="d-block my-2"
+        @click.stop="dialogPass = true"
+      >
+        Cambiar contraseña
+      </v-btn>
+      </v-layout>
+
+     <v-layout justify-start>
       <v-btn
         color="error"
-        class="mr-4"
+        class="d-block my-2"
         @click.stop="dialog = true"
       >
         Eliminar cuenta
       </v-btn>
+      </v-layout>
+
+
 <v-dialog
       v-model="dialog"
-      max-width="290"
+      max-width="450"
       style="z-index: 999"
     >
       <v-card>
-        <v-card-title class="headline">Confirmacion de eliminacion</v-card-title>
+        <v-card-title class="headline">Confirmar eliminación</v-card-title>
 
         <v-card-text>
-        Esta seguro de que desea eliminar la cuenta, este procesos será irreversible.
+          Esta seguro de que desea eliminar la cuenta, este procesos será irreversible.
         </v-card-text>
 
         <v-card-actions>
           <v-spacer></v-spacer>
 
           <v-btn
-            color="green darken-1"
+            color="success"
             text
             @click="dialog = false"
           >
@@ -94,7 +107,7 @@
           </v-btn>
 
           <v-btn
-            color="green darken-1"
+            color="error"
             text
             @click="eliminarUsuario"
           >
@@ -104,109 +117,92 @@
       </v-card>
     </v-dialog>
 
+<v-dialog
+      v-model="dialogPass"
+      max-width="400"
+      style="z-index: 999"
+    >
+      <v-card>
+        <v-card-title class="headline">Cambio de contraseña</v-card-title>
+        <v-card-text>
+   <v-form
+      class="mx-4 my-4"
+      dark
+      ref="form"
+      v-model="validPass"
+      :lazy-validation="lazyPass"
+    >
+              <v-text-field
+                :append-icon="showPass ? 'mdi-eye' : 'mdi-eye-off'"
+                :rules="passRules"
+                :type="showPass ? 'text' : 'password'"
+                name="input-10-2"
+                label="Introduzca contraseña actual"
+                hint="Al menos 8 caracteres"
+                v-model="contraseña"
+                class="input-group--focused"
+                @click:append="showPass = !showPass"
+                required
+                clearable
+              ></v-text-field>
+              <v-text-field
+                :append-icon="showPassNew ? 'mdi-eye' : 'mdi-eye-off'"
+                :rules="passRules"
+                :type="showPassNew ? 'text' : 'password'"
+                name="input-10-2"
+                label="Introduzca nueva contraseña"
+                hint="Al menos 8 caracteres"
+                v-model="contraseñaNew"
+                class="input-group--focused"
+                @click:append="showPassNew = !showPassNew"
+                required
+                clearable
+              ></v-text-field>
+              <v-text-field
+                :append-icon="showPassRepeat ? 'mdi-eye' : 'mdi-eye-off'"
+                :error-messages='passMatchError'
+                :type="showPassRepeat ? 'text' : 'password'"
+                name="input-10-2"
+                label="Repita nueva contraseña"
+                hint="Al menos 8 caracteres"
+                v-model="contraseñaRepetida"
+                class="input-group--focused"
+                @click:append="showPassRepeat = !showPassRepeat"
+                required
+                clearable
+              ></v-text-field>
+           </v-form> 
+        </v-card-text>
 
+        <v-card-actions>
+          <v-spacer></v-spacer>
+
+          <v-btn
+            :disabled="!validPass"
+            color="green darken-1"
+            text
+            @click="changePass"
+          >
+            Cambiar contraseña
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     </v-form> 
-  </v-app>
-=======
-  <div :class="$style.perfil" >
-    <form @submit.prevent="onSubmit">
-    <br />
-    <br />
-    <br />
-    <vue-grid-row>
-      <vue-grid-item>
-        <vue-input
-          name="correo"
-          id="correo"
-          type="email"
-          required
-          placeholder="correo"
-          validation="required|email"
-          :disabled="mailDisabled"
-          v-model="form.correo"
-        />
-      </vue-grid-item>
-    </vue-grid-row>
-
-    <vue-input
-      name="nombre"
-      id="nombre"
-      placeholder="nombre"
-      v-model="form.nombre"
-    />
-
-    <vue-grid-row>
-      <vue-grid-item>
-        <vue-input
-          name="foto"
-          id="foto"
-          placeholder="foto"
-          v-model="form.foto"
-        />
-      </vue-grid-item>
-
-    </vue-grid-row>
-
-    <vue-grid-row>
-      <vue-grid-item>
-        <vue-input
-          name="direccion"
-          id="direccion"
-          placeholder="direccion"
-          v-model="form.direccion"
-        />
-      </vue-grid-item>
-       <vue-grid-item>
-        <vue-input
-          name="telefono"
-          id="telefono"
-          placeholder="Telefono"
-          validation="integer|min:9"
-          v-model="form.telefono"
-        />
-      </vue-grid-item>
-    </vue-grid-row>
-    <br />
-    <vue-button color="primary" :disabled="isSubmitDisabled" :loading="isLoading"> Save </vue-button>      
-  </form>
- <vue-button color="primary" @click="eliminarUsuario" :class="$style.perfilBoton"> Eliminar Usuario </vue-button>       
->>>>>>> origin/master
  </div>
 </template>
 
 <script lang="ts">
-<<<<<<< HEAD
 
 import { mapActions, mapGetters } from 'vuex';
 import { IPreLoad } from '@/server/isomorphic';
-=======
-//import { registerModule } from '@/app/store';
-import { mapActions, mapGetters } from 'vuex';
-import { IPreLoad } from '@/server/isomorphic';
-import VueGrid from '@/app/shared/components/VueGrid/VueGrid.vue';
-import VueBreadcrumb from '@components/VueBreadcrumb/VueBreadcrumb.vue';
-import VueGridRow from '@/app/shared/components/VueGridRow/VueGridRow.vue';
-import VueGridItem from '@/app/shared/components/VueGridItem/VueGridItem.vue';
-import VueButton from '@/app/shared/components/VueButton/VueButton.vue';
-import VueHeadline from '@/app/shared/components/VueHeadline/VueHeadline.vue';
-import VueInput from '@/app/shared/components/VueInput/VueInput.vue';
-import VueSelect from '@/app/shared/components/VueSelect/VueSelect.vue';
-import { addNotification, INotification } from '@components/VueNotificationStack/utils';
-//import { PerfilModule } from '../module';
-
-
->>>>>>> origin/master
-import {Database} from '../../interfaceDatabase';
-import {ImplementationDatabase} from '../../firebaseImplementation';
-
-let FunctionsDatabase: Database = new ImplementationDatabase();
+import {Usuario} from '../../Clases/Usuario';
 import {router} from '../../router';
-<<<<<<< HEAD
 import '../../../../node_modules/@mdi/font/css/materialdesignicons.css';
 import '../../../../node_modules/vuetify/dist/vuetify.css';
-=======
->>>>>>> origin/master
-   
+import VImageInput from 'vuetify-image-input';
+import {classMethods} from '../../classMethods';
+
 export default {
    $_veeValidate: {
     validator: 'new' as 'new',
@@ -216,7 +212,7 @@ export default {
     title: 'Perfil',
   },
   components: {
-<<<<<<< HEAD
+  [VImageInput.name]: VImageInput,
   },
   
 data: () => ({
@@ -224,212 +220,143 @@ data: () => ({
       nombre: '',
       foto: '',
       direccion: '',
-      telefono: '',
+      imageData:'',
+     // telefono: '',
       valid: true,
+      picture: '',
+      validPass: true,
+      rulesFotos: [
+        value => !value || value.size < 2000000 || 'Avatar size should be less than 2 MB!',
+      ],
       emailRules: [
         v => !!v || 'E-mail is required',
         v => /.+@.+\..+/.test(v) || 'E-mail must be valid',
       ],
+      passRules: [
+        v => !!v || 'Contraseña no puede ser vacía',
+        v => (v && v.length >= 8) || 'Contraseña debe tener al menos 8 caracteres',
+      ],
+      contraseña: '',
+      contraseñaNew: '',
+      contraseñaRepetida: '',
+      showPass: false,
+      showPassNew:false,
+      showPassRepeat:false,
       colorSnackbar: '',
       snackbar: false,
       textSnackbar: '',
       timeoutSnackbar: 4000,
       lazy: false,
+      lazyPass: false,
       dialog: false,
+      dialogPass: false,
+      componentKey: 0,
+      imageName: '',
+		imageUrl: '',
+		imageFile: '',
     }),
-=======
-    VueGrid,
-    VueBreadcrumb,
-    VueGridRow,
-    VueGridItem,
-    VueButton,
-    VueHeadline,
-    VueInput,
-    VueSelect,
-  },
-  
-  data(): any {
-    return {
-      form: {
-        correo: '',
-        nombre: '',
-        foto: '',
-        direccion: '',
-        telefono: '',
-      },
 
-      isLoading: false,
-    };
-  },
->>>>>>> origin/master
- 
   methods: {
-    ...mapActions('auth', ['createToken', 'revokeToken']),
-    onSubmit() {
-<<<<<<< HEAD
-    
+    ...mapActions('app', ['changeUser', 'changeReload']),
+    pickFile () {
+       this.$refs.image.click ()
+    },
+		
+    onFilePicked (e) {
+	const files = e.target.files;
+	if(files[0] !== undefined) {
+		this.imageName = files[0].name;
+		if(this.imageName.lastIndexOf('.') <= 0) {
+			return;
+		}
+		const fr = new FileReader ();
+		fr.readAsDataURL(files[0]);
+		fr.addEventListener('load', () => {
+			this.imageUrl = fr.result;
+			this.imageFile = files[0]; // this is an image file that can be sent to server...
+		})
+		} else {
+			this.imageName = '';
+			this.imageFile = '';
+			this.imageUrl = '';
+		}
+    },
+
+    async onSubmit() {
        var userCorreo = this.correo;
        var userContraseña = this.contraseña;
        var userNombre = this.nombre;
-       var userFoto = this.foto;
+       var userFoto = this.imageFile;
        var userDireccion = this.direccion;
-       var userTelefono = this.telefono;
+      // var userTelefono = this.telefono;
 
-       FunctionsDatabase.updateUser(userCorreo,userContraseña,userNombre,userFoto,userDireccion,userTelefono);
-       this.colorSnackbar = "success";
+       var usuario = new Usuario("",userCorreo, userNombre, userDireccion, userFoto);
+       classMethods.getUsuarioMethods().updateUser(usuario).then((result) =>{
+   	  this.colorSnackbar = "success";
        this.textSnackbar = 'Perfil actualizado correctamente';
        this.snackbar = true;
-
-
-=======
-       var userCorreo = this.form.correo;
-       var userContraseña = this.form.contraseña;
-       var userNombre = this.form.nombre;
-       var userFoto = this.form.foto;
-       var userDireccion = this.form.direccion;
-       var userTelefono = this.form.telefono;
-
-       FunctionsDatabase.updateUser(userCorreo,userContraseña,userNombre,userFoto,userDireccion,userTelefono);
-          setTimeout(() => {
-            addNotification({
-              title: 'Informacion actualizada correctamente',
-              text: 'Informacion actualizada correctamente',
-            } as INotification);
-          }, 1000);
-
-
-//https://stackoverflow.com/questions/49546341/retrieving-data-from-realtime-firebase-and-display-in-form-of-table-on-web-page
-//http://mariechatfield.com/tutorials/firebase/step5.html
->>>>>>> origin/master
+          this.isLoading = false;
+          }).catch((error) => {
+   	     this.colorSnackbar = "error";
+             this.textSnackbar = 'Error al actualizar la Usuario. Por favor inténtelo otra vez';
+             this.snackbar = true;
+          });  
     },
-    async eliminarUsuario() {
-      FunctionsDatabase.deleteUser(); 
-      await this.revokeToken();
-      router.push('/');
-    },
-  },
-<<<<<<< HEAD
-
-  beforeMount () {
-     FunctionsDatabase.userInformation().then((result) =>{
-        this.correo = result.correo[0];
-        this.nombre = result.nombre[0];
-        this.foto = result.foto[0];
-        this.direccion = result.direccion[0];
-        this.telefono = result.telefono[0];
-   });  
-  },
-
-=======
-  computed: {
-    breadCrumbItems() {
-      return [
-        { label: this.$t('common.home' /* Home */), href: '/' },
-        { label: this.$t('common.Perfil' /* Perfil */), href: '/perfil' },
-      ];
-    },
-    mailDisabled() {
-      return 1;
-    },
-    hasErrors() {
-      return this.errors && this.errors.items.length > 0;
-    },
-    hasEmptyFields() {
-      let hasEmptyField: boolean = false;
-
-     Object.keys(this.form).forEach((key: string) => {
-        if (this.form.correo === '') {
-          hasEmptyField = true;
-        }
+    changePass() {
+      this.dialogPass = false;
+      classMethods.getUsuarioMethods().changePassword(this.correo,this.contraseña, this.contraseñaNew).then((user) =>{
+               this.colorSnackbar = "success";
+               this.textSnackbar = user;
+               this.snackbar = true;
+      }, (error) => {
+               this.colorSnackbar = "error";
+               this.textSnackbar = error;
+               this.snackbar = true; 
       });
-
-      return hasEmptyField;
-    },
-    isSubmitDisabled() {
-      return this.hasErrors || this.hasEmptyFields;
     },
 
+    async eliminarUsuario() {
+      classMethods.getUsuarioMethods().deleteUser().then((result) => {
+          this.changeUser(false);
+          router.push('/');
+      },(error) => { 
+          console.log(error);
+      });  
+    },
   },
+  computed: {
+    ...mapGetters('app', ['getAvatarUsuario']),
+    passMatchError () { 
+      return (this.contraseñaNew === this.contraseñaRepetida) ? '' : 'Contraseñas deben coincidir'
+    },
+  },
+
+mounted(){
+
+},
 
   beforeMount () {
-     FunctionsDatabase.userInformation().then((result) =>{
-        console.log(result);
-        this.form.correo = result.correo[0];
-        this.form.nombre = result.nombre[0];
-        this.form.foto = result.foto[0];
-        this.form.direccion = result.direccion[0];
-        this.form.telefono = result.telefono[0];
+  
+  this.changeUser(true); 
+ // this.changeReload(false); 
+     classMethods.getUsuarioMethods().userInformation().then((result) =>{
+        this.correo = result.correo;
+        this.nombre = result.nombre;
+        this.direccion = result.direccion;
+       // this.telefono = result.telefono[0];
+       if(result.foto) 
+            this.imageUrl = result.foto;
+        else{ 
+            classMethods.getUsuarioMethods().userProfileIcon().then((result) =>{
+               this.picture = result;
+            });
+        }
+       // this.imageUrl = this.getAvatarUsuario;
    });  
-     
-  /*
-     FunctionsDatabase.userMail().then((result) =>{
-        console.log(result);
-        this.form.correo = result;
-   });
-     FunctionsDatabase.userName().then((result) =>{
-        console.log(result);
-        this.form.nombre = result;
-   });
-     FunctionsDatabase.userPicture().then((result) =>{
-        console.log(result);
-        this.form.foto = result;
-   });
-     FunctionsDatabase.userAddress().then((result) =>{
-        console.log(result);
-        this.form.direccion = result;
-   });
-     FunctionsDatabase.userPhone().then((result) =>{
-        console.log(result);
-        this.form.telefono = result;
-   });*/
-
-
   },
-  beforeCreate() {
-   // registerModule('perfil', PerfilModule);
-  },
-  prefetch: (options: IPreLoad) => {
-   // registerModule('perfil', PerfilModule);
 
-    /**
-     * This is the function where you can load all the data that is needed
-     * to render the page on the server and client side
-     *
-     * This function always returns a promise that means, if you want to
-     * call a vuex action you have to return it, here is an example
-     *
-     * return options.store.dispatch('fetchPerfil', '1');
-     *
-     * If you need to fetch data from multiple source your can also return
-     * a Promise chain or a Promise.all()
-     */
-    //return Promise.resolve();
-  },
->>>>>>> origin/master
 };
 </script>
 
 <style lang="scss" module>
-<<<<<<< HEAD
 </style>
-=======
-@import "~@/app/shared/design-system";
-
-.perfil {
-  margin-top: $nav-bar-height;
-  margin-left:5%;
-  min-height: 500px;
-  
-}
- .perfilBoton{
-   display: inline;
-   margin-left:15%;
-   position:absolute; 
-   left:140px;
-   top:452px
- }
-
-</style>
-
-
->>>>>>> origin/master

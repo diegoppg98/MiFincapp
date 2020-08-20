@@ -4,6 +4,7 @@ import { Component } from 'vue-router/types/router';
 import { createApp, IApp } from '@/app/app';
 import { IPreLoad } from '@/server/isomorphic';
 import { HttpService, initHttpService } from '@shared/services/HttpService/HttpService';
+import firebase from 'firebase';
 
 if (PRODUCTION) {
   const runtime: any = require('serviceworker-webpack-plugin/lib/runtime');
@@ -13,8 +14,9 @@ if (PRODUCTION) {
     });
   }
 }
-
+firebase.auth().onAuthStateChanged(function(user) {
 const { app, router, store, i18n }: IApp = createApp();
+
 
 i18n.locale = store.state.app.locale;
 i18n.fallbackLocale = 'en';
@@ -78,4 +80,5 @@ router.onReady(() => {
   });
 
   app.$mount('#app');
+});
 });

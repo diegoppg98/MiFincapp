@@ -15,7 +15,15 @@ export interface IHttpService extends AxiosInstance {
 export let HttpService: IHttpService = axios.create();
 
 export const initHttpService = (store?: Store<IState>, router?: VueRouter) => {
-  /* istanbul ignore next */
+  /* istanbul ignore next 
+  
+  headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST, GET, PUT, OPTIONS, DELETE',
+            'Access-Control-Allow-Headers': 'Access-Control-Allow-Methods, Access-Control-Allow-Origin, Origin, Accept, Content-Type',
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          }*/
   HttpService = axios.create({
     baseURL:
       (store &&
