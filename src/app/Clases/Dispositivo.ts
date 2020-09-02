@@ -26,21 +26,23 @@ export class Dispositivo {
 export class DispositivoGps extends Dispositivo {
 
   posiblesLocalizaciones: object[];
-  
-  constructor(key: string, nombre: string, id: string, tipo: string, localizacion: string[], finca: string, pivot: string,posiblesLocalizaciones:object[]) {
+  posActual: string[];
+
+  constructor(key: string, nombre: string, id: string, tipo: string, localizacion: string[], finca: string, pivot: string,posiblesLocalizaciones:object[],posActual: string[]) {
   super(key, nombre, id, tipo, localizacion, finca, pivot);
     this.posiblesLocalizaciones = posiblesLocalizaciones;
+    this.posActual = posActual;
   }
 
 }
 
-export class DispositivoTemperatura extends Dispositivo {
+export class DispositivoSuelo extends Dispositivo {
 
-  temperatura: string;
+  suelo: string;
 
-  constructor(key: string, nombre: string, id: string, tipo: string, localizacion: string[], finca: string, pivot: string,temperatura: string) {
+  constructor(key: string, nombre: string, id: string, tipo: string, localizacion: string[], finca: string, pivot: string,suelo: string) {
   super(key, nombre, id, tipo, localizacion, finca, pivot);
-    this.temperatura = temperatura;
+    this.suelo = suelo;
   }
 
 }

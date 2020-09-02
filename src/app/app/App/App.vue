@@ -1,22 +1,15 @@
-<template>    
-<v-app>
- <div>
-      <v-app-bar 
-        :key="componentKey"
-        v-if="getUser"
-        :color="color"
-        dense
-        dark
-        style="z-index: 9999"
-      >
-      <v-app-bar-nav-icon @click="drawerMethod"></v-app-bar-nav-icon>
+<template>
+  <v-app>
+    <div>
+      <v-app-bar :key="componentKey" v-if="getUser" :color="color" dense dark style="z-index: 9999">
+        <v-app-bar-nav-icon @click="drawerMethod"></v-app-bar-nav-icon>
 
-      <v-toolbar-title>MiFincapp</v-toolbar-title>
+        <v-toolbar-title>MiFincapp</v-toolbar-title>
 
-      <v-spacer></v-spacer>     
+        <v-spacer></v-spacer>
       </v-app-bar>
 
-      <v-navigation-drawer 
+      <v-navigation-drawer
         :color="color"
         dark
         disable-resize-watcher
@@ -26,55 +19,48 @@
         v-model="drawer"
         style="z-index: 9999"
       >
+        <v-card shaped class="rounded-card mx-5 my-5">
+          <v-img height="180" :src="picture"></v-img>
+        </v-card>
 
-   <v-card class="mx-5 my-5">
-     <v-img  
-        :src="picture"
-     ></v-img>
-</v-card>
 
-        <v-list>    
-          <v-list-item          
-            v-for="item in items"
-            :key="item.title"
-            :to="item.link"
-            link          
-          >  
-          <v-list-item-icon>
-            <v-icon>{{ item.icon }}</v-icon>
-          </v-list-item-icon>
-          <v-list-item-content >
-            <v-list-item-title>{{ item.title }}</v-list-item-title>
-          </v-list-item-content>
+        <v-list>
+          <v-list-item v-for="item in items" :key="item.title" :to="item.link" link>
+            <v-list-item-icon>
+              <v-icon>{{ item.icon }}</v-icon>
+            </v-list-item-icon>
+            <v-list-item-content>
+              <v-list-item-title>{{ item.title }}</v-list-item-title>
+            </v-list-item-content>
           </v-list-item>
         </v-list>
 
-        <template v-slot:append>
-          <div class="pa-2" @click="onLogout">
-            <v-btn block>Cerrar sesión</v-btn>
+        <v-card :color="color" outlined class="px-2">
+          <div @click="onLogout">
+            <v-btn block class="mx-auto" @click="onLogout">Cerrar sesión</v-btn>
           </div>
-        </template>
+ </v-card>       
       </v-navigation-drawer>
-    <v-content>
-    <v-container fluid>
-      <router-view></router-view>
-    </v-container>
-    </v-content>
-    </div> 
+      <v-content>
+        <v-container fluid>
+          <router-view></router-view>
+        </v-container>
+      </v-content>
+    </div>
   </v-app>
 </template>
 
 <script lang="ts">
-
 import { mapActions, mapGetters } from 'vuex';
 import { loadLocaleAsync } from '@shared/plugins/i18n/i18n';
 import '@shared/designSystem/global.scss';
-import {Database} from '../../interfaceDatabase';
-import {router} from '../../router';
+import { Database } from '../../interfaceDatabase';
+import { router } from '../../router';
 import '../../../../node_modules/@mdi/font/css/materialdesignicons.css';
 import '../../../../node_modules/vuetify/dist/vuetify.css';
-import {classMethods} from '../../classMethods';
-import {colors} from '../../colors';
+import { FactoryAPI } from '../../FactoryAPI';
+import { colors } from '../../colors';
+import { Usuario } from '@/app/Clases/Usuario';
 
 /*
 COLORES
@@ -85,14 +71,13 @@ ROJO: 9F3D3A, CLARO: C36462, OSCURO: 7D1F1C
 */
 export default {
   name: 'App',
-  components: {
-  },
+  components: {},
   //
   data(): any {
-    return { 
+    return {
       menuDisabled: false,
-      color:'#246D60',
-       componentKey: 0,
+      color: '#2e7d32',
+      componentKey: 0,
       drawer: false,
       isNavigating: false,
       showLoginModal: false,
@@ -100,15 +85,15 @@ export default {
       isAuth: false,
       avatar: '',
       //picture: require('../../../static/userProfile.jpg'),
+      //{ title: 'Ayuda' , link: '/ayuda', icon: 'mdi-help-box'},
       picture: 'https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png',
       items: [
-          { title: 'Inicio' , link: '/inicio', icon: 'mdi-home'},
-          { title: 'Perfil' , link: '/perfil', icon: 'mdi-account-box'},
-          { title: 'Fincas' , link: '/finca', icon: 'mdi-sprout'},
-          { title: 'Alertas' , link: '/alerta', icon: 'mdi-alert'},
-          { title: 'Ayuda' , link: '/ayuda', icon: 'mdi-help-box'},
-          { title: 'Notificaciones' , link: '/notificacion', icon: 'mdi-bell-alert'},     
-        ],
+        { title: 'Inicio', link: '/inicio', icon: 'mdi-home' },
+        { title: 'Perfil', link: '/perfil', icon: 'mdi-account-box' },
+        { title: 'Fincas', link: '/finca', icon: 'mdi-sprout' },
+        { title: 'Alertas', link: '/alerta', icon: 'mdi-alert' },
+        { title: 'Notificaciones', link: '/notificacion', icon: 'mdi-bell-alert' },
+      ],
     };
   },
 
@@ -131,54 +116,77 @@ export default {
         this.isNavigating = false;
       });
     },
-    onLogout() {          
-      classMethods.getUsuarioMethods().logout().then((result) => {
-          this.changeUser(false);
-          router.push('/');
-      },(error) => { 
-          console.log(error);
-      });      
-
+    onLogout() {
+      FactoryAPI.getFactoryAPI('Firebase')
+        .getUsuario()
+        .logout()
+        .then(
+          (result) => {
+            this.changeUser(false);
+            router.push('/');
+          },
+          (error) => {
+            console.log(error);
+          },
+        );
     },
-    drawerMethod() {  
-       classMethods.getUsuarioMethods().userInformation().then((result) =>{
-        if(result.foto) 
-            this.picture = result.foto;
-        else{ 
-            classMethods.getUsuarioMethods().userProfileIcon().then((result) =>{
-               this.picture = result;
-            }); 
-        }
-       }).catch(reason => {});    
-       this.drawer = true;   
+    drawerMethod() {
+      FactoryAPI.getFactoryAPI('Firebase')
+        .getUsuario()
+        .userInformation()
+        .then((result: Usuario) => {
+          if (result.foto) this.picture = result.foto;
+          else {
+            FactoryAPI.getFactoryAPI('Firebase')
+              .getUsuario()
+              .userProfileIcon()
+              .then((result) => {
+                this.picture = result;
+              });
+          }
+        })
+        .catch((reason) => {});
+      this.drawer = true;
     },
   },
 
   mounted() {
     this.initProgressBar();
-    console.log(colors.navigationDrawer);
+    //  console.log(colors.navigationDrawer);
   },
 
-  beforeMount () {  
-    this.color = colors.navigationDrawer;
-    classMethods.getUsuarioMethods().userAutenticated().then((user) =>{
-         if(user) this.changeUser(true); 
-         else this.changeUser(false); 
-    })
+  beforeMount() {
+    //this.color = colors.navigationDrawer;
+    FactoryAPI.getFactoryAPI('Firebase')
+      .getUsuario()
+      .userAutenticated()
+      .then((user) => {
+        if (user) this.changeUser(true);
+        else this.changeUser(false);
+      });
 
-    classMethods.getUsuarioMethods().userInformation().then((result) =>{
-        if(result.foto) 
-            this.picture = result.foto;
-        else{ 
-            classMethods.getUsuarioMethods().userProfileIcon().then((result) =>{
-               this.picture = result;
+    FactoryAPI.getFactoryAPI('Firebase')
+      .getUsuario()
+      .userInformation()
+      .then((result: Usuario) => {
+        if (result.foto) this.picture = result.foto;
+        else {
+          FactoryAPI.getFactoryAPI('Firebase')
+            .getUsuario()
+            .userProfileIcon()
+            .then((result) => {
+              this.picture = result;
             });
         }
-    }).catch(reason => {});  
+      })
+      .catch((reason) => {});
   },
-
 };
 </script>
 
 <style >
+.rounded-card {
+  border-radius: 24px;
+}
+
 </style>

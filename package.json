@@ -1,5 +1,5 @@
 {
-  "name": "vuesion",
+  "name": "MiFincapp",
   "version": "3.7.2",
   "description": "The most complete boilerplate for production-ready PWAs. With focus on performance, development speed, and best practices",
   "repository": {
@@ -90,6 +90,7 @@
     "vee-validate": "2.0.9",
     "vue": "2.6.11",
     "vue-i18n": "8.14.1",
+    "vue-loading-overlay": "3.4.0",
     "vue-meta": "2.3.1",
     "vue-picture-input": "2.1.6",
     "vue-prevent-unload": "0.2.3",

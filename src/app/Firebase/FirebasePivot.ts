@@ -1,28 +1,30 @@
 import firebase from 'firebase';
-import {PivotInterface} from '../Interfaces/PivotInterface';
+import {IPivotAPI} from '../Interfaces/IPivotAPI';
 import {Pivot} from '../Clases/Pivot'; 
 import {FirebaseDispositivo} from '../Firebase/FirebaseDispositivo';
+import { Dispositivo } from '../Clases/Dispositivo';
 let FunctionsDispositivo: FirebaseDispositivo = new FirebaseDispositivo();
 
   let pivotConverter = {
-      toFirestore: function(pivot) {
+      toFirestore: function(pivot : any) {
           return {              
               nombre: pivot.nombre,
               localizacion: pivot.localizacion,
               tipo: pivot.tipo,
               finca: pivot.finca,
+              posActual: pivot.posActual,
           }
       }, 
-      fromFirestore: function(snapshot, options){
+      fromFirestore: function(snapshot: { data: (arg0: any) => any; id: string; }, options: any){
           const data = snapshot.data(options);
-          return new Pivot(snapshot.id,data.nombre, data.tipo, data.localizacion, data.finca)
+          return new Pivot(snapshot.id,data.nombre, data.tipo, data.localizacion, data.finca,data.posActual)
       }
   }
   
- export class FirebasePivot implements PivotInterface{
+ export class FirebasePivot extends IPivotAPI{
  
-  public createPivot(pivot : Pivot) : Promise<any>{
-   const promise = new Promise(function(resolve, reject) {
+  public createPivot(pivot : Pivot) : Promise<string>{
+   const promise = new Promise<string>(function(resolve, reject) {
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
         firebase.firestore().collection('users/' + user.uid + '/pivots').withConverter(pivotConverter).add(pivot)
@@ -40,8 +42,8 @@ let FunctionsDispositivo: FirebaseDispositivo = new FirebaseDispositivo();
    return promise;
   }
 
-  public updatePivot(pivot : Pivot) : Promise<any> {
-  const promise = new Promise(function(resolve, reject) {
+  public updatePivot(pivot : Pivot) : Promise<string> {
+  const promise = new Promise<string>(function(resolve, reject) {
   firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
         const db = firebase.database();
@@ -60,8 +62,8 @@ let FunctionsDispositivo: FirebaseDispositivo = new FirebaseDispositivo();
     return promise;
   }
 
-  public deletePivot(keyPivot: string) : Promise<any> {
-    const promise = new Promise(function(resolve, reject) {
+  public deletePivot(keyPivot: string) : Promise<string> {
+    const promise = new Promise<string>(function(resolve, reject) {
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
         firebase.firestore().collection('users/' + user.uid + '/pivots').doc(keyPivot).delete()
@@ -73,7 +75,7 @@ let FunctionsDispositivo: FirebaseDispositivo = new FirebaseDispositivo();
          });         
          FunctionsDispositivo.listDevices(keyPivot).then((result) =>{
            if(result !== null){
-             result.forEach(function(childResult) {       
+             result.forEach(function(childResult : Dispositivo) {       
                FunctionsDispositivo.deleteDevice(childResult);
              })
            }
@@ -86,14 +88,14 @@ let FunctionsDispositivo: FirebaseDispositivo = new FirebaseDispositivo();
     return promise;
   }
 
-  public listPivots(keyLand: string): Promise<any> { 
-   const promise = new Promise(function(resolve, reject) {
+  public listPivots(keyLand: string): Promise<object[]> { 
+   const promise = new Promise<object[]>(function(resolve, reject) {
       firebase.auth().onAuthStateChanged(function(user) {
         if (user) {        
           let pivotsRef =  firebase.firestore().collection('users/' + user.uid + '/pivots').withConverter(pivotConverter);
           pivotsRef.get()
           .then(snapshot => {
-            var pivots = [];
+            var pivots : Pivot[] = [];
             snapshot.forEach(doc => {
               if(doc.data().finca === keyLand)
                 pivots.push(doc.data());
@@ -111,8 +113,8 @@ let FunctionsDispositivo: FirebaseDispositivo = new FirebaseDispositivo();
     return promise;
   }
 
-  public pivotInformation(key: string): Promise<any> {
-    const promise = new Promise(function(resolve, reject) {
+  public pivotInformation(key: string): Promise<object> {
+    const promise = new Promise<object>(function(resolve, reject) {
       firebase.auth().onAuthStateChanged(function(user) {
         if (user) {        
         let pivotRef = firebase.firestore().collection('users/' + user.uid + '/pivots').doc(key).withConverter(pivotConverter);

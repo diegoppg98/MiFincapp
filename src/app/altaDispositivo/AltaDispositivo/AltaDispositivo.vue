@@ -17,7 +17,6 @@
 <v-row>
 <v-col :cols="posMap">
    <v-form
-      class="mx-10 my-12"
       dark
       ref="form"
       v-model="valid"
@@ -55,8 +54,8 @@
       <v-btn
         :disabled="!valid"
         :loading="isLoading"
-        color="success"
-        class="mr-4"
+        color="#2e7d32"
+        class="mr-4 white--text"
         @click="onSubmit"
       >
         Guardar
@@ -65,26 +64,37 @@
     </v-form>
        </v-col>
     <v-col :cols="posMap">
-    <v-layout justify-end v-if="!dialogMapa">
-     <v-btn small rounded class="mx-3 my-5" @click="mostrarOpciones" color="grey">
-        Mostrar Opciones
-     </v-btn>
-     </v-layout>
-     
-    <v-layout justify-end v-if="dialogMapa">
-     <v-btn small rounded class="mx-3 my-5" @click="mostrarOpciones" color="grey">
-        Ocultar Opciones
-     </v-btn>
-     </v-layout>
-    <div class="d-block" style="height: 350px;" ref="mapa" id="mapa"></div>
+
+    <div class="d-block" style="height: 350px;" ref="mapa" id="mapa">
+    <v-layout v-if="!dialogMapaOptions">
+                <v-btn
+                  small
+                  rounded
+                  id="optionButton"
+                  class="mx-3 my-5"
+                  @click="mostrarOpciones"
+                  color="grey"
+                >Mostrar Opciones</v-btn>
+              </v-layout>
+              <v-layout v-if="dialogMapaOptions">
+                <v-btn
+                  small
+                  rounded
+                  id="optionButton"
+                  class="mx-3 my-5"
+                  @click="mostrarOpciones"
+                  color="grey"
+                >Ocultar Opciones</v-btn>
+              </v-layout>   
+    </div>
     </v-col>
      </v-row>
  </div> 
 </template>
 
 <script lang="ts">
-import { IPreLoad } from '@/server/isomorphic';
 
+import { IPreLoad } from '@/server/isomorphic';
 import { mapActions, mapGetters } from 'vuex';
 import '../../../../node_modules/@mdi/font/css/materialdesignicons.css';
 import '../../../../node_modules/vuetify/dist/vuetify.css';
@@ -103,8 +113,8 @@ import {Notificacion} from '../../Clases/Notificacion';
 import {Pivot} from '../../Clases/Pivot';
 import {Dispositivo} from '../../Clases/Dispositivo';
 import {DispositivoGps} from '../../Clases/Dispositivo';
-import {DispositivoTemperatura} from '../../Clases/Dispositivo';
-import {classMethods} from '../../classMethods';
+import {DispositivoSuelo} from '../../Clases/Dispositivo';
+import {FactoryAPI} from '../../FactoryAPI';
 
 export default {
   $_veeValidate: {
@@ -125,7 +135,7 @@ export default {
       showSwitch:false,
       tiposDispositivos: [
         'GPS',
-        'Temperatura',
+        'Suelo',
       ],
       colorSnackbar: '',
       snackbar: false,
@@ -148,7 +158,7 @@ export default {
       localizacion: [],
       isLoading: false,
       groupLayer:[],
-      dialogMapa: true,
+      dialogMapaOptions: true,
       isIdUsed: false,
     };
   },
@@ -195,11 +205,23 @@ watch: {
   methods: {
   ...mapActions('app', ['changeUser']),
   tipoChanged(){
+  
      if(this.tipo === 'GPS'){
        this.showSwitch = true;
        if(this.marker)
         this.map2.removeLayer(this.marker);
-       this.marker = L.marker(this.coordenadaMarker).addTo(this.map2); 
+        var iconType = this.iconTypes;
+    var icon = iconType(this.tipo);
+        var iconDevice = L.icon({
+    iconUrl: icon,
+            iconSize: [30, 42],
+            iconAnchor: [15, 42],  
+            popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+           });
+           
+       this.marker = L.marker(this.coordenadaMarker, {
+                             icon: iconDevice,
+                          }).addTo(this.map2); 
       this.map2.pm.addControls({
         drawMarker: false,
         drawCircleMarker: false,
@@ -214,7 +236,7 @@ watch: {
      });
       
      }
-     else if(this.tipo === 'Temperatura'){
+     else if(this.tipo === 'Suelo'){
       this.showSwitch = false;
       if(this.marker)
         this.map2.removeLayer(this.marker);
@@ -237,10 +259,27 @@ watch: {
      
   mostrarOpciones(){           
       var lc = document.getElementsByClassName('leaflet-control-layers');
-      if(this.dialogMapa){ lc[0].style.visibility = 'hidden'; this.dialogMapa = false;}
-      else{ lc[0].style.visibility = 'visible'; this.dialogMapa = true; }
+      if (this.dialogMapaOptions) {
+        lc[0].style.visibility = 'hidden';
+        this.dialogMapaOptions = false;
+      } else {
+        lc[0].style.visibility = 'visible';
+        this.dialogMapaOptions = true;
+      }
 
     },
+    iconTypes(tipoDispositivo){
+   
+      switch (tipoDispositivo) {
+            case 'GPS':
+                return 'https://firebasestorage.googleapis.com/v0/b/pivot-2f31f.appspot.com/o/Images%2FGPS.png?alt=media&token=b48f592e-2e75-40ab-b5ba-4ee6e1ba70d2';
+            case 'Suelo':
+                return 'https://firebasestorage.googleapis.com/v0/b/pivot-2f31f.appspot.com/o/Images%2Ftemperatura.png?alt=media&token=81cc83fa-b579-42d0-8638-fc4d173b0c6c';
+            default:
+                return 'https://firebasestorage.googleapis.com/v0/b/pivot-2f31f.appspot.com/o/Images%2FGPS.png?alt=media&token=4305b91d-a064-4805-bfcb-ef45084aae52';
+        }
+    },    
+    
      onSubmit() {
        this.isLoading = true;
 
@@ -319,19 +358,19 @@ if(Math.floor(this.coordenadaPivot.getLatLngs()[0].lat*Math.pow(10,4))/(Math.pow
          var dispositivo = null;
          
          if(dispositivoTipo === 'GPS'){
-           dispositivo = new DispositivoGps("",dispositivoNombre, dispositivoId, dispositivoTipo, dispositivoLocalizacion, nombreTierra, nombrePivot,JSON.stringify(positions));
+           dispositivo = new DispositivoGps("",dispositivoNombre, dispositivoId, dispositivoTipo, dispositivoLocalizacion, nombreTierra, nombrePivot,JSON.stringify(positions),[]);
         }
-        if(dispositivoTipo === 'Temperatura'){
-           dispositivo = new DispositivoTemperatura("",dispositivoNombre, dispositivoId, dispositivoTipo, dispositivoLocalizacion, nombreTierra, nombrePivot,"");
+        if(dispositivoTipo === 'Suelo'){
+           dispositivo = new DispositivoSuelo("",dispositivoNombre, dispositivoId, dispositivoTipo, dispositivoLocalizacion, nombreTierra, nombrePivot,"",[]);
         } 
 
         this.isLoading = false;
         if(dispositivo !== null){
-        classMethods.getDispositivoMethods().createDevice(dispositivo).then((result) =>{
+        FactoryAPI.getFactoryAPI("Firebase").getDispositivo().createDevice(dispositivo).then((result) =>{
          if(dispositivoTipo === 'GPS')
             this.checkMeasurementsGps(dispositivoId);
-         if(dispositivoTipo === 'Temperatura')
-            this.checkMeasurementsTemperatura(dispositivoId);
+         if(dispositivoTipo === 'Suelo')
+            this.checkMeasurementsSuelo(dispositivoId);
    	  this.colorSnackbar = "success";
           this.textSnackbar = 'Dispositivo creado correctamente';
           this.snackbar = true;
@@ -355,18 +394,18 @@ if(Math.floor(this.coordenadaPivot.getLatLngs()[0].lat*Math.pow(10,4))/(Math.pow
                var tipoPivot = this.tipoPivot;
                var positions = this.positions; 
                 
-          classMethods.getMedidaMethods().checkDeviceMeasurement(idDevice).then((result) =>{            
+          FactoryAPI.getFactoryAPI("Firebase").getMedida().checkDeviceMeasurement(idDevice).then((result) =>{            
                 
                //if items not empty, update position of pivot and device, and check if any alert is fulfilled                   
                if(result !== null && result.length !== 0){
                var locationDevice = result[0].medida;
                var deviceId = result[0].id;
               
-                  classMethods.getDispositivoMethods().checkDeviceId(deviceId).then((result) =>{
+                  FactoryAPI.getFactoryAPI("Firebase").getDispositivo().checkDeviceId(deviceId).then((result) =>{
                      var userKey = result.user;
                      var deviceKey = result.device; 
                                                              
-                     classMethods.getDispositivoMethods().deviceInformation(deviceKey).then((resultDispositivo) =>{
+                     FactoryAPI.getFactoryAPI("Firebase").getDispositivo().deviceInformation(deviceKey).then((resultDispositivo) =>{
                      if(resultDispositivo !== null){ 
                        var latlngCenter = null;
                        var latlngPoint = null;      
@@ -384,7 +423,7 @@ if(Math.floor(this.coordenadaPivot.getLatLngs()[0].lat*Math.pow(10,4))/(Math.pow
                        });
                        
                        
-                       classMethods.getPivotMethods().pivotInformation(nomPivot).then((result) =>{
+                       FactoryAPI.getFactoryAPI("Firebase").getPivot().pivotInformation(nomPivot).then((result) =>{
                           if(result !== null){                       
                             var localizacionPivot = result.localizacion;
                             var tipoPivot = result.tipo;
@@ -410,7 +449,7 @@ if(Math.floor(this.coordenadaPivot.getLatLngs()[0].lat*Math.pow(10,4))/(Math.pow
                            var punto1;
                            var punto2;
                            
-                           classMethods.getFincaMethods().landInformation(nomFinca).then((result) =>{
+                           FactoryAPI.getFactoryAPI("Firebase").getFinca().landInformation(nomFinca).then((result) =>{
                              if(result !== null){ 
                              var localizacionFinca = result.localizacion;
                              var coordenadaFinca;
@@ -452,13 +491,13 @@ if(Math.floor(this.coordenadaPivot.getLatLngs()[0].lat*Math.pow(10,4))/(Math.pow
                             layersPivot.forEach(function(element,index) {
                               pivotLocalizacion.push(JSON.stringify(element.toGeoJSON()));
                             })  
- var pivot = new Pivot(pivotDispositivo,nombrePivot, tipoPivot, pivotLocalizacion, nomFinca);
-classMethods.getPivotMethods().updatePivot(pivot).then((result) =>{ 
+ var pivot = new Pivot(pivotDispositivo,nombrePivot, tipoPivot, pivotLocalizacion, nomFinca,[]);
+FactoryAPI.getFactoryAPI("Firebase").getPivot().updatePivot(pivot).then((result) =>{ 
           }).catch((error) => { 	     
           });
 
 //UPDATE TODOS LOS DISPOSITIVOS DEL PIVOT
-classMethods.getDispositivoMethods().listDevices(nomPivot).then((result) =>{
+FactoryAPI.getFactoryAPI("Firebase").getDispositivo().listDevices(nomPivot).then((result) =>{
       if(result !== null){
        result.forEach(function(childResult) {       
           var nombreDispositivo = childResult.nombre;
@@ -469,8 +508,8 @@ classMethods.getDispositivoMethods().listDevices(nomPivot).then((result) =>{
             var pivotDispositivo = childResult.pivot;//JSON.parse(
             var dispositivoPositions = childResult.posiblesLocalizaciones;
             var deviceKey = childResult.key;
-            var dispositivo = new DispositivoGps(deviceKey,nombreDispositivo, idDispositivo, tipoDispositivo, dispositivoLocalizacion, fincaDispositivo, pivotDispositivo,dispositivoPositions); 
-            classMethods.getDispositivoMethods().updateDevice(dispositivo);
+            var dispositivo = new DispositivoGps(deviceKey,nombreDispositivo, idDispositivo, tipoDispositivo, dispositivoLocalizacion, fincaDispositivo, pivotDispositivo,dispositivoPositions,[]); 
+            FactoryAPI.getFactoryAPI("Firebase").getDispositivo().updateDevice(dispositivo);
           }
        })
     }
@@ -489,16 +528,16 @@ classMethods.getDispositivoMethods().listDevices(nomPivot).then((result) =>{
  
  
  //CHECKEAR NOTIFICACIONES COMO VISTAS 
-  checkMeasurementsTemperatura(idDevice: string){
-     classMethods.getMedidaMethods().checkDeviceMeasurement(idDevice).then((result) =>{  
+  checkMeasurementsSuelo(idDevice: string){
+     FactoryAPI.getFactoryAPI("Firebase").getMedida().checkDeviceMeasurement(idDevice).then((result) =>{  
        if(result !== null && result.length !== 0){
                var temperatureDevice = result[0].medida;
                var deviceId = result[0].id;
                
-               classMethods.getDispositivoMethods().checkDeviceId(deviceId).then((result) =>{
+               FactoryAPI.getFactoryAPI("Firebase").getDispositivo().checkDeviceId(deviceId).then((result) =>{
                      var userKey = result.user;
                      var deviceKey = result.device;
-                     classMethods.getDispositivoMethods().deviceInformation(deviceKey).then((resultDispositivo) =>{
+                     FactoryAPI.getFactoryAPI("Firebase").getDispositivo().deviceInformation(deviceKey).then((resultDispositivo) =>{
                        var nombreDispositivo = resultDispositivo.nombre;
                        var tipoDispositivo = resultDispositivo.tipo;
                        var idDispositivo = resultDispositivo.id;
@@ -506,7 +545,7 @@ classMethods.getDispositivoMethods().listDevices(nomPivot).then((result) =>{
                        var pivotDispositivo = resultDispositivo.pivot;
                        var dispositivoLocalizacion = resultDispositivo.localizacion;                          
                       
-                      var dispositivo = new DispositivoTemperatura(deviceKey,nombreDispositivo, idDispositivo, tipoDispositivo, dispositivoLocalizacion, fincaDispositivo, pivotDispositivo,temperatureDevice); classMethods.getDispositivoMethods().updateDevice(dispositivo).then((result) =>{
+                      var dispositivo = new DispositivoSuelo(deviceKey,nombreDispositivo, idDispositivo, tipoDispositivo, dispositivoLocalizacion, fincaDispositivo, pivotDispositivo,temperatureDevice,[]); FactoryAPI.getFactoryAPI("Firebase").getDispositivo().updateDevice(dispositivo).then((result) =>{
           }).catch((error) => { 	     
           });
                      
@@ -536,7 +575,7 @@ classMethods.getDispositivoMethods().listDevices(nomPivot).then((result) =>{
         resultado = false;
       }
       else{
-        resultado = classMethods.getDispositivoMethods().deviceExist(id).then(function (result) {
+        resultado = FactoryAPI.getFactoryAPI("Firebase").getDispositivo().deviceExist(id).then(function (result) {
             return false;
         })
         .catch(function (error) {
@@ -553,14 +592,12 @@ classMethods.getDispositivoMethods().listDevices(nomPivot).then((result) =>{
 
    const mapboxTiles1 = L.tileLayer(
      `https://api.mapbox.com/styles/v1/mapbox/streets-v9/tiles/{z}/{x}/{y}?access_token=${accessToken}`,
-   {
-     attribution:
-       '&copy; <a href="https://www.mapbox.com/feedback/">Mapbox</a> &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-   }
+
    );
 
     this.map2 = L.map(this.$refs['mapa'], {
     fullscreenControl: true,
+    attributionControl: false,
    });
    
    var baselayers = {
@@ -581,12 +618,12 @@ classMethods.getDispositivoMethods().listDevices(nomPivot).then((result) =>{
 //   var lc = document.getElementsByClassName('leaflet-control-layers');
  //  lc[0].style.visibility = 'hidden';
    
-   L.tileLayer.wms('http://www.ign.es/wms-inspire/pnoa-ma', {
+   L.tileLayer.wms('https://www.ign.es/wms-inspire/pnoa-ma', {
 	layers: 'OI.OrthoimageCoverage',
 	format: 'image/png',
 	transparent: false,
 	continuousWorld : true,
-	attribution: 'PNOA cedido por © <a href="http://www.ign.es/ign/main/index.do" target="_blank">Instituto Geográfico Nacional de España</a>'
+	attribution: 'PNOA cedido por © <a href="https://www.ign.es/ign/main/index.do" target="_blank">Instituto Geográfico Nacional de España</a>'
      }).addTo(this.map2);
   //var tiles = L.esri.basemapLayer("Streets").addTo(this.map2);
   var searchControl = L.esri.Geocoding.geosearch().addTo(this.map2);
@@ -618,8 +655,22 @@ classMethods.getDispositivoMethods().listDevices(nomPivot).then((result) =>{
    this.map2.createPane("pane450").style.zIndex = 450; // between overlays and shadows
    this.map2.createPane("pane620").style.zIndex = 620; // between markers and tooltips
    this.map2.createPane("pane800").style.zIndex = 800; // above popups
-   
+ 
+   var iconType = this.iconTypes;
+   var t = this;
+           
    this.map2.on('pm:create', e => {
+   
+    var icon = iconType(t.tipo);
+  
+   var iconDevice = L.icon({
+    iconUrl: icon,
+            iconSize: [30, 42],
+            iconAnchor: [15, 42],  
+            popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+           });
+           
+     e.layer.setIcon(iconDevice);
      this.marker = e.layer;
      this.map2.pm.addControls({
        drawMarker: false,
@@ -665,6 +716,7 @@ classMethods.getDispositivoMethods().listDevices(nomPivot).then((result) =>{
         this.localizacion = this.getPivot.localizacion;
         this.tipoPivot = this.getPivot.tipo;
         var map = this.map2;
+        var t = this;
         this.localizacion.forEach(function(element,index) {
           var myStyle = {
             "color": 'blue',
@@ -676,6 +728,8 @@ classMethods.getDispositivoMethods().listDevices(nomPivot).then((result) =>{
              style: myStyle
           }).addTo(map);
         })  
+        
+          
         
         var t = this;
         L.geoJSON( L.geoJSON(JSON.parse(this.localizacion[0])).toGeoJSON(), {
@@ -699,4 +753,19 @@ classMethods.getDispositivoMethods().listDevices(nomPivot).then((result) =>{
 </script>
 
 <style >
+#optionButton {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  background-color: white;
+  border-radius: 5px;
+  border-color: gray;
+  border-style: solid;
+  border-width: 1px 1px 1px 1px;
+  opacity: 0.4;
+  text-align: center;
+  z-index: 500;
+}
 </style>

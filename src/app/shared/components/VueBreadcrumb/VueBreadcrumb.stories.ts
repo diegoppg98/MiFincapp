@@ -4,10 +4,10 @@ import VueBreadcrumb from './VueBreadcrumb.vue';
 
 const story = storiesOf('Molecules|Breadcrumb', module);
 
-story.add(
+/*story.add(
   'Default',
   withInfo({})(() => ({
     components: { VueBreadcrumb },
     template: `<vue-breadcrumb :items="[{ label: 'Home', href: '/' }, { label: 'Components', href: '/components' }, { label: 'Breadcrumb', href: '/components/breadcrumb' }]" />`,
   })),
-);
+);*/

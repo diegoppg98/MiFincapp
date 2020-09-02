@@ -1,9 +1,9 @@
 import firebase from 'firebase';
-import {MedidaInterface} from '../Interfaces/MedidaInterface';
+import {IMedidaAPI} from '../Interfaces/IMedidaAPI';
 import {Medida} from '../Clases/Medida';
 
  let medidaConverter = {
-      toFirestore: function(medida) {
+      toFirestore: function(medida : any) {
           return {              
               id: medida.id,
               medida: medida.medida,
@@ -12,16 +12,16 @@ import {Medida} from '../Clases/Medida';
               tiempo: medida.tiempo
           }
       }, 
-      fromFirestore: function(snapshot, options){
+      fromFirestore: function(snapshot: { data: (arg0: any) => any; id: string; }, options: any){
           const data = snapshot.data(options);
           return new Medida(snapshot.id, data.id, data.medida, data.chequeada, data.notificada, data.tiempo)
       }
   }
   
-  export class FirebaseMedida implements MedidaInterface{
+  export class FirebaseMedida extends IMedidaAPI{
   
-  public createMeasurement(medida: Medida) : Promise<any>{
-   const promise = new Promise(function(resolve, reject) {
+  public createMeasurement(medida: Medida) : Promise<string>{
+   const promise = new Promise<string>(function(resolve, reject) {
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
         firebase.firestore().collection('/measurements').withConverter(medidaConverter).add(medida)
@@ -39,17 +39,17 @@ import {Medida} from '../Clases/Medida';
    return promise;
   }
   
-public listMeasurements(idDevice: string, limit:number): Promise<any> {
+public listMeasurements(idDevice: string, limit:number): Promise<object[]> {
   var items = [];
   var number = 0;
-    const promise = new Promise(function(resolve, reject) {
+    const promise = new Promise<object[]>(function(resolve, reject) {
       firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
         //.orderBy('tiempo', 'desc')
-        let measurementsRef =  firebase.firestore().collection('measurements').where('id', '==', idDevice);//.orderBy('tiempo', 'desc').withConverter(medidaConverter);//.where('id', '==', idDevice).limit(limit)
+        let measurementsRef =  firebase.firestore().collection('measurements/'+idDevice+'/idMeasurements').withConverter(medidaConverter).orderBy('tiempo', 'desc').limit(limit);//.orderBy('tiempo', 'desc').withConverter(medidaConverter);//.where('id', '==', idDevice).limit(limit)
           measurementsRef.get()
           .then(snapshot => {
-            var medidas = [];
+            var medidas : Medida[] = [];
             snapshot.forEach(doc => {
                     /*    if(t.tipo === 'GPS'){
                var p;                                 
@@ -68,14 +68,15 @@ public listMeasurements(idDevice: string, limit:number): Promise<any> {
                 medidas.push(doc.data());
               //}
             });
-            var deleteItems = medidas.length - limit;
+ 
+         /*   var deleteItems = medidas.length - limit;
             medidas.sort(function(a, b){
              if(a.tiempo > b.tiempo) { return -1; }
              if(a.tiempo < b.tiempo) { return 1; }
              return 0;
             })
             if(deleteItems > 0)
-              medidas.splice(limit, deleteItems);
+              medidas.splice(limit, deleteItems);*/
            resolve(medidas);
           })
           .catch(err => {
@@ -89,16 +90,16 @@ public listMeasurements(idDevice: string, limit:number): Promise<any> {
     return promise;
   }
   
-  checkDeviceMeasurement(idDevice: string): Promise<any>{
+  checkDeviceMeasurement(idDevice: string): Promise<object[]>{
     var items = [];
-    const promise = new Promise(function(resolve, reject) {
+    const promise = new Promise<object[]>(function(resolve, reject) {
       firebase.auth().onAuthStateChanged(function(user) {
         if (user) {  
         //checkeableMeasurement      
         let measurementRef =  firebase.firestore().collection('measurements').where('id', '==', idDevice).where('chequeada', '==', false).withConverter(medidaConverter);
           measurementRef.get()
           .then(snapshot => {         
-            var medida = [];           
+            var medida : Medida[] = [];       
             snapshot.forEach(doc => {        
               if(medida.length == 0)
                  medida.push(doc.data()); 

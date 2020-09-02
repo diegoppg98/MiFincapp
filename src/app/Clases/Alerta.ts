@@ -9,12 +9,12 @@ export class Alerta {
   opcion: string;
   tiempo: string;
   tiempoUltimaAlerta: string;
-  silenciada: string;
+  silenciada: boolean;
   tierra: string;
   pivot: string;
   dispositivo: string;
 
-  constructor(key: string, nombre: string, tipo: string, datos: string[], opcion: string, tiempo: string, tiempoUltimaAlerta: string, silenciada: string, tierra: string, pivot: string, dispositivo: string) {
+  constructor(key: string, nombre: string, tipo: string, datos: string[], opcion: string, tiempo: string, tiempoUltimaAlerta: string, silenciada: boolean, tierra: string, pivot: string, dispositivo: string) {
     this.key = key;
     this.nombre = nombre;
     this.tipo = tipo;

@@ -18,7 +18,6 @@
 <v-row>
 <v-col :cols="posMap">
    <v-form
-      class="mx-10 my-12"
       dark
       ref="form"
       v-model="valid"
@@ -48,8 +47,8 @@
       <v-btn
         :disabled="!valid"
         :loading="isLoading"
-        color="success"
-        class="mr-4"
+        color="#2e7d32"
+        class="mr-4 white--text"
         @click="onSubmit"
       >
         Guardar
@@ -57,20 +56,34 @@
        </v-row>       
     </v-form> 
     </v-col>
+    
     <v-col :cols="posMap">
-    <v-layout justify-end v-if="!dialogMapa">
-     <v-btn small rounded class="mx-3 my-5" @click="mostrarOpciones" color="grey">
-        Mostrar Opciones
-     </v-btn>
-     </v-layout>
-     
-    <v-layout justify-end v-if="dialogMapa">
-     <v-btn small rounded class="mx-3 my-5" @click="mostrarOpciones" color="grey">
-        Ocultar Opciones
-     </v-btn>
-     </v-layout>
-    <div style="height: 350px;" ref="mapa" id="mapa"></div>
+
+    <div style="height: 350px;" ref="mapa" id="mapa">
+    <v-layout v-if="!dialogMapaOptions">
+                <v-btn
+                  small
+                  rounded
+                  id="optionButton"
+                  class="mx-3 my-5"
+                  @click="mostrarOpciones"
+                  color="grey"
+                >Mostrar Opciones</v-btn>
+              </v-layout>
+              <v-layout v-if="dialogMapaOptions">
+                <v-btn
+                  small
+                  rounded
+                  id="optionButton"
+                  class="mx-3 my-5"
+                  @click="mostrarOpciones"
+                  color="grey"
+                >Ocultar Opciones</v-btn>
+              </v-layout>   
+    </div>
     </v-col>
+    
+    
      </v-row>
   </v-app>
 
@@ -92,7 +105,7 @@ import {Spain_UnidadAdministrativa} from '../../LeafletSpain.js';
 import {parcelas} from '../../LeafletSpain';
 import {recintos} from '../../LeafletSpain';
 import {Finca} from '../../Clases/Finca';
-import {classMethods} from '../../classMethods';
+import {FactoryAPI} from '../../FactoryAPI';
 
 export default {
   $_veeValidate: {
@@ -136,17 +149,23 @@ export default {
       map2: '',
       localizacion: [],
       isLoading: false,
-      dialogMapa: true,
+      dialogMapaOptions: true,
     };
   },
 
   methods: {
   ...mapActions('app', ['changeUser']),
-  mostrarOpciones(){
+  mostrarOpciones(){      
       var lc = document.getElementsByClassName('leaflet-control-layers');
-      if(this.dialogMapa){ lc[0].style.visibility = 'hidden'; this.dialogMapa = false;}
-      else{ lc[0].style.visibility = 'visible'; this.dialogMapa = true; }
+      if (this.dialogMapaOptions) {
+        lc[0].style.visibility = 'hidden';
+        this.dialogMapaOptions = false;
+      } else {
+        lc[0].style.visibility = 'visible';
+        this.dialogMapaOptions = true;
+      }
     },
+    
     onSubmit() {
        this.isLoading = true;
                   
@@ -173,7 +192,7 @@ export default {
           var tierraCultivo = this.cultivo;
           
           var finca = new Finca("",tierraNombre, tierraTamaño, tierraCultivo, tierraLocalizacion);
-         classMethods.getFincaMethods().createLand(finca).then((result) =>{
+         FactoryAPI.getFactoryAPI("Firebase").getFinca().createLand(finca).then((result) =>{
    	  this.colorSnackbar = "success";
           this.textSnackbar = 'Tierra creada correctamente';
           this.snackbar = true;
@@ -205,17 +224,16 @@ export default {
    const accessToken = 'pk.eyJ1IjoiZGllZ29wcGciLCJhIjoiY2s3NmVtaXRmMTRyaDNndDA2dWFwYmk2OCJ9.0Evn9MpSDvrdASq2S60-hQ';
    const mapboxTiles1 = L.tileLayer(
      `https://api.mapbox.com/styles/v1/mapbox/streets-v9/tiles/{z}/{x}/{y}?access_token=${accessToken}`,
-   {
-     attribution:
-       '&copy; <a href="https://www.mapbox.com/feedback/">Mapbox</a> &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-   }
+
    );   		
 		
    
    this.map2 = L.map(this.$refs['mapa'], {
     fullscreenControl: true,
-   }).setView([0, 0], 1);
+    attributionControl: false,
+   }).setView([40, 0], 1);
    
+   this.map2.setZoom(4);
    var baselayers = {
 	"Normal": mapboxTiles1,
 	"Vista Real": Spain_PNOA_Ortoimagen,
@@ -236,12 +254,12 @@ export default {
 		   
    this.map2.pm.setLang('es');
    
-   L.tileLayer.wms('http://www.ign.es/wms-inspire/pnoa-ma', {
+   L.tileLayer.wms('https://www.ign.es/wms-inspire/pnoa-ma', {
 	layers: 'OI.OrthoimageCoverage',
 	format: 'image/png',
 	transparent: false,
 	continuousWorld : true,
-	attribution: 'PNOA cedido por © <a href="http://www.ign.es/ign/main/index.do" target="_blank">Instituto Geográfico Nacional de España</a>'
+	attribution: 'PNOA cedido por © <a href="https://www.ign.es/ign/main/index.do" target="_blank">Instituto Geográfico Nacional de España</a>'
      }).addTo(this.map2);
   //var tiles = L.esri.basemapLayer("Streets").addTo(this.map2);
   var searchControl = L.esri.Geocoding.geosearch().addTo(this.map2); 
@@ -275,8 +293,10 @@ export default {
    
    //DAR STYLE AL CREAR
    this.map2.on('pm:create', e => {
-     e.layer.bindPopup((LGeo.area(e.layer) / 10000).toFixed(2) + ' hectáreas');
+     var hectareas = (LGeo.area(e.layer) / 10000).toFixed(2);
+     e.layer.bindPopup(hectareas + ' hectáreas');
      e.layer.openPopup();
+     this.tamaño = hectareas + ' hectáreas';
      this.map2.pm.addControls({
        drawPolygon: false,
      });
@@ -310,4 +330,19 @@ export default {
 </script>
 
 <style>
+#optionButton {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  background-color: white;
+  border-radius: 5px;
+  border-color: gray;
+  border-style: solid;
+  border-width: 1px 1px 1px 1px;
+  opacity: 0.4;
+  text-align: center;
+  z-index: 500;
+}
 </style>

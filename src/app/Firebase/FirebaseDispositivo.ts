@@ -1,13 +1,14 @@
 import firebase from 'firebase';
-import {DispositivoInterface} from '../Interfaces/DispositivoInterface';
+import {IDispositivoAPI} from '../Interfaces/IDispositivoAPI';
 import {Dispositivo} from '../Clases/Dispositivo';
 import {DispositivoGps} from '../Clases/Dispositivo';
-import {DispositivoTemperatura} from '../Clases/Dispositivo';
+import {DispositivoSuelo} from '../Clases/Dispositivo';
 import {FirebaseAlerta} from '../Firebase/FirebaseAlerta';
+import { Alerta } from '../Clases/Alerta';
 let FunctionsAlerta: FirebaseAlerta = new FirebaseAlerta();
  
  let dispositivoGpsConverter = {
-      toFirestore: function(dispositivo) {
+      toFirestore: function(dispositivo : any) {
           return {              
               nombre: dispositivo.nombre,
               id: dispositivo.id,
@@ -16,16 +17,17 @@ let FunctionsAlerta: FirebaseAlerta = new FirebaseAlerta();
               finca: dispositivo.finca,
               pivot: dispositivo.pivot,
               localizacionesPosibles: dispositivo.posiblesLocalizaciones,
+              posActual: dispositivo.posActual,
           }
       }, 
-      fromFirestore: function(snapshot, options){
+      fromFirestore: function(snapshot: { data: (arg0: any) => any; id: string; }, options: any){
           const data = snapshot.data(options);
-          return new DispositivoGps(snapshot.id,data.nombre, data.id, data.tipo, data.localizacion, data.finca, data.pivot, data.localizacionesPosibles)
+          return new DispositivoGps(snapshot.id,data.nombre, data.id, data.tipo, data.localizacion, data.finca, data.pivot, data.localizacionesPosibles,data.posActual)
       }
   }
   
-  let dispositivoTemperaturaConverter = {
-      toFirestore: function(dispositivo) {
+  let dispositivoSueloConverter = {
+      toFirestore: function(dispositivo : any) {
           return {              
               nombre: dispositivo.nombre,
               id: dispositivo.id,
@@ -33,19 +35,19 @@ let FunctionsAlerta: FirebaseAlerta = new FirebaseAlerta();
               localizacion: dispositivo.localizacion,
               finca: dispositivo.finca,
               pivot: dispositivo.pivot,
-              temperatura: dispositivo.temperatura,
+              suelo: dispositivo.suelo,
           }
       }, 
-      fromFirestore: function(snapshot, options){
+      fromFirestore: function(snapshot: { data: (arg0: any) => any; id: string; }, options: any){
           const data = snapshot.data(options);
-          return new DispositivoTemperatura(snapshot.id,data.nombre, data.id, data.tipo, data.localizacion, data.finca, data.pivot, data.temperatura)
+          return new DispositivoSuelo(snapshot.id,data.nombre, data.id, data.tipo, data.localizacion, data.finca, data.pivot, data.suelo)
       }
   }
  
- export class FirebaseDispositivo implements DispositivoInterface{
+ export class FirebaseDispositivo extends IDispositivoAPI{
  
-  public createDevice(dispositivo : Dispositivo) : Promise<any>{  
-   const promise = new Promise(function(resolve, reject) {
+  public createDevice(dispositivo : Dispositivo) : Promise<string>{  
+   const promise = new Promise<string>(function(resolve, reject) {
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {       
         if(dispositivo instanceof DispositivoGps){
@@ -58,8 +60,8 @@ let FunctionsAlerta: FirebaseAlerta = new FirebaseAlerta();
             resolve('Dispositivo creada');
           })
         }
-        else if (dispositivo instanceof DispositivoTemperatura){
-          firebase.firestore().collection('users/' + user.uid + '/devices').withConverter(dispositivoTemperaturaConverter).add(dispositivo)
+        else if (dispositivo instanceof DispositivoSuelo){
+          firebase.firestore().collection('users/' + user.uid + '/devices').withConverter(dispositivoSueloConverter).add(dispositivo)
           .then(function(docRef) { 
            firebase.firestore().collection('devices/').doc(dispositivo.id).set({
             user: user.uid,
@@ -78,8 +80,8 @@ let FunctionsAlerta: FirebaseAlerta = new FirebaseAlerta();
     return promise;   
   }
 
-  public updateDevice(dispositivo : Dispositivo) : Promise<any>{
-  const promise = new Promise(function(resolve, reject) {
+  public updateDevice(dispositivo : Dispositivo) : Promise<string>{
+  const promise = new Promise<string>(function(resolve, reject) {
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
       if(dispositivo instanceof DispositivoGps){
@@ -91,8 +93,8 @@ let FunctionsAlerta: FirebaseAlerta = new FirebaseAlerta();
            reject(Error('Error updateDevice'));
          });
        }
-       else if(dispositivo instanceof DispositivoTemperatura){
-        firebase.firestore().collection('users/' + user.uid + '/devices/').doc(dispositivo.key).withConverter(dispositivoTemperaturaConverter).set(dispositivo)
+       else if(dispositivo instanceof DispositivoSuelo){
+        firebase.firestore().collection('users/' + user.uid + '/devices/').doc(dispositivo.key).withConverter(dispositivoSueloConverter).set(dispositivo)
          .then(function(docRef) {
            resolve('dispositivo actualizada');
          })
@@ -110,8 +112,8 @@ let FunctionsAlerta: FirebaseAlerta = new FirebaseAlerta();
      return promise;  
   }
 
-  public deleteDevice(dispositivo : Dispositivo) : Promise<any>{
-  const promise = new Promise(function(resolve, reject) {
+  public deleteDevice(dispositivo : Dispositivo) : Promise<string>{
+  const promise = new Promise<string>(function(resolve, reject) {
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
       
@@ -126,8 +128,8 @@ let FunctionsAlerta: FirebaseAlerta = new FirebaseAlerta();
         
         FunctionsAlerta.listAlerts().then((result) =>{
            if(result !== null){
-             result.forEach(function(childResult) {       
-             if(childResult.nombreDispositivo === dispositivo.key)
+             result.forEach(function(childResult : Alerta) {       
+             if(childResult.dispositivo === dispositivo.key)
                FunctionsAlerta.deleteAlert(childResult.key);
              })
            }
@@ -140,12 +142,12 @@ let FunctionsAlerta: FirebaseAlerta = new FirebaseAlerta();
    return promise;  
   }
 
-  public listDevices(keyPivot: string): Promise<any> {   
-  const promise = new Promise(function(resolve, reject) {
+  public listDevices(keyPivot: string): Promise<object[]> {   
+  const promise = new Promise<object[]>(function(resolve, reject) {
       firebase.auth().onAuthStateChanged(async function(user) {
         if (user) {
-          var dispositivos = [];
-        let devicesTempRef = firebase.firestore().collection('users/' + user.uid + '/devices').where('pivot', '==', keyPivot).where('tipo', '==', "Temperatura").withConverter(dispositivoTemperaturaConverter);
+          var dispositivos : Dispositivo[] = [];
+        let devicesTempRef = firebase.firestore().collection('users/' + user.uid + '/devices').where('pivot', '==', keyPivot).where('tipo', '==', "Suelo").withConverter(dispositivoSueloConverter);
           let devicesTemp = await devicesTempRef.get();     
             devicesTemp.forEach(doc => {
                 dispositivos.push(doc.data());
@@ -167,8 +169,8 @@ let FunctionsAlerta: FirebaseAlerta = new FirebaseAlerta();
     return promise;
   }
 
-  public deviceInformation(key: string): Promise<any> {
-    const promise = new Promise(function(resolve, reject) {
+  public deviceInformation(key: string): Promise<object> {
+    const promise = new Promise<object>(function(resolve, reject) {
       firebase.auth().onAuthStateChanged(function(user) {
         if (user) {      
         let devicesRef = firebase.firestore().collection('users/' + user.uid + '/devices').doc(key);
@@ -191,8 +193,8 @@ let FunctionsAlerta: FirebaseAlerta = new FirebaseAlerta();
                 reject(Error('Error deviceInformation'));
               });          
             }
-            else if (doc.data().tipo == 'Temperatura'){
-              let deviceTemp = firebase.firestore().collection('users/' + user.uid + '/devices').doc(key).withConverter(dispositivoTemperaturaConverter).get()
+            else if (doc.data().tipo == 'Suelo'){
+              let deviceTemp = firebase.firestore().collection('users/' + user.uid + '/devices').doc(key).withConverter(dispositivoSueloConverter).get()
               .then(doc => {
                if (!doc.exists) {
                 reject(Error('Error deviceInformation'));
@@ -243,8 +245,8 @@ let FunctionsAlerta: FirebaseAlerta = new FirebaseAlerta();
     return promise;
   }
   
-  checkDeviceId(idDevice: string): Promise<any>{
-  const promise = new Promise(function(resolve, reject) {
+  checkDeviceId(idDevice: string): Promise<object>{
+  const promise = new Promise<object>(function(resolve, reject) {
       firebase.auth().onAuthStateChanged(function(user) {
         if (user) {       
         let deviceRef = firebase.firestore().collection('devices/').doc(idDevice);

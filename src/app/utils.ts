@@ -1,4 +1,3 @@
-import {classMethods} from './classMethods';
 import {Notificacion} from './Clases/Notificacion';
 import {Alerta} from './Clases/Alerta';
 import {Pivot} from './Clases/Pivot';
@@ -6,154 +5,10 @@ import {Dispositivo} from './Clases/Dispositivo';
 import {DispositivoGps} from './Clases/Dispositivo';
 import {DispositivoTemperatura} from './Clases/Dispositivo';
 
-export class Utils {
-
-    public checkMeasurementsTemperatura(idDevice: string){
-     classMethods.getMedidaMethods().checkDeviceMeasurement(idDevice).then((result) =>{  
-       if(result !== null && result.length !== 0){
-               var temperatureDevice = result[0].medida;
-               var deviceId = result[0].id;              
-               classMethods.getDispositivoMethods().checkDeviceId(deviceId).then((result) =>{
-                     var userKey = result.user;
-                     var deviceKey = result.device;
-                     classMethods.getDispositivoMethods().deviceInformation(deviceKey).then((resultDispositivo) =>{
-                       var nombreDispositivo = resultDispositivo.nombre;
-                       var tipoDispositivo = resultDispositivo.tipo;
-                       var idDispositivo = resultDispositivo.id;
-                       var fincaDispositivo = resultDispositivo.finca;
-                       var pivotDispositivo = resultDispositivo.pivot;
-                       var dispositivoLocalizacion = resultDispositivo.localizacion;           
-               
-              var dispositivo = new DispositivoTemperatura(deviceKey,nombreDispositivo, idDispositivo, tipoDispositivo, dispositivoLocalizacion, fincaDispositivo, pivotDispositivo,[],[],temperatureDevice);
-              
-         classMethods.getDispositivoMethods().updateDevice(dispositivo).then((result) =>{
-          }).catch((error) => { 	     
-          });
-                     }); 
-               }); 
-        }
-     }); 
-    }
-    
-    public async checkMeasurementsGps(idDevice: string): string{
-
-          var updated = await classMethods.getMedidaMethods().checkDeviceMeasurement(idDevice).then((result) =>{                              
-               //if items not empty, update position of pivot and device, and check if any alert is fulfilled                   
-               if(result !== null && result.length !== 0){
-               var locationDevice = result[0].medida;
-               var deviceId = result[0].id;
-                  classMethods.getDispositivoMethods().checkDeviceId(deviceId).then((result) =>{
-                     var userKey = result.user;
-                     var deviceKey = result.device;
-                                                             
-                     classMethods.getDispositivoMethods().deviceInformation(deviceKey).then((resultDispositivo) =>{
-                     if(resultDispositivo !== null){ 
-                       var latlngCenter = null;
-                       var latlngPoint = null;      
-                       var nombreDispositivo = resultDispositivo.nombre;
-                       var tipoDispositivo = resultDispositivo.tipo;
-                       var idDispositivo = resultDispositivo.id;
-                       var fincaDispositivo = resultDispositivo.finca;
-                       var pivotDispositivo = resultDispositivo.pivot;
-                       var positions = JSON.parse(resultDispositivo.posiblesLocalizaciones); 
-                      
-                       var localizacionActualDispositivo = resultDispositivo.localizacion;
-                       var coordenadasActualesDispositivo = JSON.parse(localizacionActualDispositivo[0]).geometry.coordinates;
-                                        
-                       classMethods.getPivotMethods().pivotInformation(pivotDispositivo).then((result) =>{
-                          if(result !== null){                       
-                            var localizacionPivot = result.localizacion;
-                            var tipoPivot = result.tipo;
-                            var nombrePivot = result.nombre; 
-                            
-                            var coordenadaPivot = JSON.parse(localizacionPivot[0]).geometry.coordinates;
-                           
-                           if(Math.floor(coordenadaPivot[0][1]*Math.pow(10,4))/(Math.pow(10,4)) === Math.floor(coordenadasActualesDispositivo[1]*Math.pow(10,4))/(Math.pow(10,4)) && Math.floor(coordenadaPivot[0][0]*Math.pow(10,4))/(Math.pow(10,4)) === Math.floor(coordenadasActualesDispositivo[0]*Math.pow(10,4))/(Math.pow(10,4))){
-              latlngCenter = L.latLng(coordenadaPivot[1][1], coordenadaPivot[1][0]);
-              latlngPoint = L.latLng(coordenadaPivot[0][1], coordenadaPivot[0][0]);
-                           }
-                           else {
-              latlngCenter = L.latLng(coordenadaPivot[0][1], coordenadaPivot[0][0]);
-              latlngPoint = L.latLng(coordenadaPivot[1][1], coordenadaPivot[1][0]);
-                           }
-                           
-                           var p;
-                           var punto1;
-                           var punto2;
-
-                             var puntoDevice = L.latLng(locationDevice[0], locationDevice[1]);
-                             if(tipoPivot === "lineal"){
-                           p = this.closestPoint(tipoPivot, positions, puntoDevice);
-                           punto1=L.latLng(p[0].x, p[0].y);
-                           punto2=L.latLng(p[1].x, p[1].y);
-                           p=punto2;
-                             }
-                             else{
-                           p = this.closestPoint(tipoPivot, positions, puntoDevice);
-                           punto1=latlngCenter;
-                           punto2=p;
-                             } 
-
-                             var m1 = L.marker(p);
-                             
-                             var dispositivoLocalizacion = [];
-                             var layers = [];
-                             layers.push(m1); 
-                             layers.forEach(function(element,index) {
-                               dispositivoLocalizacion.push(JSON.stringify(element.toGeoJSON()));
-                             })
-                             var layersPivot = [];
-                             var pivotLocalizacion = [];
-                             
-                             
-                             var LatLngs = []; LatLngs.push(punto1); LatLngs.push(punto2);
-                             var polyline = L.polyline(LatLngs);
-                             layersPivot.push(polyline); 
-                             
-                            layersPivot.forEach(function(element,index) {
-                              pivotLocalizacion.push(JSON.stringify(element.toGeoJSON()));
-                            })  
-                           
-
-var pivot = new Pivot(pivotDispositivo,nombrePivot, tipoPivot, pivotLocalizacion, fincaDispositivo, []);
-classMethods.getPivotMethods().updatePivot(pivot).then((result) =>{
-          }).catch((error) => { 	     
-          });
-//UPDATE TODOS LOS DISPOSITIVOS DEL PIVOT
-classMethods.getDispositivoMethods().listDevices(pivotDispositivo).then((result) =>{
-      if(result !== null){
-       result.forEach(function(childResult) {       
-          var nombreDispositivo = childResult.nombre;
-          var tipoDispositivo = childResult.tipo;
-          if(tipoDispositivo === 'GPS'){
-            var idDispositivo = childResult.id;
-            var fincaDispositivo = childResult.finca;
-            var pivotDispositivo = childResult.pivot;//JSON.parse(
-            var dispositivoPositions = childResult.posiblesLocalizaciones;
-
-            var deviceKey = childResult.key;
-
-            var dispositivo = new DispositivoGps(deviceKey,nombreDispositivo, idDispositivo, tipoDispositivo, dispositivoLocalizacion, fincaDispositivo, pivotDispositivo,[],[],dispositivoPositions);
-              
-         classMethods.getDispositivoMethods().updateDevice(dispositivo).then((result) =>{
-          }).catch((error) => { 	     
-          }); 
-          }
-       })
-    }
-   });
-                                      
-                          }
-                       });                  
-                     } 
-                   });
-                 }); 
-                 return true;  
-               } 
-               return false;               
-      }); 
-      return updated;
-    }
+/**
+ * Auxiliary functions related to calculations with polygons and distances 
+ */
+export class Utils {   
     
     public comparePolygon(polygon1: L.polygon, polygon2: L.polygon):boolean {
     var inside = true;
@@ -250,7 +105,7 @@ console.log(
       }
       return pointFinal;
     }
-    else{           
+    else if(tipoPivot === 'circular'){           
       var pointFinal = null;
       var distance = -1;
       for (var i=0;i<puntos.length;i++){

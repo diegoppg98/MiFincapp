@@ -17,7 +17,6 @@
 <v-row>
 <v-col :cols="posMap">
    <v-form
-      class="mx-10 my-12"
       dark
       ref="form"
       v-model="valid"
@@ -96,8 +95,8 @@
    <v-btn
       :disabled="!valid"
       :loading="isLoading"
-      color="success"
-      class="mr-4"
+      color="#2e7d32"
+      class="mr-4 white--text"
       @click="onSubmit"
    >
       Guardar
@@ -107,44 +106,41 @@
   </v-col>
     <v-col :cols="posMap">
      <v-card
-      class="mx-10 my-12"
       outlined
-      v-show="dispositivoTemperatura"
+      v-show="dispositivoSuelo"
    >       
-    <v-subheader>Temperatura</v-subheader>
+    <v-subheader>Valor</v-subheader>
     <v-card-text>
       <v-row>
         <v-col class="px-4">
           <v-range-slider
-            v-model="rangeTemperatura"
-            :max="maxTemperatura"
-            :min="minTemperatura"
+            v-model="rangeSuelo"
+            :max="maxSuelo"
+            :min="minSuelo"
             hide-details
             class="align-center"
           >
             <template v-slot:prepend>
               <v-text-field
-                :value="rangeTemperatura[0]"
+                :value="rangeSuelo[0]"
                 class="mt-0 pt-0"
                 hide-details
                 single-line
                 type="number"
-                suffix="°C"
                 style="width: 60px"
-                @change="$set(rangeTemperatura, 0, $event)"
+                @change="$set(rangeSuelo, 0, $event)"
                 readonly
               ></v-text-field>
             </template>
             <template v-slot:append>
               <v-text-field
-                :value="rangeTemperatura[1]"
+                :value="rangeSuelo[1]"
                 class="mt-0 pt-0"
                 hide-details
                 single-line
                 type="number"
-                suffix="°C"
                 style="width: 60px"
-                @change="$set(rangeTemperatura, 1, $event)"
+                @change="$set(rangeSuelo, 1, $event)"
                 readonly
               ></v-text-field>
             </template>
@@ -154,16 +150,15 @@
     </v-card-text>
 
       <v-select
-        v-model="temperatura"
-        :items="opcionesTemperatura"
+        v-model="suelo"
+        :items="opcionesSuelo"
         :rules="[v => !!v || 'opcion es requerida']"
-        label="Temperatura opcion"
+        label="Suelo opcion"
         style="z-index: 999"
       ></v-select>
    </v-card>
 
    <v-card
-      class="mx-10 my-12"
       outlined
       v-show="dispositivoGps"
    >
@@ -174,18 +169,29 @@
         label="Gps opcion"
         style="z-index: 999"
       ></v-select>
-      <v-layout justify-end v-if="!dialogMapa">
-     <v-btn small rounded class="mx-3 my-5" @click="mostrarOpciones" color="grey">
-        Mostrar Opciones
-     </v-btn>
-     </v-layout>
-     
-    <v-layout justify-end v-if="dialogMapa">
-     <v-btn small rounded class="mx-3 my-5" @click="mostrarOpciones" color="grey">
-        Ocultar Opciones
-     </v-btn>
-     </v-layout>
-      <div class="d-block" style="height: 350px;" ref="mapa" id="mapa"></div>
+
+      <div class="d-block" style="height: 350px;" ref="mapa" id="mapa">
+      <v-layout v-if="!dialogMapaOptions">
+                <v-btn
+                  small
+                  rounded
+                  id="optionButton"
+                  class="mx-3 my-5"
+                  @click="mostrarOpciones"
+                  color="grey"
+                >Mostrar Opciones</v-btn>
+              </v-layout>
+              <v-layout v-if="dialogMapaOptions">
+                <v-btn
+                  small
+                  rounded
+                  id="optionButton"
+                  class="mx-3 my-5"
+                  @click="mostrarOpciones"
+                  color="grey"
+                >Ocultar Opciones</v-btn>
+              </v-layout>   
+      </div>
    </v-card>
     </v-col>
      </v-row>
@@ -210,7 +216,7 @@ import {Utils} from '../../utils';
 let FunctionsUtils: Utils = new Utils();
 import {Alerta} from '../../Clases/Alerta';
 import {Notificacion} from '../../Clases/Notificacion';
-import {classMethods} from '../../classMethods';
+import {FactoryAPI} from '../../FactoryAPI';
 
 export default {
   $_veeValidate: {
@@ -227,10 +233,10 @@ export default {
       finca: null,
       pivot: null,
       dispositivo: null,
-      temperatura: 'Dentro del rango',
-      minTemperatura: -50,
-      maxTemperatura: 90,
-      rangeTemperatura: [-20, 70],
+      suelo: 'Dentro del rango',
+      minSuelo: -50,
+      maxSuelo: 90,
+      rangeSuelo: [-20, 70],
       minTiempo: 1,
       maxTiempo: 120,
       slider: 5,
@@ -243,7 +249,7 @@ export default {
       ],
       listaDispositivos: [
       ],
-      opcionesTemperatura: [
+      opcionesSuelo: [
       'Dentro del rango',
       'Fuera del rango',
       ],
@@ -256,7 +262,7 @@ export default {
       textSnackbar: '',
       timeoutSnackbar: 4000,
       valid: true,
-      dispositivoTemperatura: false,
+      dispositivoSuelo: false,
       dispositivoGps: true,
       nameRules: [
         v => !!v || 'Nombre no puede estar vacío',
@@ -270,20 +276,25 @@ export default {
       coorPivot: '',
       coorDispositivo: '',
       fincaElement: '',
-      dialogMapa: true,
+      dialogMapaOptions: true,
     };
   },
 
   methods: {
     mostrarOpciones(){ 
       var lc = document.getElementsByClassName('leaflet-control-layers');
-      if(this.dialogMapa){ lc[0].style.visibility = 'hidden'; this.dialogMapa = false;}
-      else{ lc[0].style.visibility = 'visible'; this.dialogMapa = true; }
+      if (this.dialogMapaOptions) {
+        lc[0].style.visibility = 'hidden';
+        this.dialogMapaOptions = false;
+      } else {
+        lc[0].style.visibility = 'visible';
+        this.dialogMapaOptions = true;
+      }
     },
      fincaChanged(){
      this.listaPivots = [];
       var pivots = this.listaPivots;
-      classMethods.getPivotMethods().listPivots(this.finca.key).then((result) =>{
+      FactoryAPI.getFactoryAPI("Firebase").getPivot().listPivots(this.finca.key).then((result) =>{
         if(result !== null){
          result.forEach(function(childResult) {       
             var pivot = childResult.nombre;         
@@ -295,7 +306,8 @@ export default {
      pivotChanged(){
      this.listaDispositivos = [];
       var dispositivos = this.listaDispositivos;
-      classMethods.getDispositivoMethods().listDevices(this.pivot.key).then((result) =>{
+     
+      FactoryAPI.getFactoryAPI("Firebase").getDispositivo().listDevices(this.pivot.key).then((result) =>{
         if(result !== null){
          result.forEach(function(childResult) {       
             var dispositivo = childResult.nombre;
@@ -304,12 +316,30 @@ export default {
        }
      }); 
      },
+     iconTypes(tipoDispositivo){
+      switch (tipoDispositivo) {
+            case 'GPS':
+                return 'https://firebasestorage.googleapis.com/v0/b/pivot-2f31f.appspot.com/o/Images%2FGPS.png?alt=media&token=b48f592e-2e75-40ab-b5ba-4ee6e1ba70d2';
+            case 'Suelo':
+                return 'https://firebasestorage.googleapis.com/v0/b/pivot-2f31f.appspot.com/o/Images%2Ftemperatura.png?alt=media&token=81cc83fa-b579-42d0-8638-fc4d173b0c6c';
+            default:
+                return 'https://firebasestorage.googleapis.com/v0/b/pivot-2f31f.appspot.com/o/Images%2FGPS.png?alt=media&token=4305b91d-a064-4805-bfcb-ef45084aae52';
+        }
+    },
      dispositivoChanged(){ 
        this.dispositivoGps = true; 
+        
           this.tipo = this.dispositivo.tipo;
+          
           if(this.tipo === 'GPS'){   
          
-          this.dispositivoTemperatura = false;               
+         var t = this;
+                this.map2.eachLayer(function (layer) {
+                  if (layer instanceof L.Rectangle || layer instanceof L.Polygon || layer instanceof L.Polyline || layer instanceof L.Marker)
+                     t.map2.removeLayer(layer);
+                });
+                
+          this.dispositivoSuelo = false;               
           if(this.finca === null) router.push('/alerta');
               var localizacionFinca = this.finca.localizacion;
               var map = this.map2;
@@ -357,21 +387,101 @@ export default {
                if(this.dispositivo === null) router.push('/alerta');
                var localizacionDispositivo = this.dispositivo.localizacion;
                var map = this.map2;
+               var t = this;
+                var coordenadasDispositivo = '';
+                          L.geoJSON( L.geoJSON(JSON.parse(localizacionDispositivo[0])).toGeoJSON(), {
+                            onEachFeature: function (feature, layer) {
+                              coordenadasDispositivo = feature.geometry.coordinates;
+                            },
+                          });
+                 var positions = JSON.parse(this.dispositivo.posiblesLocalizaciones); 
+                 var coordenadaPivot = '';
+                  L.geoJSON( L.geoJSON(JSON.parse(this.pivot.localizacion[0])).toGeoJSON(), {
+          onEachFeature: function (feature, layer) {
+          coordenadaPivot = layer;
+          },
+        });
+               var iconType = this.iconTypes;
+               var icon = iconType(this.dispositivo.tipo);
                var dispositivo;
+               var iconDevice = L.icon({
+    iconUrl: icon,
+            iconSize: [30, 42],
+            iconAnchor: [15, 42],  
+            popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+           });
                localizacionDispositivo.forEach(function(element,index) {
                dispositivo = JSON.parse(element);
-               L.geoJSON(JSON.parse(element)).addTo(map);
+               L.geoJSON(JSON.parse(element), {
+                   pointToLayer: function (feature, latlng) {
+                          return L.marker(latlng, {
+                             icon: iconDevice,
+                          });
+                     }
+                }).addTo(map);
+               
+                   t.calculoPosicion(t.pivot.posActual,t.pivot.tipo,positions,coordenadaPivot,coordenadasDispositivo,t.dispositivo.tipo);
                })  
-               this.coorDispositivo = dispositivo;   
+               this.coorDispositivo = dispositivo;  
+               
         }
-        else if(this.tipo === 'Temperatura'){
+        else if(this.tipo === 'Suelo'){
           this.dispositivoGps = false;
-          this.dispositivoTemperatura = true;
+          this.dispositivoSuelo = true;
        }  
    },
    
+   
+   
+   
+    calculoPosicion(coordPos,tipoPivot,positions,coordenadaPivot,coordenadasActualesDispositivo,tipo){   
+      if(!coordPos.length == 0){ 
+        var pos;
+        var punto1;
+        var punto2;
+        var latlngCenter;                                    
+        var puntoDevice = L.latLng(coordPos[0],coordPos[1]);
+        if(tipoPivot === "lineal"){
+          pos = FunctionsUtils.closestPoint(tipoPivot, positions, puntoDevice);
+          punto1=L.latLng(pos[0].x, pos[0].y);
+          punto2=L.latLng(pos[1].x, pos[1].y);
+          pos=punto2;    
+        }
+        else{
+          if(Math.floor(coordenadaPivot.getLatLngs()[0].lat*Math.pow(10,4))/(Math.pow(10,4)) === Math.floor(coordenadasActualesDispositivo[1]*Math.pow(10,4))/(Math.pow(10,4)) && Math.floor(coordenadaPivot.getLatLngs()[0].lng*Math.pow(10,4))/(Math.pow(10,4)) === Math.floor(coordenadasActualesDispositivo[0]*Math.pow(10,4))/(Math.pow(10,4))){
+              latlngCenter = L.latLng(coordenadaPivot.getLatLngs()[1].lat, coordenadaPivot.getLatLngs()[1].lng);
+          }
+          else {
+              latlngCenter = L.latLng(coordenadaPivot.getLatLngs()[0].lat, coordenadaPivot.getLatLngs()[0].lng);
+          }
+          pos = FunctionsUtils.closestPoint(tipoPivot, positions, puntoDevice);
+          punto1=latlngCenter;
+          punto2=pos;
+        } 
+        var LatLngs = []; LatLngs.push(punto1); LatLngs.push(punto2);
+        var LatLng = pos;                         
+        if(tipo == 'GPS'){           
+          this.map2.eachLayer(function(layer) { 
+             if (layer instanceof L.Marker) {
+              layer.setLatLng(LatLng);
+             }                    
+          })
+        }
+        
+        this.map2.eachLayer(function(layer) {
+           if ((layer instanceof L.Polyline) && ! (layer instanceof L.Polygon)) {
+            layer.setLatLngs(LatLngs); 
+           }                       
+        })   
+      }
+    },
+   
+   
+   
+   
+   
      onSubmit() {
-     var rang=this.rangeTemperatura;
+     var rang=this.rangeSuelo;
        this.isLoading = true;   
        if(this.tipo === 'GPS'){
        var tierraLocalizacion = [];
@@ -404,7 +514,7 @@ export default {
 
           var alerta = new Alerta("",alertaNombre, alertaTipo, tierraLocalizacion, alertaOpcion, alertaTiempo, "", false, nombreTierra, nombrePivot, NombreDispositivo);
           
-      classMethods.getAlertaMethods().createAlert(alerta).then((result) =>{
+      FactoryAPI.getFactoryAPI("Firebase").getAlerta().createAlert(alerta).then((result) =>{
          this.colorSnackbar = "success";
          this.textSnackbar = 'Alerta creada correctamente';
          this.snackbar = true;
@@ -430,8 +540,8 @@ export default {
                            if(alertaOpcion === "Entre en la zona"){
                              if(inZone){ 
                              var notificacion = new Notificacion("",dispositivoLocation, time, alertKey);
-                            classMethods.getNotificacionMethods().createNotification(notificacion).then((result) =>{
-                         classMethods.getAlertaMethods().updateAlert(alerta).then((result) =>{
+                            FactoryAPI.getFactoryAPI("Firebase").getNotificacion().createNotification(notificacion).then((result) =>{
+                         FactoryAPI.getFactoryAPI("Firebase").getAlerta().updateAlert(alerta).then((result) =>{
                            }).catch((error) => {
                            }); 
                        }).catch((error) => {   	                 
@@ -441,8 +551,8 @@ export default {
                             else if(alertaOpcion === "Salga de la zona"){
                              if(!inZone){
                              var notificacion = new Notificacion("",dispositivoLocation, time, alertKey);
-                             classMethods.getNotificacionMethods().createNotification(notificacion).then((result) =>{
-                         classMethods.getAlertaMethods().updateAlert(alerta).then((result) =>{
+                             FactoryAPI.getFactoryAPI("Firebase").getNotificacion().createNotification(notificacion).then((result) =>{
+                         FactoryAPI.getFactoryAPI("Firebase").getAlerta().updateAlert(alerta).then((result) =>{
                            }).catch((error) => {
                            });  
                        }).catch((error) => {   	                 
@@ -463,18 +573,18 @@ export default {
           });  
        }
        }
-       else if(this.tipo === 'Temperatura'){
+       else if(this.tipo === 'Suelo'){
          var nombreTierra = this.finca.key;
          var nombrePivot = this.pivot.key;
          var NombreDispositivo = this.dispositivo.key;
          var alertaNombre = this.nombre;
-         var alertaDatos = this.rangeTemperatura; 
-         var alertaOpcion = this.temperatura;
+         var alertaDatos = this.rangeSuelo; 
+         var alertaOpcion = this.suelo;
          var alertaTipo = this.tipo;
          var alertaTiempo = this.slider;
 
          var alerta = new Alerta("",alertaNombre, alertaTipo, alertaDatos, alertaOpcion, alertaTiempo, "", false, nombreTierra, nombrePivot, NombreDispositivo);
-      classMethods.getAlertaMethods().createAlert(alerta).then((result) =>{
+      FactoryAPI.getFactoryAPI("Firebase").getAlerta().createAlert(alerta).then((result) =>{
       var alertKey = result;
          this.colorSnackbar = "success";
          this.textSnackbar = 'Alerta creada correctamente';
@@ -485,7 +595,7 @@ export default {
          
                   var nombreDispositivo = this.dispositivo.nombre;
                   var idDispositivo = this.dispositivo.id;
-                  var dispositivotemp = this.dispositivo.temperatura;   
+                  var dispositivotemp = this.dispositivo.suelo;   
                  if(dispositivotemp !== ""){                                                   
                   let current_datetime = new Date();
                   var time = current_datetime.toISOString();   
@@ -494,8 +604,8 @@ export default {
                   if(alertaOpcion === "Dentro del rango"){
                     if(dispositivotemp >= alertaDatos[0] && dispositivotemp <= alertaDatos[1]){
                     var notificacion = new Notificacion("",dispositivotemp, time, alertKey);
-                       classMethods.getNotificacionMethods().createNotification(notificacion).then((result) =>{
-                         classMethods.getAlertaMethods().updateAlert(alerta).then((result) =>{
+                       FactoryAPI.getFactoryAPI("Firebase").getNotificacion().createNotification(notificacion).then((result) =>{
+                         FactoryAPI.getFactoryAPI("Firebase").getAlerta().updateAlert(alerta).then((result) =>{
                            }).catch((error) => {
                            }); 
                        }).catch((error) => {   	                 
@@ -505,8 +615,8 @@ export default {
                   else if(alertaOpcion === "Fuera del rango"){
                     if(dispositivotemp < alertaDatos[0] || dispositivotemp > alertaDatos[1]){
                     var notificacion = new Notificacion("",dispositivoLocation, time, alertKey);
-                       classMethods.getNotificacionMethods().createNotification(notificacion).then((result) =>{
-                         classMethods.getAlertaMethods().updateAlert(alerta).then((result) =>{
+                       FactoryAPI.getFactoryAPI("Firebase").getNotificacion().createNotification(notificacion).then((result) =>{
+                         FactoryAPI.getFactoryAPI("Firebase").getAlerta().updateAlert(alerta).then((result) =>{
                            }).catch((error) => {
                            }); 
                        }).catch((error) => {   	                 
@@ -547,14 +657,12 @@ export default {
              const accessToken = 'pk.eyJ1IjoiZGllZ29wcGciLCJhIjoiY2s3NmVtaXRmMTRyaDNndDA2dWFwYmk2OCJ9.0Evn9MpSDvrdASq2S60-hQ';
              const mapboxTiles1 = L.tileLayer(
               `https://api.mapbox.com/styles/v1/mapbox/streets-v9/tiles/{z}/{x}/{y}?access_token=${accessToken}`,
-             {
-             attribution:
-              '&copy; <a href="https://www.mapbox.com/feedback/">Mapbox</a> &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-             }
+
              );
              
              this.map2 = L.map(this.$refs['mapa'], {
                fullscreenControl: true,
+               attributionControl: false,
              }); 
               
             ///////////////////////////////////////
@@ -638,18 +746,30 @@ export default {
          }).addTo(this.map2);
       } 
       else if (e.layer instanceof L.Marker) {//crearlo con el style y debajo de la linea
-         L.geoJSON((this.coorDispositivo), {
-           pane: "pane450"
-         }).addTo(this.map2);
+         var iconType = this.iconTypes;
+      var icon = iconType(this.tipo);
+                 var iconDevice = L.icon({
+    iconUrl: icon,
+            iconSize: [30, 42],
+            iconAnchor: [15, 42],  
+            popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+           });
+      L.geoJSON(this.coorDispositivo, {
+                   pointToLayer: function (feature, latlng) {
+                          return L.marker(latlng, {
+                             icon: iconDevice,
+                          });
+                     }
+                }).addTo(this.map2);
       } 
    });
 
-   L.tileLayer.wms('http://www.ign.es/wms-inspire/pnoa-ma', {
+   L.tileLayer.wms('https://www.ign.es/wms-inspire/pnoa-ma', {
 	layers: 'OI.OrthoimageCoverage',
 	format: 'image/png',
 	transparent: false,
 	continuousWorld : true,
-	attribution: 'PNOA cedido por © <a href="http://www.ign.es/ign/main/index.do" target="_blank">Instituto Geográfico Nacional de España</a>'
+	attribution: 'PNOA cedido por © <a href="https://www.ign.es/ign/main/index.do" target="_blank">Instituto Geográfico Nacional de España</a>'
      }).addTo(this.map2);
    //   var tiles = L.esri.basemapLayer("Streets").addTo(this.map2);
   var searchControl = L.esri.Geocoding.geosearch().addTo(this.map2);
@@ -675,7 +795,7 @@ window.onbeforeunload = function() {
     window.onbeforeunload = null; // necessary to prevent infinite loop, that kills your browser 
    }
      var tierras = this.listaFincas;
-     classMethods.getFincaMethods().listLands().then((result) =>{
+     FactoryAPI.getFactoryAPI("Firebase").getFinca().listLands().then((result) =>{
       if(result !== null){
        result.forEach(function(childResult) {   
           var finca = childResult.nombre;
@@ -687,4 +807,19 @@ window.onbeforeunload = function() {
 };
 </script>
 <style>
+#optionButton {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  background-color: white;
+  border-radius: 5px;
+  border-color: gray;
+  border-style: solid;
+  border-width: 1px 1px 1px 1px;
+  opacity: 0.4;
+  text-align: center;
+  z-index: 500;
+}
 </style>

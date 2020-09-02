@@ -17,7 +17,6 @@
 <v-row>
 <v-col :cols="posMap">
    <v-form
-      class="mx-10 my-12"
       dark
       ref="form"
       v-model="valid"
@@ -41,8 +40,8 @@
       <v-btn
         :disabled="!valid"
         :loading="isLoading"
-        color="success"
-        class="mr-4"
+        color="#2e7d32"
+        class="mr-4 white--text"
         @click="onSubmit"
       >
         Guardar
@@ -51,18 +50,27 @@
     </v-form> 
        </v-col>
     <v-col :cols="posMap">
-    <v-layout justify-end v-if="!dialogMapa">
-     <v-btn small rounded class="mx-3 my-5" @click="mostrarOpciones" color="grey">
-        Mostrar Opciones
-     </v-btn>
-     </v-layout>
-     
-    <v-layout justify-end v-if="dialogMapa">
-     <v-btn small rounded class="mx-3 my-5" @click="mostrarOpciones" color="grey">
-        Ocultar Opciones
-     </v-btn>
-     </v-layout>
-    <div class="d-block" style="height: 350px;" ref="mapa" id="mapa"></div>
+    <div class="d-block" style="height: 350px;" ref="mapa" id="mapa">  
+    <v-layout v-if="!dialogMapaOptions">
+                <v-btn
+                  small
+                  rounded
+                  id="optionButton"
+                  class="mx-3 my-5"
+                  @click="mostrarOpciones"
+                  color="grey"
+                >Mostrar Opciones</v-btn>
+              </v-layout>
+              <v-layout v-if="dialogMapaOptions">
+                <v-btn
+                  small
+                  rounded
+                  id="optionButton"
+                  class="mx-3 my-5"
+                  @click="mostrarOpciones"
+                  color="grey"
+                >Ocultar Opciones</v-btn>
+              </v-layout>   </div>
     </v-col>   
      </v-row>
  </div> 
@@ -84,7 +92,7 @@ import {Spain_UnidadAdministrativa} from '../../LeafletSpain.js';
 import {parcelas} from '../../LeafletSpain';
 import {recintos} from '../../LeafletSpain';
 import {Pivot} from '../../Clases/Pivot';
-import {classMethods} from '../../classMethods';
+import {FactoryAPI} from '../../FactoryAPI';
 
 export default {
   $_veeValidate: {
@@ -116,7 +124,8 @@ export default {
       coorFinca: '',
       groupLayer:[],
       coordenadaFinca:0,
-      dialogMapa: true,
+      dialogMapaOptions: true,
+      iconPivot:'https://firebasestorage.googleapis.com/v0/b/pivot-2f31f.appspot.com/o/Images%2FmarkerDevice.png?alt=media&token=88ede691-a2a8-40ef-8a88-05cd62eef8bd',
   }; 
   },
 
@@ -124,8 +133,13 @@ export default {
   ...mapActions('app', ['changeUser']),
   mostrarOpciones(){
       var lc = document.getElementsByClassName('leaflet-control-layers');
-      if(this.dialogMapa){ lc[0].style.visibility = 'hidden'; this.dialogMapa = false;}
-      else{ lc[0].style.visibility = 'visible'; this.dialogMapa = true; }
+      if (this.dialogMapaOptions) {
+        lc[0].style.visibility = 'hidden';
+        this.dialogMapaOptions = false;
+      } else {
+        lc[0].style.visibility = 'visible';
+        this.dialogMapaOptions = true;
+      }
     },
     onSubmit() {
        this.isLoading = true;
@@ -162,8 +176,8 @@ export default {
          var pivotNombre = this.nombre;
          var pivotTipo = this.tipo;
          
-         var pivot = new Pivot("",pivotNombre, pivotTipo, pivotLocalizacion, nombreTierra);
-        classMethods.getPivotMethods().createPivot(pivot).then((result) =>{
+         var pivot = new Pivot("",pivotNombre, pivotTipo, pivotLocalizacion, nombreTierra,[]);
+        FactoryAPI.getFactoryAPI("Firebase").getPivot().createPivot(pivot).then((result) =>{
    	  this.colorSnackbar = "success";
           this.textSnackbar = 'Pivot creado correctamente';
           this.snackbar = true;        
@@ -197,14 +211,12 @@ export default {
 
    const mapboxTiles1 = L.tileLayer(
      `https://api.mapbox.com/styles/v1/mapbox/streets-v9/tiles/{z}/{x}/{y}?access_token=${accessToken}`,
-   {
-     attribution:
-       '&copy; <a href="https://www.mapbox.com/feedback/">Mapbox</a> &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-   }
+
    );
 
     this.map2 = L.map(this.$refs['mapa'], {
     fullscreenControl: true,
+    attributionControl: false,
    });
    
    var baselayers = {
@@ -254,13 +266,30 @@ export default {
    this.map2.createPane("pane450").style.zIndex = 450; // between overlays and shadows
    this.map2.createPane("pane620").style.zIndex = 620; // between markers and tooltips
    this.map2.createPane("pane800").style.zIndex = 800; // above popups
-   
+    var t = this;
+      var icon = L.icon({
+    iconUrl: t.iconPivot,
+            iconSize: [30, 42],
+            iconAnchor: [15, 42],  
+            popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+           });
+
       //DAR STYLE AL CREAR
    this.map2.on('pm:create', e => {
      this.map2.pm.addControls({
        drawPolyline: false,
      });
      e.layer.setStyle(myStyleLine);
+    
+       var punto1 = L.latLng(e.layer.getLatLngs()[0].lat,e.layer.getLatLngs()[0].lng);
+                          var punto2 = L.latLng(e.layer.getLatLngs()[1].lat,e.layer.getLatLngs()[1].lng);
+     L.marker(punto1, {
+                             icon: icon,
+                          }).addTo(map);
+                       
+                 L.marker(punto2, {
+                             icon: icon,
+                          }).addTo(map); 
      
    });
       //DEJAR CREAR OTRO PIVOT AL ELIMINAR EL ACTUAL
@@ -269,6 +298,10 @@ export default {
          this.map2.pm.addControls({
             drawPolyline: true,
          });
+         this.map2.eachLayer(function (layer) {
+                  if (layer instanceof L.Marker)
+                     t.map2.removeLayer(layer);
+                });
       } 
       else if (e.layer instanceof L.Polygon) {//crearlo con el style y debajo de la linea
          L.geoJSON((this.coorFinca), {
@@ -300,12 +333,12 @@ export default {
   });
 });
 
-  L.tileLayer.wms('http://www.ign.es/wms-inspire/pnoa-ma', {
+  L.tileLayer.wms('https://www.ign.es/wms-inspire/pnoa-ma', {
 	layers: 'OI.OrthoimageCoverage',
 	format: 'image/png',
 	transparent: false,
 	continuousWorld : true,
-	attribution: 'PNOA cedido por © <a href="http://www.ign.es/ign/main/index.do" target="_blank">Instituto Geográfico Nacional de España</a>'
+	attribution: 'PNOA cedido por © <a href="https://www.ign.es/ign/main/index.do" target="_blank">Instituto Geográfico Nacional de España</a>'
      }).addTo(this.map2);
  //  var tiles = L.esri.basemapLayer("Streets").addTo(this.map2);
   var searchControl = L.esri.Geocoding.geosearch().addTo(this.map2);
@@ -370,4 +403,19 @@ export default {
 </script>
 
 <style>
+#optionButton {
+  display: flex;
+  align-items: center;
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  background-color: white;
+  border-radius: 5px;
+  border-color: gray;
+  border-style: solid;
+  border-width: 1px 1px 1px 1px;
+  opacity: 0.4;
+  text-align: center;
+  z-index: 500;
+}
 </style>

@@ -1,11 +1,12 @@
 import firebase from 'firebase';
 import {Alerta} from '../Clases/Alerta';
-import {AlertaInterface} from '../Interfaces/AlertaInterface';
+import {IAlertaAPI} from '../Interfaces/IAlertaAPI';
 import {FirebaseNotificacion} from '../Firebase/FirebaseNotificacion';
+import { Notificacion } from '../Clases/Notificacion';
 let FunctionsNotificacion: FirebaseNotificacion = new FirebaseNotificacion();
 
 let alertaConverter = {
-      toFirestore: function(alerta) {
+      toFirestore: function(alerta : any) {
           return {
               nombre: alerta.nombre,
               tipo: alerta.tipo,
@@ -19,16 +20,16 @@ let alertaConverter = {
               dispositivo: alerta.dispositivo
               }
       },
-      fromFirestore: function(snapshot, options){
+      fromFirestore: function(snapshot: { data: (arg0: any) => any; id: string; }, options: any){
           const data = snapshot.data(options);
           return new Alerta(snapshot.id,data.nombre, data.tipo, data.datosAlerta, data.opcionAlerta, data.tiempoAlerta, data.tiempoUltimaAlerta, data.silenciada, data.tierra, data.pivot, data.dispositivo)
       }
   }
   
-  export class FirebaseAlerta implements AlertaInterface{
+  export class FirebaseAlerta extends IAlertaAPI{
 
-   public createAlert(alerta: Alerta) : Promise<any>{
-    const promise = new Promise(function(resolve, reject) {
+   public createAlert(alerta: Alerta) : Promise<string>{
+    const promise = new Promise<string>(function(resolve, reject) {
      firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
         firebase.firestore().collection('users/' + user.uid + '/alerts').withConverter(alertaConverter).add(alerta)
@@ -46,8 +47,8 @@ let alertaConverter = {
     return promise;
   }
 
-  public updateAlert(alerta: Alerta) : Promise<any> {
-   const promise = new Promise(function(resolve, reject) {
+  public updateAlert(alerta: Alerta) : Promise<string> {
+   const promise = new Promise<string>(function(resolve, reject) {
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
       firebase.firestore().collection('users/'+ user.uid + '/alerts/').doc(alerta.key).withConverter(alertaConverter).set(alerta)
@@ -58,15 +59,15 @@ let alertaConverter = {
            reject(Error('Error updateAlert'));
          });
       } else {
-        return null;
+        reject(Error('Error updateAlert'));
       }
      });
     });
     return promise;
   }
 
-  public deleteAlert(key: string) : Promise<any> {
-    const promise = new Promise(function(resolve, reject) {
+  public deleteAlert(key: string) : Promise<string> {
+    const promise = new Promise<string>(function(resolve, reject) {
      firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
         firebase.firestore().collection('users/' + user.uid + '/alerts').doc(key).delete()
@@ -78,7 +79,7 @@ let alertaConverter = {
          });
          FunctionsNotificacion.listNotification().then((result) =>{
            if(result !== null){
-             result.forEach(function(childResult) {       
+             result.forEach(function(childResult : Notificacion) {       
              if(childResult.alerta === key)
                FunctionsNotificacion.deleteNotification(childResult.key);
              })
@@ -92,14 +93,14 @@ let alertaConverter = {
     return promise;
   }
 
-  public listAlerts(): Promise<any> {
-    const promise = new Promise(function(resolve, reject) {
+  public listAlerts(): Promise<object[]> {
+    const promise = new Promise<object[]>(function(resolve, reject) {
       firebase.auth().onAuthStateChanged(function(user) {
         if (user) {       
          let alertsRef =  firebase.firestore().collection('users/' + user.uid + '/alerts').withConverter(alertaConverter);
           alertsRef.get()
           .then(snapshot => {
-            var alertas = [];
+            var alertas : Alerta[] = [];
             snapshot.forEach(doc => {
               alertas.push(doc.data());
             });
@@ -116,8 +117,8 @@ let alertaConverter = {
     return promise;
   }
 
-  public alertInformation(key: string): Promise<any> {
-    const promise = new Promise(function(resolve, reject) {
+  public alertInformation(key: string): Promise<object> {
+    const promise = new Promise<object>(function(resolve, reject) {
       firebase.auth().onAuthStateChanged(function(user) {
         if (user) {       
         let alertRef = firebase.firestore().collection('users/' + user.uid + '/alerts').doc(key).withConverter(alertaConverter);

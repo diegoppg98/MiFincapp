@@ -1,15 +1,15 @@
 {
   "name": "MiFincapp", 
   "short_name": "MiFincapp",
-  "theme_color": "#f43b6c",
-  "background_color": "#f43b6c",
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff",
   "display": "standalone",
   "orientation": "portrait",
   "Scope": "/",
   "start_url": "/",
   "icons": [
     {
-      "src": "/miFincappIcon.png",
+      "src": "/logo.png",
       "sizes": "384x384",
       "type": "image/png"
     }

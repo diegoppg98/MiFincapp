@@ -1,4 +1,8 @@
 import { IAppState } from './state';
+import {Finca} from '../Clases/Finca';
+import {Pivot} from '../Clases/Pivot';
+import {Dispositivo} from '../Clases/Dispositivo';
+import {Alerta} from '../Clases/Alerta';
 
 export interface IAppGetters {
   getLocale(state: IAppState): string;

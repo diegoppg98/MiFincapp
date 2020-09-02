@@ -1,11 +1,12 @@
 import firebase from 'firebase';
 import {Finca} from '../Clases/Finca';
-import {FincaInterface} from '../Interfaces/FincaInterface';
+import {IFincaAPI} from '../Interfaces/IFincaAPI';
 import {FirebasePivot} from '../Firebase/FirebasePivot';
+import { Pivot } from '../Clases/Pivot';
 let FunctionsPivot: FirebasePivot = new FirebasePivot();
 
  let fincaConverter = {
-      toFirestore: function(finca) {
+      toFirestore: function(finca : any) {
           return {
               nombre: finca.nombre,
               localizacion: finca.localizacion,
@@ -13,16 +14,16 @@ let FunctionsPivot: FirebasePivot = new FirebasePivot();
               cultivo: finca.cultivo
               }
       },
-      fromFirestore: function(snapshot, options){
+      fromFirestore: function(snapshot: { data: (arg0: any) => any; id: string; }, options: any){
           const data = snapshot.data(options);
           return new Finca(snapshot.id,data.nombre, data.tamaño, data.cultivo, data.localizacion)
       }
   }
   
- export class FirebaseFinca implements FincaInterface{
+ export class FirebaseFinca extends IFincaAPI{
  
-  public createLand(finca: Finca) : Promise<any>{
-   const promise = new Promise(function(resolve, reject) {
+  public createLand(finca: Finca) : Promise<string>{
+   const promise = new Promise<string>(function(resolve, reject) {
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
         firebase.firestore().collection('users/' + user.uid + '/lands').withConverter(fincaConverter).add(finca)
@@ -40,8 +41,8 @@ let FunctionsPivot: FirebasePivot = new FirebasePivot();
    return promise;
   }
 
-  public updateLand(finca: Finca) : Promise<any> {
-   const promise = new Promise(function(resolve, reject) {
+  public updateLand(finca: Finca) : Promise<string> {
+   const promise = new Promise<string>(function(resolve, reject) {
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
         const db = firebase.database();
@@ -60,8 +61,8 @@ let FunctionsPivot: FirebasePivot = new FirebasePivot();
     return promise;
   }
 
-  public deleteLand(keyLand: string) : Promise<any> {
-    const promise = new Promise(function(resolve, reject) {
+  public deleteLand(keyLand: string) : Promise<string> {
+    const promise = new Promise<string>(function(resolve, reject) {
      firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
 
@@ -75,7 +76,7 @@ let FunctionsPivot: FirebasePivot = new FirebasePivot();
 
          FunctionsPivot.listPivots(keyLand).then((result) =>{
            if(result !== null){
-             result.forEach(function(childResult) {       
+             result.forEach(function(childResult : Pivot) {       
                FunctionsPivot.deletePivot(childResult.key);
              })
            }
@@ -89,14 +90,14 @@ let FunctionsPivot: FirebasePivot = new FirebasePivot();
     return promise;
   }
 
-  public listLands(): Promise<any> {
-    const promise = new Promise(function(resolve, reject) {
+  public listLands(): Promise<object[]> {
+    const promise = new Promise<object[]>(function(resolve, reject) {
       firebase.auth().onAuthStateChanged(function(user) {
         if (user) {        
           let landsRef =  firebase.firestore().collection('users/' + user.uid + '/lands').withConverter(fincaConverter);
           landsRef.get()
           .then(snapshot => {
-            var fincas = [];
+            var fincas : Finca[] = [];    
             snapshot.forEach(doc => {
               fincas.push(doc.data());
             });
@@ -114,8 +115,8 @@ let FunctionsPivot: FirebasePivot = new FirebasePivot();
     return promise;
   }
 
-  public landInformation(key: string): Promise<any> {
-    const promise = new Promise(function(resolve, reject) {
+  public landInformation(key: string): Promise<object> {
+    const promise = new Promise<object[]>(function(resolve, reject) {
       firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
           let landRef = firebase.firestore().collection('users/' + user.uid + '/lands').doc(key).withConverter(fincaConverter);

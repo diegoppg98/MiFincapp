@@ -1,10 +1,10 @@
 import firebase from 'firebase';
-import {UsuarioInterface} from '../Interfaces/UsuarioInterface';
+import {IUsuarioAPI} from '../Interfaces/IUsuarioAPI';
 import {Usuario} from '../Clases/Usuario';
 
 
  let usuarioConverter = {
-      toFirestore: function(usuario) {
+      toFirestore: function(usuario : any) {
           return {
               correo: usuario.correo,
               nombre: usuario.nombre,
@@ -12,17 +12,17 @@ import {Usuario} from '../Clases/Usuario';
               foto: usuario.foto
               }
       },
-      fromFirestore: function(snapshot, options){
+      fromFirestore: function(snapshot: { data: (arg0: any) => any; id: string; }, options: any){
           const data = snapshot.data(options);
         
           return new Usuario(snapshot.id,data.correo, data.nombre, data.direccion, data.foto)
       }
   }
 
-export class FirebaseUser implements UsuarioInterface{
+export class FirebaseUser extends IUsuarioAPI{
 
-  public login(mail: string, pass: string): Promise<any> {
-    const promise = new Promise(function(resolve, reject) {
+  public login(mail: string, pass: string): Promise<string> {
+    const promise = new Promise<string>(function(resolve, reject) {
       firebase
         .auth()
         .signInWithEmailAndPassword(mail, pass)
@@ -41,8 +41,8 @@ export class FirebaseUser implements UsuarioInterface{
   }
 
 
-  public changePassword(name: string, pass: string, newPass: string) : Promise<any>{
-    const promise = new Promise(function(resolve, reject) {
+  public changePassword(name: string, pass: string, newPass: string) : Promise<string>{
+    const promise = new Promise<string>(function(resolve, reject) {
            firebase.auth().onAuthStateChanged(function(user) {
               if (user) {
                  const userMail = firebase.auth().currentUser;
@@ -64,8 +64,8 @@ export class FirebaseUser implements UsuarioInterface{
     return promise;
   }
 
-  public forgetPassword(name: string): Promise<any>{
-    const promise = new Promise(function(resolve, reject) {
+  public forgetPassword(name: string): Promise<string>{
+    const promise = new Promise<string>(function(resolve, reject) {
         firebase.auth().languageCode = 'es';
         firebase.auth().sendPasswordResetEmail(name).then(() => {
             resolve('Contraseña enviada al correo');
@@ -77,8 +77,8 @@ export class FirebaseUser implements UsuarioInterface{
   }
 
 
-  public logout() : Promise<any>{
-    const promise = new Promise(function(resolve, reject) {
+  public logout() : Promise<string>{
+    const promise = new Promise<string>(function(resolve, reject) {
      firebase.auth().signOut().then(function() {
         resolve('Usuario desconectado correctamente');
      }).catch(function(error) {
@@ -100,18 +100,9 @@ export class FirebaseUser implements UsuarioInterface{
     return promise;    
   }
   
-  public appIcon(): Promise<string>{
-  const promise = new Promise<string>(function(resolve) {
-      const ref = firebase.storage().ref('miFincappIcon.png');
-     ref.getDownloadURL().then(function(url) {
-         resolve(url);                           
-     });                
-    });
-    return promise;    
-  }
 
-  public createUser(usuario: Usuario, pass: string): Promise<any> {
-    const promise = new Promise(function(resolve, reject) {
+  public createUser(usuario: Usuario, pass: string): Promise<string> {
+    const promise = new Promise<string>(function(resolve, reject) {
       firebase
         .auth()
         .createUserWithEmailAndPassword(usuario.correo, pass)
@@ -122,8 +113,8 @@ export class FirebaseUser implements UsuarioInterface{
                 var foto = '';
                 if (usuario.foto){
                    const ref = firebase.storage().ref('userPicture');
-                   const metadata = { contentType: usuario.foto.type };
-                   const task = ref.child(usuario.correo).put(usuario.foto,metadata);
+                 //  const metadata = { contentType: usuario.foto.type };
+                   const task = ref.child(usuario.correo).put(usuario.foto);
                    var pictureRef = ref.child(usuario.correo);
                    pictureRef.getDownloadURL().then(function(url) {
                      usuario.foto = url;
@@ -161,15 +152,16 @@ export class FirebaseUser implements UsuarioInterface{
     return promise;
   }
 
-  public updateUser(usuario : Usuario): Promise<any> {
-const promise = new Promise(function(resolve, reject) {
+  public updateUser(usuario : Usuario): Promise<string> {
+const promise = new Promise<string>(function(resolve, reject) {
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
         var foto = '';
        if (usuario.foto){
           const ref = firebase.storage().ref('userPicture');
-          const metadata = { contentType: usuario.foto.type };
-          const task = ref.child(usuario.correo).put(usuario.foto,metadata);
+          //const metadata = { contentType: usuario.foto.type };
+          console.log(usuario.foto);
+          const task = ref.child(usuario.correo).put(usuario.foto);
           var pictureRef = ref.child(usuario.correo);
           pictureRef.getDownloadURL().then(function(url) {
              usuario.foto = url;
@@ -200,8 +192,8 @@ const promise = new Promise(function(resolve, reject) {
 return promise;
   }
 
-  public deleteUser() : Promise<any> {
-  const promise = new Promise(function(resolve, reject) {
+  public deleteUser() : Promise<string> {
+  const promise = new Promise<string>(function(resolve, reject) {
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {     
        firebase.firestore().collection('users/').doc(user.uid).delete()
@@ -223,8 +215,8 @@ return promise;
     return promise;
   }
 
-  public userInformation(): Promise<any> {
-    const promise = new Promise(function(resolve, reject) {
+  public userInformation(): Promise<object> {
+    const promise = new Promise<object>(function(resolve, reject) {
       firebase.auth().onAuthStateChanged(function(user) {
         if (user) {       
         let userRef = firebase.firestore().collection('users').doc(user.uid).withConverter(usuarioConverter);

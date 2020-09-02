@@ -1,26 +1,26 @@
 import firebase from 'firebase';
-import {NotificacionInterface} from '../Interfaces/NotificacionInterface';
+import {INotificacionAPI} from '../Interfaces/INotificacionAPI';
 import {Notificacion} from '../Clases/Notificacion';
 
 
 let notificationConverter = {
-      toFirestore: function(notification) {
+      toFirestore: function(notification : any) {
           return {
               medida: notification.medida,
               tiempo: notification.tiempo,
               alerta: notification.alerta
               }
       },
-      fromFirestore: function(snapshot, options){
+      fromFirestore: function(snapshot: { data: (arg0: any) => any; id: string; }, options: any){
           const data = snapshot.data(options);
           return new Notificacion(snapshot.id,data.medida, data.tiempo, data.alerta)
       }
   }
   
-export class FirebaseNotificacion implements NotificacionInterface{
+export class FirebaseNotificacion extends INotificacionAPI{
  
- public createNotification(notification: Notification): Promise<any>{
-   const promise = new Promise(function(resolve, reject) {
+ public createNotification(notification: Notification): Promise<string>{
+   const promise = new Promise<string>(function(resolve, reject) {
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
         firebase.firestore().collection('users/' + user.uid + '/notifications').withConverter(notificationConverter).add(notification)
@@ -39,8 +39,8 @@ export class FirebaseNotificacion implements NotificacionInterface{
     return promise;
   }
 
-  public deleteNotification(key: string): Promise<any>{
-   const promise = new Promise(function(resolve, reject) {
+  public deleteNotification(key: string): Promise<string>{
+   const promise = new Promise<string>(function(resolve, reject) {
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
         firebase.firestore().collection('users/' + user.uid + '/notifications').doc(key).delete()
@@ -57,14 +57,14 @@ export class FirebaseNotificacion implements NotificacionInterface{
     });
     return promise;
   }
-  public listNotification(): Promise<any>{
-  const promise = new Promise(function(resolve, reject) {
+  public listNotification(): Promise<object[]>{
+  const promise = new Promise<object[]>(function(resolve, reject) {
       firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
          let notificationsRef =  firebase.firestore().collection('users/' + user.uid + '/notifications').withConverter(notificationConverter);
           notificationsRef.get()
           .then(snapshot => {
-            var notificaciones = [];
+            var notificaciones : Notificacion[] = [];
             snapshot.forEach(doc => {
               notificaciones.push(doc.data());
             });
@@ -81,8 +81,8 @@ export class FirebaseNotificacion implements NotificacionInterface{
     });
     return promise;
   }
-  public notificationInformation(key: string): Promise<any>{
-  const promise = new Promise(function(resolve, reject) {
+  public notificationInformation(key: string): Promise<object>{
+  const promise = new Promise<object>(function(resolve, reject) {
       firebase.auth().onAuthStateChanged(function(user) {
         if (user) {
          let notificationRef = firebase.firestore().collection('users/' + user.uid + '/notifications').doc(key).withConverter(notificationConverter);
