@@ -156,11 +156,10 @@ export class FirebaseUser extends IUsuarioAPI{
 const promise = new Promise<string>(function(resolve, reject) {
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
-        var foto = '';
+       /* var foto = '';
        if (usuario.foto){
           const ref = firebase.storage().ref('userPicture');
           //const metadata = { contentType: usuario.foto.type };
-          console.log(usuario.foto);
           const task = ref.child(usuario.correo).put(usuario.foto);
           var pictureRef = ref.child(usuario.correo);
           pictureRef.getDownloadURL().then(function(url) {
@@ -173,8 +172,8 @@ const promise = new Promise<string>(function(resolve, reject) {
                reject(Error('Error updateUser'));
              });
           });
-       }
-       else{
+       }*/
+       //else{
         firebase.firestore().collection('users/').doc(user.uid).withConverter(usuarioConverter).set(usuario)
         .then(function(docRef) {
            resolve('usuario actualizada');
@@ -182,8 +181,36 @@ const promise = new Promise<string>(function(resolve, reject) {
         .catch(function(error) {
            reject(Error('Error updateUser'));
         });
-       } 
+     //  } 
       resolve('Actualizado');
+      } else {
+        reject(Error('Error updateUser'));
+      }
+    });
+   });
+return promise;
+  }
+  
+  public updateUserImage(usuario : Usuario): Promise<string> {
+const promise = new Promise<string>(function(resolve, reject) {
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        var foto = '';
+          const ref = firebase.storage().ref('userPicture');
+          //const metadata = { contentType: usuario.foto.type };
+          const task = ref.child(usuario.correo).put(usuario.foto);
+          var pictureRef = ref.child(usuario.correo);
+          pictureRef.getDownloadURL().then(function(url) {
+             usuario.foto = url;
+             firebase.firestore().collection('users/').doc(user.uid).withConverter(usuarioConverter).set(usuario)
+             .then(function(docRef) {
+               resolve(url);
+             })
+             .catch(function(error) {
+               reject(Error('Error updateUser'));
+             });
+          });
+     // resolve('Actualizado');
       } else {
         reject(Error('Error updateUser'));
       }

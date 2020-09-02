@@ -38,6 +38,11 @@ export abstract class IUsuarioAPI {
     */
    abstract updateUser(usuario : Usuario): Promise<string>;
    /**
+    * Updates a user image from the database
+    * @param {Usuario} object
+    */
+   abstract updateUserImage(usuario : Usuario): Promise<string>;
+   /**
     * Deletes a user from the database
     * @param {string} key - The key of the user to delete
     */

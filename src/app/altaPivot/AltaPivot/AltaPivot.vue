@@ -310,6 +310,9 @@ export default {
          }).addTo(this.map2);
          //e.layer.pm.disable(); 
       } 
+       else if (e.layer instanceof L.Marker) {
+         e.layer.addTo(this.map2);
+       }
    });
    
      //CREAR FIGURA AL SEGUNDO CLICK 

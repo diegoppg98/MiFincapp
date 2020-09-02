@@ -361,7 +361,7 @@ if(Math.floor(this.coordenadaPivot.getLatLngs()[0].lat*Math.pow(10,4))/(Math.pow
            dispositivo = new DispositivoGps("",dispositivoNombre, dispositivoId, dispositivoTipo, dispositivoLocalizacion, nombreTierra, nombrePivot,JSON.stringify(positions),[]);
         }
         if(dispositivoTipo === 'Suelo'){
-           dispositivo = new DispositivoSuelo("",dispositivoNombre, dispositivoId, dispositivoTipo, dispositivoLocalizacion, nombreTierra, nombrePivot,"",[]);
+           dispositivo = new DispositivoSuelo("",dispositivoNombre, dispositivoId, dispositivoTipo, dispositivoLocalizacion, nombreTierra, nombrePivot,"");
         } 
 
         this.isLoading = false;
@@ -545,7 +545,7 @@ FactoryAPI.getFactoryAPI("Firebase").getDispositivo().listDevices(nomPivot).then
                        var pivotDispositivo = resultDispositivo.pivot;
                        var dispositivoLocalizacion = resultDispositivo.localizacion;                          
                       
-                      var dispositivo = new DispositivoSuelo(deviceKey,nombreDispositivo, idDispositivo, tipoDispositivo, dispositivoLocalizacion, fincaDispositivo, pivotDispositivo,temperatureDevice,[]); FactoryAPI.getFactoryAPI("Firebase").getDispositivo().updateDevice(dispositivo).then((result) =>{
+                      var dispositivo = new DispositivoSuelo(deviceKey,nombreDispositivo, idDispositivo, tipoDispositivo, dispositivoLocalizacion, fincaDispositivo, pivotDispositivo,temperatureDevice); FactoryAPI.getFactoryAPI("Firebase").getDispositivo().updateDevice(dispositivo).then((result) =>{
           }).catch((error) => { 	     
           });
                      

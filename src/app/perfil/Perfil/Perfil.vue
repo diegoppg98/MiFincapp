@@ -200,7 +200,7 @@ export default {
     async dataChanged(){
       var userCorreo = this.correo;
       var userNombre = this.nombre;
-      var userFoto = this.imageFile;
+      var userFoto = this.imageUrl;
       var userDireccion = this.direccion;
 
       var usuario = new Usuario('', this.correo, this.nombre, this.direccion, userFoto);
@@ -225,9 +225,19 @@ export default {
         const fr = new FileReader();
         fr.readAsDataURL(files[0]);
         fr.addEventListener('load', () => {
-          this.imageUrl = fr.result;
+          //this.imageUrl = fr.result;
+          var t = this;
           this.imageFile = files[0]; // this is an image file that can be sent to server...
-          this.dataChanged();
+          var userFoto = this.imageFile;
+          var usuario = new Usuario('', this.correo, this.nombre, this.direccion, userFoto);
+          FactoryAPI.getFactoryAPI('Firebase')
+           .getUsuario()
+           .updateUserImage(usuario)
+           .then((result) => {  
+             t.imageUrl = result;
+           })
+           .catch((error) => {         
+           });
         });
        
       } else {
@@ -241,7 +251,7 @@ export default {
       var userCorreo = this.correo;
       var userContraseña = this.contraseña;
       var userNombre = this.nombre;
-      var userFoto = this.imageFile;
+      var userFoto = this.imageUrl;
       var userDireccion = this.direccion;
       // var userTelefono = this.telefono;
 
@@ -326,9 +336,6 @@ export default {
                    pictureRef.getDownloadURL().then(function(url) {
                     console.log(url); 
                    });*/
-  const id = "12345678";
-  var ruta="/measurements/"+id +"/idMeasurements";  
- 
   //
 /*  firebase.firestore().collection(ruta).add({medida: ["1","2"], id: id,chequeada: false, notificada: false})
         .then(function(docRef) {

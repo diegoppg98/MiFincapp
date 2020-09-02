@@ -682,8 +682,9 @@ this.map2.eachLayer(function(layer) {
           var nombreTierra = this.getFinca.key;
           var pivotNombre = this.nombre;
           var pivotTipo = this.tipo;
+          var pivotPosActual = this.coordPos;
 
-          var pivot = new Pivot(this.getPivot.key, pivotNombre, pivotTipo, pivotLocalizacion, nombreTierra,[]);
+          var pivot = new Pivot(this.getPivot.key, pivotNombre, pivotTipo, pivotLocalizacion, nombreTierra,pivotPosActual);
           FactoryAPI.getFactoryAPI('Firebase')
             .getPivot()
             .updatePivot(pivot)

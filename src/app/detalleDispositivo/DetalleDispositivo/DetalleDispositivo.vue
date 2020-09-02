@@ -423,6 +423,27 @@ watch: {
    numberItems(val) {
      this.items = [];
      var items = this.items;
+
+        
+        FactoryAPI.getFactoryAPI("Firebase").getMedida().listMeasurements(this.id,parseInt(val)).then((result) =>{
+        if(result !== null){
+         result.forEach(function(childResult) {  
+          var medida = childResult.medida;
+          var time = childResult.tiempo;
+            var msec = Date.parse(time);
+            var date = new Date(msec);
+            var tiempo = date.toLocaleString();
+          var notificada = childResult.notificada;
+          var label =medida;/////////////////////////////
+          items.push( { medida: medida ,tiempo: tiempo,revisada: notificada, key: childResult.key });  
+         })
+         /*items.sort(function(a, b){
+           if(a.tiempo > b.tiempo) { return -1; }
+           if(a.tiempo < b.tiempo) { return 1; }
+           return 0;
+         })*/
+    }
+   });
      /*FactoryAPI.getFactoryAPI("Firebase").getMedida().listMeasurements(this.id,parseInt(val)).then((result) =>{
         if(result !== null){
          result.forEach(function(childResult) {  
@@ -1063,17 +1084,17 @@ if(Math.floor(this.coordenadaPivot.getLatLngs()[0].lat*Math.pow(10,4))/(Math.pow
          var dispositivoNombre = this.nombre;
          var dispositivoId = this.id;
          var dispositivoSuelo= this.sueloActual;
-         
+         var dispositivoPosActual = this.coordPos;
          this.positions = positions;
          
          var dispositivo = null;
          
          if(dispositivoTipo === 'GPS'){
-           dispositivo = new DispositivoGps(this.getDispositivo.key,dispositivoNombre, dispositivoId, dispositivoTipo, dispositivoLocalizacion, nombreTierra, nombrePivot,JSON.stringify(positions),[]);
+           dispositivo = new DispositivoGps(this.getDispositivo.key,dispositivoNombre, dispositivoId, dispositivoTipo, dispositivoLocalizacion, nombreTierra, nombrePivot,JSON.stringify(positions),dispositivoPosActual);
         }
         if(dispositivoTipo === 'Suelo'){
           if(!this.getDispositivo.suelo) dispositivoSuelo = "";
-           dispositivo = new DispositivoSuelo(this.getDispositivo.key,dispositivoNombre, dispositivoId, dispositivoTipo, dispositivoLocalizacion, nombreTierra, nombrePivot,dispositivoSuelo,[]);
+           dispositivo = new DispositivoSuelo(this.getDispositivo.key,dispositivoNombre, dispositivoId, dispositivoTipo, dispositivoLocalizacion, nombreTierra, nombrePivot,dispositivoSuelo);
         } 
 
       if(dispositivo !== null){ 
@@ -1214,6 +1235,7 @@ if(Math.floor(this.coordenadaPivot.getLatLngs()[0].lat*Math.pow(10,4))/(Math.pow
                             var localizacionPivot = result.localizacion;
                             var tipoPivot = result.tipo;
                             var nombrePivot = result.nombre; 
+                            var pivotPosActual = result.posActual; 
                             
                             var coordenadaPivot;
                             L.geoJSON( L.geoJSON(JSON.parse(localizacionPivot[0])).toGeoJSON(), {
@@ -1286,7 +1308,7 @@ if(Math.floor(this.coordenadaPivot.getLatLngs()[0].lat*Math.pow(10,4))/(Math.pow
                      style: myStyle
                     }).addTo(map);              
                  }) 
-var pivot = new Pivot(pivotDispositivo,nombrePivot, tipoPivot, pivotLocalizacion, fincaDispositivo,[]);
+var pivot = new Pivot(pivotDispositivo,nombrePivot, tipoPivot, pivotLocalizacion, fincaDispositivo,pivotPosActual);
 FactoryAPI.getFactoryAPI("Firebase").getPivot().updatePivot(pivot).then((result) =>{
           }).catch((error) => { 	     
           });
@@ -1301,12 +1323,13 @@ FactoryAPI.getFactoryAPI("Firebase").getDispositivo().listDevices(pivotDispositi
             var fincaDispositivo = childResult.finca;
             var pivotDispositivo = childResult.pivot;//JSON.parse(
             var dispositivoPositions = childResult.posiblesLocalizaciones;
-console.log(dispositivoPositions);
+            var dispositivoPosActual = childResult.posActual;
+
             var deviceKey = childResult.key;
             dispositivoLocalizacion.forEach(function(element,index) { 
                 L.geoJSON(JSON.parse(element)).addTo(map);
             }) 
-            var dispositivo = new DispositivoGps(deviceKey,nombreDispositivo, idDispositivo, tipoDispositivo, dispositivoLocalizacion, fincaDispositivo, pivotDispositivo,dispositivoPositions,[]);
+            var dispositivo = new DispositivoGps(deviceKey,nombreDispositivo, idDispositivo, tipoDispositivo, dispositivoLocalizacion, fincaDispositivo, pivotDispositivo,dispositivoPositions,dispositivoPosActual);
               
          FactoryAPI.getFactoryAPI("Firebase").getDispositivo().updateDevice(dispositivo).then((result) =>{
           }).catch((error) => { 	     
