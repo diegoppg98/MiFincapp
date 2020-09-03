@@ -9,7 +9,6 @@
       {{ textSnackbar }}
       <v-btn text @click="snackbar = false">Close</v-btn>
     </v-snackbar>
-
     <v-container fill-height fluid>
       <v-row align="center" justify="center">
         <v-col :cols="posMap">
@@ -42,13 +41,8 @@
               required
               clearable
             ></v-text-field>
-
             <v-text-field v-model="nombre" label="Nombre (opcional)" clearable></v-text-field>
-
             <v-text-field v-model="direccion" label="Direccion (opcional)" clearable></v-text-field>
-
-            <v-text-field v-model="telefono" label="Telefono (opcional)" clearable></v-text-field>
-
             <v-btn
               :disabled="!valid"
               :loading="isLoading"
@@ -56,26 +50,21 @@
               class="mr-4 white--text"
               @click="dialog = true"
             >Registrarse</v-btn>
-                       
           </v-form>
-                
         </v-col>
       </v-row>
     </v-container>
-    
-     <v-dialog v-model="dialog" max-width="290" style="z-index: 999999">
-            <v-card>
-              <v-card-title class="headline">Confirmación registro</v-card-title>
-
-              <v-card-text>Después de registrarse se enviará un correo para verificar la veracidad del correo.</v-card-text>
-
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="#2e7d32" text @click="dialog = false">Cancelar</v-btn>
-                <v-btn color="#7d2f2e" text @click="onSubmit">Aceptar</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-dialog>
+    <v-dialog v-model="dialog" max-width="290" style="z-index: 999999">
+      <v-card>
+        <v-card-title class="headline">Confirmación registro</v-card-title>
+        <v-card-text>Después de registrarse se enviará un correo para verificar la veracidad del correo.</v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="#2e7d32" text @click="dialog = false">Cancelar</v-btn>
+          <v-btn color="#7d2f2e" text @click="onSubmit">Aceptar</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -103,7 +92,6 @@ export default {
       nombre: '',
       foto: '',
       direccion: '',
-      telefono: '',
       showPass: false,
       showPassRepeat: false,
       colorSnackbar: '',
@@ -134,7 +122,6 @@ export default {
       var userNombre = this.nombre;
       var userFoto = this.foto;
       var userDireccion = this.direccion;
-      var userTelefono = this.telefono;
       var usuario = new Usuario('', userCorreo, userNombre, userDireccion, userFoto);
 
       FactoryAPI.getFactoryAPI('Firebase')
@@ -151,7 +138,6 @@ export default {
             this.colorSnackbar = 'error';
             this.textSnackbar = 'Error al intertar registrarse. Comprueba que este usuario no tenga ya una cuenta';
             this.snackbar = true;
-            console.log(error);
           },
         );
       this.isLoading = false;
@@ -181,5 +167,4 @@ export default {
 </script>
 
 <style>
-
 </style>

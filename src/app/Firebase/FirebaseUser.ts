@@ -113,27 +113,22 @@ export class FirebaseUser extends IUsuarioAPI{
                 var foto = '';
                 if (usuario.foto){
                    const ref = firebase.storage().ref('userPicture');
-                 //  const metadata = { contentType: usuario.foto.type };
                    const task = ref.child(usuario.correo).put(usuario.foto);
                    var pictureRef = ref.child(usuario.correo);
                    pictureRef.getDownloadURL().then(function(url) {
                      usuario.foto = url;
                      firebase.firestore().collection('users/').doc(user.uid).withConverter(usuarioConverter).set(usuario)
                      .then(function(docRef) {
-                        //resolve('Tierra creada');
                       })
                       .catch(function(error) {
-                        // reject(Error('Error createLands'));
                       });  
                    });
                 }
                 else{
                   firebase.firestore().collection('users/').doc(user.uid).withConverter(usuarioConverter).set(usuario)
                   .then(function(docRef) {
-                     //resolve('Tierra creada');
                    })
                   .catch(function(error) {
-                     //reject(Error('Error createLands'));
                   });  
                 }
                 firebase.auth().languageCode = 'es';
@@ -142,7 +137,6 @@ export class FirebaseUser extends IUsuarioAPI{
                 });                
               }
             });
-            //firebase.auth().signOut();
             resolve('Usuario creado correctamente');
             
           },
@@ -156,24 +150,6 @@ export class FirebaseUser extends IUsuarioAPI{
 const promise = new Promise<string>(function(resolve, reject) {
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
-       /* var foto = '';
-       if (usuario.foto){
-          const ref = firebase.storage().ref('userPicture');
-          //const metadata = { contentType: usuario.foto.type };
-          const task = ref.child(usuario.correo).put(usuario.foto);
-          var pictureRef = ref.child(usuario.correo);
-          pictureRef.getDownloadURL().then(function(url) {
-             usuario.foto = url;
-             firebase.firestore().collection('users/').doc(user.uid).withConverter(usuarioConverter).set(usuario)
-             .then(function(docRef) {
-               resolve('usuario actualizada');
-             })
-             .catch(function(error) {
-               reject(Error('Error updateUser'));
-             });
-          });
-       }*/
-       //else{
         firebase.firestore().collection('users/').doc(user.uid).withConverter(usuarioConverter).set(usuario)
         .then(function(docRef) {
            resolve('usuario actualizada');
@@ -181,7 +157,6 @@ const promise = new Promise<string>(function(resolve, reject) {
         .catch(function(error) {
            reject(Error('Error updateUser'));
         });
-     //  } 
       resolve('Actualizado');
       } else {
         reject(Error('Error updateUser'));
@@ -197,7 +172,6 @@ const promise = new Promise<string>(function(resolve, reject) {
       if (user) {
         var foto = '';
           const ref = firebase.storage().ref('userPicture');
-          //const metadata = { contentType: usuario.foto.type };
           const task = ref.child(usuario.correo).put(usuario.foto);
           var pictureRef = ref.child(usuario.correo);
           pictureRef.getDownloadURL().then(function(url) {
@@ -210,7 +184,6 @@ const promise = new Promise<string>(function(resolve, reject) {
                reject(Error('Error updateUser'));
              });
           });
-     // resolve('Actualizado');
       } else {
         reject(Error('Error updateUser'));
       }

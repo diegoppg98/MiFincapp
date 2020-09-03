@@ -1,6 +1,9 @@
 <template>
-<div id="divHome" class="grid-block" style="background-image: url('https://firebasestorage.googleapis.com/v0/b/pivot-2f31f.appspot.com/o/Images%2FPivot.jpeg?alt=media&token=4215cb1b-6ce4-4be9-833a-2d10f706512d'); width: 100%; height: 100vh; ">
-  
+  <div
+    id="divHome"
+    class="grid-block"
+    style="background-image: url('https://firebasestorage.googleapis.com/v0/b/pivot-2f31f.appspot.com/o/Images%2FPivot.jpeg?alt=media&token=4215cb1b-6ce4-4be9-833a-2d10f706512d'); width: 100%; height: 100vh; "
+  >
     <v-snackbar
       v-model="snackbar"
       :timeout="timeoutSnackbar"
@@ -10,18 +13,19 @@
       {{ textSnackbar }}
       <v-btn text @click="snackbar = false">Cerrar</v-btn>
     </v-snackbar>
-
     <div v-show="auth">
-      <v-container >
+      <v-container>
         <v-row align="center" justify="center">
           <v-col :cols="posMap">
             <v-card>
               <div class="text-center pt-10">
                 <v-avatar size="100">
-                  <v-img height="100%" src="https://firebasestorage.googleapis.com/v0/b/pivot-2f31f.appspot.com/o/Images%2FMiFincappIcon.png?alt=media&token=c284a7d6-50bd-4046-8796-5ce7b45c2e3d"></v-img>
+                  <v-img
+                    height="100%"
+                    src="https://firebasestorage.googleapis.com/v0/b/pivot-2f31f.appspot.com/o/Images%2FMiFincappIcon.png?alt=media&token=c284a7d6-50bd-4046-8796-5ce7b45c2e3d"
+                  ></v-img>
                 </v-avatar>
               </div>
-
               <v-card-text>
                 <v-form ref="form" v-model="valid" :lazy-validation="lazy">
                   <v-text-field
@@ -48,7 +52,7 @@
               <v-card-actions>
                 <v-btn
                   block
-                   class="white--text"
+                  class="white--text"
                   color="#2e7d32"
                   :disabled="!valid"
                   :loading="isLoading"
@@ -56,10 +60,20 @@
                 >Iniciar Sesion</v-btn>
               </v-card-actions>
               <v-card-actions>
-                <v-btn class="white--text" block color="#2e7d32" @click="registrarUsuario">Registrarse</v-btn>
+                <v-btn
+                  class="white--text"
+                  block
+                  color="#2e7d32"
+                  @click="registrarUsuario"
+                >Registrarse</v-btn>
               </v-card-actions>
               <v-card-actions>
-                <v-btn  class="white--text" block color="#7d2f2e" @click.stop="dialogPass = true">¿Olvidaste tu contraseña?</v-btn>
+                <v-btn
+                  class="white--text"
+                  block
+                  color="#7d2f2e"
+                  @click.stop="dialogPass = true"
+                >¿Olvidaste tu contraseña?</v-btn>
               </v-card-actions>
             </v-card>
           </v-col>
@@ -67,17 +81,24 @@
       </v-container>
     </div>
 
-<div class="padre">
-    <div class="loading" v-show="!auth">
-      <v-container >
-        <v-row align="center" justify="center">
-          <v-col :cols="posMap">
-      <loading :active.sync="active" :is-full-page="fullPage" color="#2e7d32" background-color="#2e7d32" :height="height" :width="width" ></loading>
-       </v-col>
-      </v-row>
-      </v-container>
+    <div class="padre">
+      <div class="loading" v-show="!auth">
+        <v-container>
+          <v-row align="center" justify="center">
+            <v-col :cols="posMap">
+              <loading
+                :active.sync="active"
+                :is-full-page="fullPage"
+                color="#2e7d32"
+                background-color="#2e7d32"
+                :height="height"
+                :width="width"
+              ></loading>
+            </v-col>
+          </v-row>
+        </v-container>
+      </div>
     </div>
-</div>
     <v-dialog v-model="dialogPass" max-width="400" style="z-index: 999">
       <v-card>
         <v-card-title class="headline">Pedir contraseña</v-card-title>
@@ -101,7 +122,6 @@
 </template>
 
 <script lang="ts">
-//https://firebasestorage.googleapis.com/v0/b/pivot-2f31f.appspot.com/o/Images%2FPivot.jpeg?alt=media&token=4215cb1b-6ce4-4be9-833a-2d10f706512d
 import { mapActions, mapGetters } from 'vuex';
 import { IPreLoad } from '@/server/isomorphic';
 import { router } from '../../router';
@@ -110,7 +130,7 @@ import '../../../../node_modules/vuetify/dist/vuetify.css';
 import VImageInput from 'vuetify-image-input';
 import { FactoryAPI } from '../../FactoryAPI';
 
- import Loading from 'vue-loading-overlay';
+import Loading from 'vue-loading-overlay';
 
 export default {
   metaInfo: {
@@ -127,8 +147,8 @@ export default {
       correo: '',
       active: true,
       fullPage: true,
-      width:128,
-      height:128,
+      width: 128,
+      height: 128,
       correoPass: '',
       contraseña: '',
       showPass: false,
@@ -152,7 +172,7 @@ export default {
     };
   },
   components: {
-    Loading
+    Loading,
   },
   computed: {
     posMap() {
@@ -181,12 +201,10 @@ export default {
         .login(this.correo, this.contraseña)
         .then(
           (user) => {
-            // this.changeUser(true);
             this.changeAvatarUsuario('');
             router.push({ name: 'inicio' }).catch((err) => {});
           },
           (error) => {
-            // FunctionsDatabase.logout();
             this.colorSnackbar = 'error';
             this.textSnackbar = error;
             this.snackbar = true;
@@ -217,24 +235,9 @@ export default {
     },
   },
   created() {},
-/*
-.container--fluid
-.v-application--wrap{
-background-position: center center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-size: cover;
-  height: 100%;
-  background-image: url(https://firebasestorage.googleapis.com/v0/b/pivot-2f31f.appspot.com/o/Images%2FPivot.jpeg?alt=media&token=4215cb1b-6ce4-4be9-833a-2d10f706512d);
-   
-}
-document.getElementById('app').style.backgroundImage = "https://firebasestorage.googleapis.com/v0/b/pivot-2f31f.appspot.com/o/Images%2FPivot.jpeg?alt=media&token=4215cb1b-6ce4-4be9-833a-2d10f706512d";
-*/
-mounted(){
 
-},
+  mounted() {},
   beforeMount() {
-
     FactoryAPI.getFactoryAPI('Firebase')
       .getUsuario()
       .userAutenticated()
@@ -290,7 +293,6 @@ mounted(){
 
 
 <style>
-
 .loading {
   text-align: center;
 }
@@ -324,19 +326,16 @@ mounted(){
   }
 }
 
-html, body{
-    height:100%;
-  }
-  
-  
-#divHome{
-background-position: center center;
+html,
+body {
+  height: 100%;
+}
+
+#divHome {
+  background-position: center center;
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-size: cover;
-
-   
 }
-
 </style>
 

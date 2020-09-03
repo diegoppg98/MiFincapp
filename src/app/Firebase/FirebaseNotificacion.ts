@@ -71,7 +71,6 @@ export class FirebaseNotificacion extends INotificacionAPI{
            resolve(notificaciones);
           })
           .catch(err => {
-          console.log(err);
             reject(Error('Error listNotification'));
           });          
         } else {

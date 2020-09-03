@@ -18,11 +18,9 @@ export class ImplementationDatabase implements Database {
       firebase.initializeApp(firebaseConfig);
     }
   }
-
   public userAutenticated(): Promise<boolean> {
     const promise = new Promise<boolean>(function(resolve) {
-      firebase.auth().onAuthStateChanged(function(user) {
-            
+      firebase.auth().onAuthStateChanged(function(user) {         
         if (user && user.emailVerified) { 
           resolve(true);
         } else {

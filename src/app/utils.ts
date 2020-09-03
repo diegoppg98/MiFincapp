@@ -2,8 +2,7 @@ import {Notificacion} from './Clases/Notificacion';
 import {Alerta} from './Clases/Alerta';
 import {Pivot} from './Clases/Pivot';
 import {Dispositivo} from './Clases/Dispositivo';
-import {DispositivoGps} from './Clases/Dispositivo';
-import {DispositivoTemperatura} from './Clases/Dispositivo';
+
 
 /**
  * Auxiliary functions related to calculations with polygons and distances 
@@ -34,34 +33,6 @@ export class Utils {
         return true;
      else
         return false;
-  
-    /*
-    //POINT IN LAND WITHOUT BORDERS
-    var inside = false;
-    var x = point.lat, y = point.lng;
-    for (var k=0;k<polygon.getLatLngs().length;k++){
-        var polyPoints = polygon.getLatLngs()[k];       
-        for (var i = 0, j = polyPoints.length - 1; i < polyPoints.length; j = i++) {
-            var xi = polyPoints[i].lat, yi = polyPoints[i].lng;
-            var xj = polyPoints[j].lat, yj = polyPoints[j].lng;
-            var intersect = ((yi > y) != (yj > y))
-                && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
-            if (intersect) inside = !inside;
-        }
-    }
-  return inside;*/
-   
-    /*
-    //POINT IN LAND INCLUDING BORDERS
-    var classifyPoint = require("robust-point-in-polygon")
-var polygon = [ [ 1, 1 ], [ 1, 2 ], [ 2, 2 ], [ 2, 1 ] ]
- 
-console.log(
-  classifyPoint(polygon, [1.5, 1.5]),
-  classifyPoint(polygon, [1, 2]),
-  classifyPoint(polygon, [100000, 10000]));
-  */
-
   }
   
   public  distanciaMedidas(medidas: object[],medida1: object,medida2: object, punto1: L.Point, punto2: L.Point):number {
@@ -71,11 +42,9 @@ console.log(
        for (var i = 0; i < medidas.length; ++i) {
          if(medidas[i] == medida1 || medidas[i] == medida2){ 
            if(sum == false){
-             //medida = L.latLng(medida1.lat,medida1.lng);
              sum = true;
            }  
            else{ 
-             //sumDistances = sumDistances + point2.distanceTo(this.point1);
              break;
            }  
            }
@@ -93,7 +62,7 @@ console.log(
       for (var i=0;i<puntos.length;i++){
         var point1 = L.latLng(puntos[i][0].x, puntos[i][0].y);
         var point2 = L.latLng(puntos[i][1].x, puntos[i][1].y); 
-        var distanceActual = point2.distanceTo(punto); //////////////////ARREGLAR CENTER
+        var distanceActual = point2.distanceTo(punto);
         if(pointFinal === null){
           pointFinal = puntos[i];
           distance = distanceActual;
@@ -131,7 +100,7 @@ public pivotPosition(tipoPivot: string, puntos: object[], punto: L.Point):L.Poin
       for (var i=0;i<puntos.length;i++){
         var point1 = L.latLng(puntos[i][0].x, puntos[i][0].y);
         var point2 = L.latLng(puntos[i][1].x, puntos[i][1].y); 
-        var distanceActual = point2.distanceTo(punto); //////////////////ARREGLAR CENTER
+        var distanceActual = point2.distanceTo(punto); 
         if(pointFinal === null){
           pointFinal = i;
           distance = distanceActual;
@@ -231,90 +200,6 @@ public pivotPosition(tipoPivot: string, puntos: object[], punto: L.Point):L.Poin
   }
 
 
-
-/*
-  public puntosPivotLineal(point: L.Point, mapa: L.map, polygon: L.polygon, pivotPoint: L.latLng, pivotCenter: L.latLng):object {
-       var offset = 0.0001;
-       var pointFinal = null;
-       var distance = -1;
-       var out = false;
-       var points = [];
-       points.push({
-         x: pivotCenter.lat,
-         y: pivotCenter.lng,
-       });
-       points.push({
-         x: pivotPoint.lat,
-         y: pivotPoint.lng,
-       });
-
-       while (!out){
-          var pointActual = this.offsetPoints(points,offset);
-          var point1 = L.latLng(pointActual[0].x, pointActual[0].y);
-          var point2 = L.latLng(pointActual[1].x, pointActual[1].y);
-          if(this.pointInLand(point1, polygon) && this.pointInLand(point2, polygon)){
-            var distanceActual = point1.distanceTo(point);
-            if(pointFinal === null){
-               pointFinal = pointActual;
-               distance = distanceActual;
-            }
-            else if(distance > distanceActual){
-               pointFinal = pointActual;
-               distance = distanceActual;
-            }
-            offset = offset + 0.0001;
-          }
-          else out = true; 
-       }
-       out = false;
-       offset = 0; 
-       while (!out){
-          var pointActual = this.offsetPoints(points,offset);
-          var point1 = L.latLng(pointActual[0].x, pointActual[0].y);
-          var point2 = L.latLng(pointActual[1].x, pointActual[1].y);
-          if(this.pointInLand(point1, polygon) && this.pointInLand(point2, polygon)){
-            var distanceActual = point1.distanceTo(point);
-            if(pointFinal === null){
-               pointFinal = pointActual;
-               distance = distanceActual;
-            }
-            else if(distance > distanceActual){
-               pointFinal = pointActual;
-               distance = distanceActual;
-            }
-            offset = offset - 0.0001;
-          }
-          else out = true;
-       }
-       if(pointFinal === null){
-          pointFinal = points;
-       }
-       return pointFinal;
-  }
-  
-  public puntosPivotCircular(point: L.Point, mapa: L.map, polygon: L.polygon, pivotPoint: L.latLng, pivotCenter: L.latLng):L.Point {
-       var angle = 0;
-       var pointFinal = null;
-       var distance = -1;
-
-       for (var angle=0;angle<360;angle++){
-          var pointActual = this.calculoPivotCircular(mapa, angle, pivotPoint, pivotCenter);
-
-          if(this.pointInLand(pointActual, polygon)){
-            var distanceActual = pointActual.distanceTo(point);
-            if(pointFinal === null){
-               pointFinal = pointActual;
-               distance = distanceActual;
-            }
-            else if(distance > distanceActual){
-               pointFinal = pointActual;
-               distance = distanceActual;
-            }
-          }
-       }
-       return pointFinal;
-  }*/
-
   public polygonArea(X: float[], Y: float[], numPoints: int):float
   { 
     var area = 0;         
@@ -325,24 +210,6 @@ public pivotPosition(tipoPivot: string, puntos: object[], punto: L.Point):L.Poin
         j = i;  
       }
     return Math.abs(area/2);
-
-  /* var len = polygonPrime.length;
-   
-   var result = 0.0;
-   var dx = 0.0;
-   var dy = 0.0;
-   for( var k = 0; k < (len-1); k++ )
-   {
-      dx = polygonPrime[k+1].lat - polygonPrime[k].lat;
-      dy = polygonPrime[k+1].lng - polygonPrime[k].lng; 
-      result += polygonPrime[k].lat * dy - 
-                polygonPrime[k].lng * dx; 
-   } 
-   dx = polygonPrime[0].lat - polygonPrime[len-1].lat;
-   dy = polygonPrime[0].lng - polygonPrime[len-1].lng; 
-   result += polygonPrime[len-1].lat * dy - 
-             polygonPrime[len-1].lng * dx;  
-   return result/2.0;*/
   }
 
 

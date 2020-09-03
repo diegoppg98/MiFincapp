@@ -5,10 +5,10 @@ export class Usuario {
     correo: string;
     nombre: string;
     direccion: string;
-    foto: object;
+    foto: ArrayBuffer;
 
 
-  constructor(key: string, correo: string, nombre: string, direccion: string, foto: object) {
+  constructor(key: string, correo: string, nombre: string, direccion: string, foto: ArrayBuffer) {
     this.key = key;
     this.correo = correo;
     this.nombre = nombre;

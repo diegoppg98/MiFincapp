@@ -9,124 +9,117 @@
       {{ textSnackbar }}
       <v-btn text @click="snackbar = false">Close</v-btn>
     </v-snackbar>
-
-
-<v-container fill-height fluid>
+    <v-container fill-height fluid>
       <v-row align="center" justify="center">
         <v-col :cols="posMap">
-        
-    <v-card
-      width="170"
-      shaped class="rounded-card mx-auto mt-5 mt-2 d-flex align-center"
-      @click.native="pickFile()"
-    >
-      <img height="180" :src="imageUrl" width="100%" v-if="imageUrl" />
-
-      <input type="file" style="display: none" ref="image" accept="image/*" @change="onFilePicked" />
-    </v-card>
-
-    <v-form class="mx-10 my-3" dark ref="form" v-model="valid" :lazy-validation="lazy">
-      <v-text-field v-model="correo" label="Correo" disabled required></v-text-field>
-
-      <v-text-field @change="dataChanged" v-model="nombre" label="Nombre (opcional)"></v-text-field>
-
-      <v-text-field @change="dataChanged" v-model="direccion" label="Direcccion (opcional)"></v-text-field>    
-
-     <v-btn
-     
-          color="#2e7d32"
-          block
-          style="width=100%"
-          @click.stop="dialogPass = true"
-          class="my-1 white--text"
-        >Cambiar contraseña</v-btn>
-
-        <v-btn color="#7d2f2e" class="white--text" block @click.stop="dialog = true">Eliminar cuenta</v-btn>
-
-      <v-dialog v-model="dialog" max-width="450" style="z-index: 999">
-        <v-card>
-          <v-card-title class="headline">Confirmar eliminación</v-card-title>
-
-          <v-card-text>Esta seguro de que desea eliminar la cuenta, este procesos será irreversible.</v-card-text>
-
-          <v-card-actions>
-            <v-spacer></v-spacer>
-
-            <v-btn color="#2e7d32" text @click="dialog = false">Cancelar</v-btn>
-
-            <v-btn color="#7d2f2e" text @click="eliminarUsuario">Eliminar</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-
-      <v-dialog v-model="dialogPass" max-width="400" style="z-index: 999">
-        <v-card>
-          <v-card-title class="headline">Cambio de contraseña</v-card-title>
-          <v-card-text>
-            <v-form
-              class="mx-4 my-4"
-              dark
-              ref="form"
-              v-model="validPass"
-              :lazy-validation="lazyPass"
-            >
-              <v-text-field
-                :append-icon="showPass ? 'mdi-eye' : 'mdi-eye-off'"
-                :rules="passRules"
-                :type="showPass ? 'text' : 'password'"
-                name="input-10-2"
-                label="Introduzca contraseña actual"
-                hint="Al menos 8 caracteres"
-                v-model="contraseña"
-                class="input-group--focused"
-                @click:append="showPass = !showPass"
-                required
-                clearable
-              ></v-text-field>
-              <v-text-field
-                :append-icon="showPassNew ? 'mdi-eye' : 'mdi-eye-off'"
-                :rules="passRules"
-                :type="showPassNew ? 'text' : 'password'"
-                name="input-10-2"
-                label="Introduzca nueva contraseña"
-                hint="Al menos 8 caracteres"
-                v-model="contraseñaNew"
-                class="input-group--focused"
-                @click:append="showPassNew = !showPassNew"
-                required
-                clearable
-              ></v-text-field>
-              <v-text-field
-                :append-icon="showPassRepeat ? 'mdi-eye' : 'mdi-eye-off'"
-                :error-messages="passMatchError"
-                :type="showPassRepeat ? 'text' : 'password'"
-                name="input-10-2"
-                label="Repita nueva contraseña"
-                hint="Al menos 8 caracteres"
-                v-model="contraseñaRepetida"
-                class="input-group--focused"
-                @click:append="showPassRepeat = !showPassRepeat"
-                required
-                clearable
-              ></v-text-field>
-            </v-form>
-          </v-card-text>
-
-          <v-card-actions>
-            <v-spacer></v-spacer>
-
+          <v-card
+            width="170"
+            shaped
+            class="rounded-card mx-auto mt-5 mt-2 d-flex align-center"
+            @click.native="pickFile()"
+          >
+            <img height="180" :src="imageUrl" width="100%" v-if="imageUrl" />
+            <input
+              type="file"
+              style="display: none"
+              ref="image"
+              accept="image/*"
+              @change="onFilePicked"
+            />
+          </v-card>
+          <v-form class="mx-10 my-3" dark ref="form" v-model="valid" :lazy-validation="lazy">
+            <v-text-field v-model="correo" label="Correo" disabled required></v-text-field>
+            <v-text-field @change="dataChanged" v-model="nombre" label="Nombre (opcional)"></v-text-field>
+            <v-text-field @change="dataChanged" v-model="direccion" label="Direcccion (opcional)"></v-text-field>
             <v-btn
-              :disabled="!validPass"
-              color="green darken-1"
-              text
-              @click="changePass"
+              color="#2e7d32"
+              block
+              style="width=100%"
+              @click.stop="dialogPass = true"
+              class="my-1 white--text"
             >Cambiar contraseña</v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-    </v-form>
-    
-     </v-col>
+            <v-btn
+              color="#7d2f2e"
+              class="white--text"
+              block
+              @click.stop="dialog = true"
+            >Eliminar cuenta</v-btn>
+            <v-dialog v-model="dialog" max-width="450" style="z-index: 999">
+              <v-card>
+                <v-card-title class="headline">Confirmar eliminación</v-card-title>
+                <v-card-text>Esta seguro de que desea eliminar la cuenta, este procesos será irreversible.</v-card-text>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn color="#2e7d32" text @click="dialog = false">Cancelar</v-btn>
+                  <v-btn color="#7d2f2e" text @click="eliminarUsuario">Eliminar</v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+            <v-dialog v-model="dialogPass" max-width="400" style="z-index: 999">
+              <v-card>
+                <v-card-title class="headline">Cambio de contraseña</v-card-title>
+                <v-card-text>
+                  <v-form
+                    class="mx-4 my-4"
+                    dark
+                    ref="form"
+                    v-model="validPass"
+                    :lazy-validation="lazyPass"
+                  >
+                    <v-text-field
+                      :append-icon="showPass ? 'mdi-eye' : 'mdi-eye-off'"
+                      :rules="passRules"
+                      :type="showPass ? 'text' : 'password'"
+                      name="input-10-2"
+                      label="Introduzca contraseña actual"
+                      hint="Al menos 8 caracteres"
+                      v-model="contraseña"
+                      class="input-group--focused"
+                      @click:append="showPass = !showPass"
+                      required
+                      clearable
+                    ></v-text-field>
+                    <v-text-field
+                      :append-icon="showPassNew ? 'mdi-eye' : 'mdi-eye-off'"
+                      :rules="passRules"
+                      :type="showPassNew ? 'text' : 'password'"
+                      name="input-10-2"
+                      label="Introduzca nueva contraseña"
+                      hint="Al menos 8 caracteres"
+                      v-model="contraseñaNew"
+                      class="input-group--focused"
+                      @click:append="showPassNew = !showPassNew"
+                      required
+                      clearable
+                    ></v-text-field>
+                    <v-text-field
+                      :append-icon="showPassRepeat ? 'mdi-eye' : 'mdi-eye-off'"
+                      :error-messages="passMatchError"
+                      :type="showPassRepeat ? 'text' : 'password'"
+                      name="input-10-2"
+                      label="Repita nueva contraseña"
+                      hint="Al menos 8 caracteres"
+                      v-model="contraseñaRepetida"
+                      class="input-group--focused"
+                      @click:append="showPassRepeat = !showPassRepeat"
+                      required
+                      clearable
+                    ></v-text-field>
+                  </v-form>
+                </v-card-text>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn
+                    :disabled="!validPass"
+                    color="green darken-1"
+                    text
+                    @click="changePass"
+                  >Cambiar contraseña</v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+          </v-form>
+        </v-col>
       </v-row>
     </v-container>
   </div>
@@ -142,7 +135,7 @@ import '../../../../node_modules/@mdi/font/css/materialdesignicons.css';
 import '../../../../node_modules/vuetify/dist/vuetify.css';
 import VImageInput from 'vuetify-image-input';
 import { FactoryAPI } from '../../FactoryAPI';
-//<v-icon>mdi-plus</v-icon>
+
 export default {
   $_veeValidate: {
     validator: 'new' as 'new',
@@ -161,7 +154,6 @@ export default {
     foto: '',
     direccion: '',
     imageData: '',
-    // telefono: '',
     valid: true,
     picture: '',
     validPass: true,
@@ -197,7 +189,7 @@ export default {
     pickFile() {
       this.$refs.image.click();
     },
-    async dataChanged(){
+    async dataChanged() {
       var userCorreo = this.correo;
       var userNombre = this.nombre;
       var userFoto = this.imageUrl;
@@ -207,12 +199,8 @@ export default {
       FactoryAPI.getFactoryAPI('Firebase')
         .getUsuario()
         .updateUser(usuario)
-        .then((result) => {
-       
-        })
-        .catch((error) => {
-         
-        });
+        .then((result) => {})
+        .catch((error) => {});
     },
 
     onFilePicked(e) {
@@ -225,21 +213,18 @@ export default {
         const fr = new FileReader();
         fr.readAsDataURL(files[0]);
         fr.addEventListener('load', () => {
-          //this.imageUrl = fr.result;
           var t = this;
-          this.imageFile = files[0]; // this is an image file that can be sent to server...
+          this.imageFile = files[0];
           var userFoto = this.imageFile;
           var usuario = new Usuario('', this.correo, this.nombre, this.direccion, userFoto);
           FactoryAPI.getFactoryAPI('Firebase')
-           .getUsuario()
-           .updateUserImage(usuario)
-           .then((result) => {  
-             t.imageUrl = result;
-           })
-           .catch((error) => {         
-           });
+            .getUsuario()
+            .updateUserImage(usuario)
+            .then((result) => {
+              t.imageUrl = result;
+            })
+            .catch((error) => {});
         });
-       
       } else {
         this.imageName = '';
         this.imageFile = '';
@@ -253,7 +238,6 @@ export default {
       var userNombre = this.nombre;
       var userFoto = this.imageUrl;
       var userDireccion = this.direccion;
-      // var userTelefono = this.telefono;
 
       var usuario = new Usuario('', userCorreo, userNombre, userDireccion, userFoto);
       FactoryAPI.getFactoryAPI('Firebase')
@@ -300,7 +284,6 @@ export default {
             router.push('/');
           },
           (error) => {
-            console.log(error);
           },
         );
     },
@@ -329,24 +312,7 @@ export default {
   mounted() {},
 
   beforeMount() {
- 
-//https://firebasestorage.googleapis.com/v0/b/pivot-2f31f.appspot.com/o/Images%2FmarkerDevice.png?alt=media&token=88ede691-a2a8-40ef-8a88-05cd62eef8bd
-/*  const ref = firebase.storage().ref('Images');
-                   var pictureRef = ref.child('markerDevice.png');
-                   pictureRef.getDownloadURL().then(function(url) {
-                    console.log(url); 
-                   });*/
-  //
-/*  firebase.firestore().collection(ruta).add({medida: ["1","2"], id: id,chequeada: false, notificada: false})
-        .then(function(docRef) {
-         console.log("1");
-        })
-        .catch(function(error) {
-         console.log("2");
-        });*/
-  
     this.changeUser(true);
-    // this.changeReload(false);
     FactoryAPI.getFactoryAPI('Firebase')
       .getUsuario()
       .userInformation()
@@ -354,7 +320,6 @@ export default {
         this.correo = result.correo;
         this.nombre = result.nombre;
         this.direccion = result.direccion;
-        // this.telefono = result.telefono[0];
         if (result.foto) this.imageUrl = result.foto;
         else {
           FactoryAPI.getFactoryAPI('Firebase')
@@ -364,7 +329,6 @@ export default {
               this.imageUrl = result;
             });
         }
-        // this.imageUrl = this.getAvatarUsuario;
       });
   },
 };

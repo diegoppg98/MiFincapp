@@ -9,7 +9,6 @@
       {{ textSnackbar }}
       <v-btn text @click="snackbar = false">Close</v-btn>
     </v-snackbar>
-
     <v-container fill-height fluid>
       <v-row align="center" justify="center">
         <v-col :cols="posMap">
@@ -28,42 +27,37 @@
                     @click.stop="dialogOptions = true"
                   >Opciones</v-btn>
                 </v-layout>
-
                 <v-layout>
                   <v-btn small rounded @click="mostrarMapa" color="#2e7d32" right>
                     <v-icon color="white">mdi-map-legend</v-icon>
                   </v-btn>
                 </v-layout>
-
-
                 <v-dialog v-model="dialogOptions" style="z-index: 9999">
-                <v-card outlined>
-                 <v-container >
-      <v-row align="center" justify="center">
-        <v-col :cols="posMap">
-                  <v-btn
-                    color="#2e7d32"
-                    block
-                    style="width=100%"
-                    @click.stop="dialogDatos = true"
-                    class="my-4 white--text"
-                  >Cambiar Datos</v-btn>
-
-                  <v-btn
-                    class="white--text"
-                    color="#7d2f2e"
-                    block
-                    @click.stop="dialog = true"
-                  >Eliminar finca</v-btn>
-                  </v-col>
-      </v-row>
-    </v-container>
-    </v-card>
+                  <v-card outlined>
+                    <v-container>
+                      <v-row align="center" justify="center">
+                        <v-col :cols="posMap">
+                          <v-btn
+                            color="#2e7d32"
+                            block
+                            style="width=100%"
+                            @click.stop="dialogDatos = true"
+                            class="my-4 white--text"
+                          >Cambiar Datos</v-btn>
+                          <v-btn
+                            class="white--text"
+                            color="#7d2f2e"
+                            block
+                            @click.stop="dialog = true"
+                          >Eliminar finca</v-btn>
+                        </v-col>
+                      </v-row>
+                    </v-container>
+                  </v-card>
                 </v-dialog>
               </v-row>
             </v-col>
           </v-container>
-
           <v-container>
             <v-row dense>
               <v-col v-for="(item, i) in items" :key="i" cols="12">
@@ -72,9 +66,9 @@
                     <div>
                       <v-card-title v-text="item.text"></v-card-title>
                     </div>
-
                     <v-avatar class="ma-3" size="125" tile>
-                      <v-img id="image"
+                      <v-img
+                        id="image"
                         src="https://firebasestorage.googleapis.com/v0/b/pivot-2f31f.appspot.com/o/Images%2FPivot2.jpeg?alt=media&token=dbb7694b-980f-4622-9747-b77d91e8c467"
                       ></v-img>
                     </v-avatar>
@@ -83,7 +77,6 @@
               </v-col>
             </v-row>
           </v-container>
-
           <v-btn
             fab
             absolute
@@ -96,7 +89,6 @@
           >
             <v-icon>mdi-plus</v-icon>
           </v-btn>
-
           <v-card outlined ref="mapaShow" id="mapaShow">
             <div class="d-block" style="height: 350px;" ref="mapa" id="mapa">
               <v-layout v-if="!dialogMapaOptions">
@@ -121,55 +113,50 @@
               </v-layout>
             </div>
           </v-card>
-
-          <v-dialog v-model="dialogDatos" style="z-index: 9999" fullscreen hide-overlay transition="dialog-bottom-transition">
-
-                <v-card>
-                <v-toolbar dark color="#2e7d32">
-          <v-btn icon dark @click="dialogDatos = false">
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
-          <v-spacer></v-spacer>
-          <v-toolbar-items>
-            <v-btn dark text @click="onSubmit">Guardar</v-btn>
-          </v-toolbar-items>
-        </v-toolbar>
-                  <v-form class="my-1" dark ref="form" v-model="valid" :lazy-validation="lazy">
-                    <v-text-field
-                      class="my-1 mx-3 mt-5"
-                      v-model="nombre"
-                      :rules="nameRules"
-                      label="Nombre"
-                      clearable
-                      required
-                    ></v-text-field>
-
-                    <v-text-field class="my-1 mx-2" v-model="tamaño" label="Tamaño (opcional)"></v-text-field>
-
-                    <v-select
-                      class="my-1 mx-3"
-                      v-model="cultivo"
-                      :items="tiposCultivos"
-                      label="Cultivo (opcional)"
-                      style="z-index: 999"
-                    ></v-select>
-
-                  </v-form>
-                </v-card>
-             
+          <v-dialog
+            v-model="dialogDatos"
+            style="z-index: 9999"
+            fullscreen
+            hide-overlay
+            transition="dialog-bottom-transition"
+          >
+            <v-card>
+              <v-toolbar dark color="#2e7d32">
+                <v-btn icon dark @click="dialogDatos = false">
+                  <v-icon>mdi-close</v-icon>
+                </v-btn>
+                <v-spacer></v-spacer>
+                <v-toolbar-items>
+                  <v-btn dark text @click="onSubmit">Guardar</v-btn>
+                </v-toolbar-items>
+              </v-toolbar>
+              <v-form class="my-1" dark ref="form" v-model="valid" :lazy-validation="lazy">
+                <v-text-field
+                  class="my-1 mx-3 mt-5"
+                  v-model="nombre"
+                  :rules="nameRules"
+                  label="Nombre"
+                  clearable
+                  required
+                ></v-text-field>
+                <v-text-field class="my-1 mx-2" v-model="tamaño" label="Tamaño (opcional)"></v-text-field>
+                <v-select
+                  class="my-1 mx-3"
+                  v-model="cultivo"
+                  :items="tiposCultivos"
+                  label="Cultivo (opcional)"
+                  style="z-index: 999"
+                ></v-select>
+              </v-form>
+            </v-card>
           </v-dialog>
-
           <v-dialog v-model="dialog" max-width="290" style="z-index: 9999">
             <v-card>
               <v-card-title class="headline">Confirmar eliminación</v-card-title>
-
               <v-card-text>Esta seguro de que desea eliminar la finca, este procesos será irreversible.</v-card-text>
-
               <v-card-actions>
                 <v-spacer></v-spacer>
-
                 <v-btn color="#2e7d32" text @click="dialog = false">Cancelar</v-btn>
-
                 <v-btn color="#7d2f2e" text @click="eliminarFinca">Eliminar</v-btn>
               </v-card-actions>
             </v-card>
@@ -200,8 +187,7 @@ import { parcelas } from '../../LeafletSpain';
 import { recintos } from '../../LeafletSpain';
 import { Finca } from '../../Clases/Finca';
 import { FactoryAPI } from '../../FactoryAPI';
-//map-marker-radius
-//map-legend
+
 export default {
   $_veeValidate: {
     validator: 'new' as 'new',
@@ -253,7 +239,7 @@ export default {
     };
   },
 
-  //BEFORE UPDATE CHECK THAT ALL PIVOTS AND DEVICES ARE INSIDE THE LAND
+
   methods: {
     ...mapActions('app', ['changePivot', 'changeUser', 'changeFinca']),
     mostrarOpciones() {
@@ -270,20 +256,18 @@ export default {
       this.isLoading = true;
       var tierraLocalizacion = [];
       var layers = [];
-      
+
       if (this.map2) {
-        
-      this.map2.eachLayer(function (layer) {
-        if (layer instanceof L.Polygon) {
-          layers.push(layer);
-        }
-      });
-      this.localizacion = layers;
-      this.localizacion.forEach(function (element, index) {
-        tierraLocalizacion.push(JSON.stringify(element.toGeoJSON()));
-      });
-      }
-      else{
+        this.map2.eachLayer(function (layer) {
+          if (layer instanceof L.Polygon) {
+            layers.push(layer);
+          }
+        });
+        this.localizacion = layers;
+        this.localizacion.forEach(function (element, index) {
+          tierraLocalizacion.push(JSON.stringify(element.toGeoJSON()));
+        });
+      } else {
         tierraLocalizacion = this.localizacion;
       }
       if (tierraLocalizacion.length === 0) {
@@ -361,7 +345,6 @@ export default {
           'Mapa España': Spain_MapasrasterIGN,
           Parcelas: parcelas,
           Recintos: recintos,
-          //"Mapa España y Mundo": Spain_IGNBase,
           Catastro: Spain_Catastro,
         };
 
@@ -375,14 +358,11 @@ export default {
           })
           .addTo(this.map2);
         Spain_PNOA_Ortoimagen.addTo(this.map2);
-        //var lc = document.getElementsByClassName('leaflet-control-layers');
-        //lc[0].style.visibility = 'hidden';
 
         this.map2.pm.setLang('es');
 
         this.map2.on('fullscreenchange', function () {
           if (map.isFullscreen()) {
-            //console.log('entered fullscreen');
           } else {
             document.getElementById('mapaShow').style.display = 'none';
           }
@@ -394,17 +374,15 @@ export default {
           opacity: 0.65,
         };
 
-        //DAR STYLE AL CREAR
         this.map2.on('pm:create', (e) => {
-         var hectareas = (LGeo.area(e.layer) / 10000).toFixed(2);
-           e.layer.bindPopup(hectareas + ' hectáreas');
-     e.layer.openPopup();
-     this.tamaño = hectareas + ' hectáreas';
+          var hectareas = (LGeo.area(e.layer) / 10000).toFixed(2);
+          e.layer.bindPopup(hectareas + ' hectáreas');
+          e.layer.openPopup();
+          this.tamaño = hectareas + ' hectáreas';
           this.map2.pm.addControls({
             drawPolygon: false,
           });
           e.layer.setStyle(myStyle);
-          //this.map2.fitBounds(e.layer.getBounds());
           var map = this.map2;
           var layer = e.layer;
           e.layer.on('pm:edit', (e) => {
@@ -412,7 +390,6 @@ export default {
           });
         });
 
-        //DEJAR CREAR OTRO POLYGON AL ELIMINAR EL ACTUAL
         this.map2.on('pm:remove', (e) => {
           this.map2.pm.addControls({
             drawPolygon: true,
@@ -429,7 +406,6 @@ export default {
               'PNOA cedido por © <a href="https://www.ign.es/ign/main/index.do" target="_blank">Instituto Geográfico Nacional de España</a>',
           })
           .addTo(this.map2);
-        // var tiles = L.esri.basemapLayer("Streets").addTo(this.map2);
         var searchControl = L.esri.Geocoding.geosearch().addTo(this.map2);
 
         var results = L.layerGroup().addTo(this.map2);
@@ -440,7 +416,7 @@ export default {
             results.addLayer(L.marker(data.results[i].latlng));
           }
         });
-var lc = document.getElementsByClassName('leaflet-control-layers');
+        var lc = document.getElementsByClassName('leaflet-control-layers');
         lc[0].style.visibility = 'hidden';
         this.map2.fitBounds(this.layerFinca.getBounds());
 
@@ -482,7 +458,7 @@ var lc = document.getElementsByClassName('leaflet-control-layers');
             weight: 5,
             opacity: 0.65,
           };
-          //https://leafletjs.com/reference-1.6.0.html#path
+
           L.geoJSON(JSON.parse(element), {
             style: myStyle,
           }).addTo(map);
@@ -513,9 +489,6 @@ var lc = document.getElementsByClassName('leaflet-control-layers');
   },
 
   mounted() {
-    //document.getElementById("mapaShow").style.display = "none";
-
-    //this.changeUser(true);
 
     if (this.getFinca === null) router.push('/finca');
     else {
@@ -537,7 +510,6 @@ var lc = document.getElementsByClassName('leaflet-control-layers');
                 src: 'https://i.ytimg.com/vi/B_RgooXDHvA/maxresdefault.jpg',
               });
             });
-            // this.getFinca.pivots = arrayPivots;
           }
         });
 
@@ -559,9 +531,9 @@ var lc = document.getElementsByClassName('leaflet-control-layers');
   beforeMount() {
     window.onbeforeunload = function () {
       window.setTimeout(function () {
-        window.location = '/perfil';
+        window.location.href = '/perfil';
       }, 0);
-      window.onbeforeunload = null; // necessary to prevent infinite loop, that kills your browser
+      window.onbeforeunload = null; 
     };
   },
 };
@@ -592,27 +564,27 @@ var lc = document.getElementsByClassName('leaflet-control-layers');
   display: none;
 }
 #btn-flotante {
-	font-size: 16px; 
-	font-weight: bold; 
-	padding: 18px 30px; 
-	position: fixed;
-	bottom: 40px;
-	right: 40px;
-	transition: all 300ms ease 0ms;
-	box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
-	z-index: 99;
+  font-size: 16px;
+  font-weight: bold;
+  padding: 18px 30px;
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  transition: all 300ms ease 0ms;
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+  z-index: 99;
 }
 #btn-flotante:hover {
-	background-color: #2c2fa5; 
-	box-shadow: 0px 15px 20px rgba(0, 0, 0, 0.3);
-	transform: translateY(-7px);
+  background-color: #2c2fa5;
+  box-shadow: 0px 15px 20px rgba(0, 0, 0, 0.3);
+  transform: translateY(-7px);
 }
 @media only screen and (max-width: 600px) {
- 	.btn-flotante {
-		font-size: 14px;
-		padding: 12px 20px;
-		bottom: 20px;
-		right: 20px;
-	}
-} 
+  .btn-flotante {
+    font-size: 14px;
+    padding: 12px 20px;
+    bottom: 20px;
+    right: 20px;
+  }
+}
 </style>

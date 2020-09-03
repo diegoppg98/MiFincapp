@@ -27,8 +27,5 @@ describe('Home.vue', () => {
       localVue,
       i18n,
     });
-
-    // expect(wrapper.findAll(Stage)).toHaveLength(1);
-    // expect(wrapper.findAll(HomeSection)).toHaveLength(4);
   });
 });

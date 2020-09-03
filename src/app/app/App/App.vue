@@ -3,12 +3,9 @@
     <div>
       <v-app-bar :key="componentKey" v-if="getUser" :color="color" dense dark style="z-index: 9999">
         <v-app-bar-nav-icon @click="drawerMethod"></v-app-bar-nav-icon>
-
         <v-toolbar-title>MiFincapp</v-toolbar-title>
-
         <v-spacer></v-spacer>
       </v-app-bar>
-
       <v-navigation-drawer
         :color="color"
         dark
@@ -22,8 +19,6 @@
         <v-card shaped class="rounded-card mx-5 my-5">
           <v-img height="180" :src="picture"></v-img>
         </v-card>
-
-
         <v-list>
           <v-list-item v-for="item in items" :key="item.title" :to="item.link" link>
             <v-list-item-icon>
@@ -34,12 +29,11 @@
             </v-list-item-content>
           </v-list-item>
         </v-list>
-
         <v-card :color="color" outlined class="px-2">
           <div @click="onLogout">
             <v-btn block class="mx-auto" @click="onLogout">Cerrar sesión</v-btn>
           </div>
- </v-card>       
+        </v-card>
       </v-navigation-drawer>
       <v-content>
         <v-container fluid>
@@ -60,32 +54,21 @@ import '../../../../node_modules/@mdi/font/css/materialdesignicons.css';
 import '../../../../node_modules/vuetify/dist/vuetify.css';
 import { FactoryAPI } from '../../FactoryAPI';
 import { colors } from '../../colors';
-import { Usuario } from '@/app/Clases/Usuario';
+import { Usuario } from '../../Clases/Usuario';
 
-/*
-COLORES
-VERDE: 2E7D33, CLARO: 4D9A52, OSCURO: 16621B
-AZUL: 246D60, CLARO: 3C7476, OSCURO: 11494C
-MARRON: 9F693A, CLARO: C38F62, OSCURO: 7D491C
-ROJO: 9F3D3A, CLARO: C36462, OSCURO: 7D1F1C
-*/
 export default {
   name: 'App',
   components: {},
   //
   data(): any {
     return {
-      menuDisabled: false,
       color: '#2e7d32',
       componentKey: 0,
       drawer: false,
       isNavigating: false,
-      showLoginModal: false,
       isLoginPending: false,
       isAuth: false,
       avatar: '',
-      //picture: require('../../../static/userProfile.jpg'),
-      //{ title: 'Ayuda' , link: '/ayuda', icon: 'mdi-help-box'},
       picture: 'https://www.pngitem.com/pimgs/m/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png',
       items: [
         { title: 'Inicio', link: '/inicio', icon: 'mdi-home' },
@@ -152,11 +135,9 @@ export default {
 
   mounted() {
     this.initProgressBar();
-    //  console.log(colors.navigationDrawer);
   },
 
   beforeMount() {
-    //this.color = colors.navigationDrawer;
     FactoryAPI.getFactoryAPI('Firebase')
       .getUsuario()
       .userAutenticated()
@@ -188,5 +169,4 @@ export default {
 .rounded-card {
   border-radius: 24px;
 }
-
 </style>
